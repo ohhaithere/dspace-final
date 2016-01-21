@@ -699,10 +699,15 @@ public class SubmissionController extends DSpaceServlet
                 {
                     request = ((FileUploadRequest)request).getOriginalRequest();
                 }
-                
+
                 //retrieve any changes to the SubmissionInfo object
                 subInfo = getSubmissionInfo(context, request);
 
+
+                String iden = request.getParameter("identifier");
+                request.setAttribute("identigier", iden);
+                String lang2 = request.getParameter("wtf_lang");
+                request.setAttribute("wtf_lang", lang2);
 
 
                 if(stepNumber == 1){
@@ -720,7 +725,7 @@ public class SubmissionController extends DSpaceServlet
 
                     WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
                     Item ti = wi.getItem();
-                    String iden = request.getParameter("identifier");
+
 
                     String item_id = request.getParameter("import_item");
                     if((iden != null) || (item_id != null)){
@@ -871,7 +876,9 @@ public class SubmissionController extends DSpaceServlet
                             log.error("lang error:", e);
                         }
 
-                        writeMetaDataToItemLowerCaseDescr(ti, "language", langs);
+                        writeMetaDataToItemLowerCaseLang(ti, "language", langs, request);
+
+
 
                         try {
                             expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Coverage']");
@@ -1027,19 +1034,30 @@ public class SubmissionController extends DSpaceServlet
 
                 }
 
-                if(stepNumber == 2) {
-                    WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
-                    Item ti = wi.getItem();
-                    String iden = request.getParameter("identifier");
-                    request.setAttribute("identifier", iden);
-                    log.debug("WTFMESSAGE: "+ iden);
-                    if (!iden.equals("null")) {
-                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", iden);
-                        } else {
-                        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-                        Date date = new Date();
-                        ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + ti.getID());
 
+
+                String step = request.getParameter("step");
+                if(step != null) {
+                    if (step.equals("2")) {
+                        WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
+                        Item ti = wi.getItem();
+
+                        Metadatum[] id = ti.getMetadata(MetadataSchema.DC_SCHEMA, "subject","lcc", "ru");
+                        if (id.length > 0) {
+                            String langg = "";
+                            Metadatum[] lng = ti.getMetadata(MetadataSchema.DC_SCHEMA, "subject","lcsh", "ru");
+                            if(lng.length > 0)
+                                langg = lng[0].value;
+                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", id[0].value);
+                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "language", "iso", "ru", langg);
+                            ti.clearMetadata(MetadataSchema.DC_SCHEMA, "subject","lcc", "ru");
+                            ti.clearMetadata(MetadataSchema.DC_SCHEMA, "subject","lcsh", "ru");
+                        } else {
+                                       DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                            Date date = new Date();
+                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + ti.getID());
+
+                        }
                     }
                 }
 
@@ -1104,6 +1122,8 @@ public class SubmissionController extends DSpaceServlet
             
             //flag that we are going to the start of this next step (for JSPStepManager class)
             setBeginningOfStep(request, true);
+
+
 
             doStep(context, request, response, subInfo, currentStepNum);
         }
@@ -2373,7 +2393,8 @@ public class SubmissionController extends DSpaceServlet
             Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
                     request.setAttribute("identifier", textSubject.getTextContent());
-                //item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+                item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcc", "ru", textSubject.getTextContent());
+
             }else {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }
@@ -2401,6 +2422,18 @@ public class SubmissionController extends DSpaceServlet
             if(qulSubject.getTextContent().toLowerCase().equals("abstract")){
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, "abstract", "ru", textSubject.getTextContent());
             }
+        }
+    }
+
+    public void writeMetaDataToItemLowerCaseLang(Item item,  String qualifier, NodeList nodes, HttpServletRequest request){
+        for(int j = 0; j < nodes.getLength(); j++){
+            Element subjectNode = (Element) nodes.item(j);
+            Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
+            Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+
+                request.setAttribute("wtf_lang", textSubject.getTextContent());
+                item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+                item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcsh", "ru", textSubject.getTextContent());
         }
     }
 }

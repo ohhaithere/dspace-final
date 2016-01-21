@@ -1405,19 +1405,24 @@
 		if(!(SubmissionController.isFirstStep(request, si) && pageNum<=1))
 
 		{
-String iden = (String) request.getAttribute("identifier");%>
+String iden = (String) request.getAttribute("identifier");
+String lang = (String) request.getAttribute("wtf_lang");%>
+
 			<div class="col-md-6 pull-right btn-group">
 				<input class="btn btn-default col-md-4" type="submit" name="<%=AbstractProcessingStep.PREVIOUS_BUTTON%>" value="<fmt:message key="jsp.submit.edit-metadata.previous"/>" />
 				<input class="btn btn-default col-md-4" type="submit" name="<%=AbstractProcessingStep.CANCEL_BUTTON%>" value="<fmt:message key="jsp.submit.edit-metadata.cancelsave"/>"/>
 				<input class="btn btn-primary col-md-4" type="submit" name="<%=AbstractProcessingStep.NEXT_BUTTON%>" value="<fmt:message key="jsp.submit.edit-metadata.next"/>"/>
 				<input type="hidden" name="identifier" value="<%=iden%>" />
+				<input type="hidden" name="wtf_lang" value="<%=lang%>" />
     <%  } else {
 String iden = (String) request.getAttribute("identifier");
+String lang = (String) request.getAttribute("wtf_lang");
  %>
     		<div class="col-md-4 pull-right btn-group">
                 <input class="btn btn-default col-md-6" type="submit" name="<%=AbstractProcessingStep.CANCEL_BUTTON%>" value="<fmt:message key="jsp.submit.edit-metadata.cancelsave"/>"/>
 				<input class="btn btn-primary col-md-6" type="submit" name="<%=AbstractProcessingStep.NEXT_BUTTON%>" value="<fmt:message key="jsp.submit.edit-metadata.next"/>"/>
 				<input type="hidden" name="identifier" value="<%=iden%>" />
+				<input type="hidden" name="wtf_lang" value="<%=lang%>" />
     <%  }  %>
     		</div><br/>
 </div>

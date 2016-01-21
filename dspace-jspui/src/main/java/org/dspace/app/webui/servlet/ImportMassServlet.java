@@ -256,11 +256,14 @@ public class ImportMassServlet extends DSpaceServlet {
 
                             InputStream iss  = new URL("http://cs633820.vk.me/v633820541/d3b5/FixSIizVXNw.jpg").openStream();
 
-                            itemItem.createBundle("test");
-                            Bitstream b = itemItem.getBundles("test")[0].createBitstream(iss);
+                            itemItem.createBundle("ORIGINAL");
+                            Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
                             b.setName("test");
                             b.setDescription("test");
                             b.setSource("test");
+
+                            itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+
 
                             BitstreamFormat bf = null;
 
@@ -269,6 +272,8 @@ public class ImportMassServlet extends DSpaceServlet {
 
                             b.update();
                             itemItem.update();
+
+                            iss.close();
 
 
                             // Group groups = Group.findByName(context, "Anonymous");
