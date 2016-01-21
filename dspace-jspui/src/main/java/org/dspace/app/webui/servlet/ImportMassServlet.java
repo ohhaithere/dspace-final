@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -259,7 +260,7 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                 String firstUrl = "http://lib.ssau.ru/download?fname=";
 
-                                String linkEncode = link.getTextContent().replace(" ", "%20");
+                                String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
 
                                 String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('/') + 1);
 
