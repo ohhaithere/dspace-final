@@ -254,26 +254,44 @@ public class ImportMassServlet extends DSpaceServlet {
 
 
 
-                            InputStream iss  = new URL("http://cs633820.vk.me/v633820541/d3b5/FixSIizVXNw.jpg").openStream();
+                            try {
+                                Node link = record.getElementsByTagName("Link").item(0);
 
-                            itemItem.createBundle("ORIGINAL");
-                            Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
-                            b.setName("test");
-                            b.setDescription("test");
-                            b.setSource("test");
+                                String firstUrl = "http://lib.ssau.ru/download?fname=";
 
-                            itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+                                String linkEncode = link.getTextContent().replace(" ", "%20");
+
+                                String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('/') + 1);
+
+                                InputStream iss  = new URL(firstUrl+linkEncode).openStream();
+
+                                log.info("wowlol: "+firstUrl+linkEncode);
+
+                                itemItem.createBundle("ORIGINAL");
+                                Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
+                                b.setName(filenamelel);
+                                b.setDescription("from 1C");
+                                b.setSource("1C");
+
+                                itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
 
 
-                            BitstreamFormat bf = null;
 
-                            bf = FormatIdentifier.guessFormat(context, b);
-                            b.setFormat(bf);
 
-                            b.update();
-                            itemItem.update();
+                                BitstreamFormat bf = null;
 
-                            iss.close();
+                                bf = FormatIdentifier.guessFormat(context, b);
+                                b.setFormat(bf);
+
+                                b.update();
+                                itemItem.update();
+
+                                iss.close();
+                            } catch (Exception e) {
+                                log.error("wtferror", e);
+                            }
+
+
 
 
                             // Group groups = Group.findByName(context, "Anonymous");

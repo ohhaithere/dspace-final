@@ -87,6 +87,13 @@
 
   NodeList tags = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
+  for(int i = 0; i <tags.getLength(); i++){
+    tagsString+=tags.item(i).getTextContent();
+    if(i == tags.getLength() - 1){
+
+    }else
+      tagsString+=",";
+  }
 
   try {
     expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Date']");
@@ -156,7 +163,7 @@
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
   <b>Автор: </b><%= author%><br>
   <b>Наименование: </b> <%=titles%> <br>
-  <b>Ключевые слова: </b> <%=tagsString %> <br>
+  <b>Ключевые слова: </b> <%=coverages %> <br>
   <b>Дата: </b><%=date%> <br>
   <b>Языки: </b><%=languages%><br>
 
