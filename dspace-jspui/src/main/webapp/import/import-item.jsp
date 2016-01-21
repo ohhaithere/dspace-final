@@ -87,13 +87,6 @@
 
   NodeList tags = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
-  for(int i = 0; i <tags.getLength(); i++){
-    tagsString+=tags.item(i).getTextContent();
-    if(i == tags.getLength() - 1){
-
-    }else
-      tagsString+=",";
-  }
 
   try {
     expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Date']");
