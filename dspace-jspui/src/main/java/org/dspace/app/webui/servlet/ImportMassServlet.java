@@ -262,7 +262,7 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                 String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
 
-                                String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('/') + 1);
+                                String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('\\') + 1);
 
                                 InputStream iss  = new URL(firstUrl+linkEncode).openStream();
 
