@@ -163,7 +163,7 @@
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
   <b>Автор: </b><%= author%><br>
   <b>Наименование: </b> <%=titles%> <br>
-  <b>Ключевые слова: </b> <%=coverages %> <br>
+  <b>Ключевые слова: </b> <%=tagsString %> <br>
   <b>Дата: </b><%=date%> <br>
   <b>Языки: </b><%=languages%><br>
 

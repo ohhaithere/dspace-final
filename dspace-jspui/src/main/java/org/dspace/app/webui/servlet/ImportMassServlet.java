@@ -40,6 +40,7 @@ import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -182,14 +183,6 @@ public class ImportMassServlet extends DSpaceServlet {
                             }
 
                             try {
-                                Node source = record.getElementsByTagName("Source").item(0);
-
-                                itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", null, "ru", source.getTextContent());
-                            } catch (Exception e) {
-                                //response.getWriter().write(e.getMessage());
-                            }
-
-                            try {
                                 Node type = record.getElementsByTagName("Type").item(0);
 
                                 itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "type", null, "ru", type.getTextContent());
@@ -248,6 +241,18 @@ public class ImportMassServlet extends DSpaceServlet {
                                 writeMetaDataToItemLowerCase(itemItem, "citation", citation);
                             } catch (Exception e) {
                                 //response.getWriter().write(e.getMessage());
+                            }
+
+                            try {
+                                itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", new Date().toString());
+                            }
+                                catch(Exception e1){
+
+                                }
+                            try {
+                                itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", new Date().toString());
+                            } catch(Exception e2){
+                                
                             }
 
                             itemItem.setDiscoverable(true);

@@ -2392,7 +2392,7 @@ public class SubmissionController extends DSpaceServlet
             Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
             Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
-                    request.setAttribute("identifier", textSubject.getTextContent());
+                request.setAttribute("identifier", textSubject.getTextContent());
                 item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcc", "ru", textSubject.getTextContent());
 
             }else {

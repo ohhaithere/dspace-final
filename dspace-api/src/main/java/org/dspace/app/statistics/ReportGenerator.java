@@ -817,8 +817,13 @@ public class ReportGenerator
         {
            authors.append(")");
         }
-        
-        String content = title[0].value + " " + authors.toString();
+
+        String content = "";
+        try {
+             content = title[0].value + " " + authors.toString();
+        } catch(Exception e){
+            content = authors.toString();
+        }
         
         return content;
     }
