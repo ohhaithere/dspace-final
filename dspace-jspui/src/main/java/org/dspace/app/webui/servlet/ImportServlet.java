@@ -126,6 +126,8 @@ public class ImportServlet extends DSpaceServlet {
             request.setAttribute("uuid_search", uuid);
             request.setAttribute("document", doc);
 
+
+
             NodeList testWow = doc.getElementsByTagName("Records");
             try{
                 if(testWow.getLength() > 0) {
@@ -172,9 +174,14 @@ public class ImportServlet extends DSpaceServlet {
             request.setAttribute("collection_id", request.getParameter("collection_id"));
             request.setAttribute("document", doc);
 
-            if(doc.getChildNodes().getLength() > 1) {
-                request.getRequestDispatcher("/import/import-items.jsp").forward(request, response);
-            } else{
+            NodeList testWow = doc.getElementsByTagName("m:BiblRecords");
+            try{
+                if(testWow.getLength() > 0) {
+                    request.getRequestDispatcher("/import/import-items.jsp").forward(request, response);
+                } else {
+                    request.getRequestDispatcher("/import/import-no.jsp").forward(request, response);
+                }
+            } catch (Exception e){
                 request.getRequestDispatcher("/import/import-no.jsp").forward(request, response);
             }
 
