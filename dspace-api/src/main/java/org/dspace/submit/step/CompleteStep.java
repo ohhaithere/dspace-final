@@ -9,6 +9,9 @@ package org.dspace.submit.step;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.dspace.app.itemexport.ItemExport;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataSchema;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.submit.AbstractProcessingStep;
 import org.dspace.authorize.AuthorizeException;
@@ -83,6 +87,22 @@ public class CompleteStep extends AbstractProcessingStep
                 "Completed submission with id="
                         + subInfo.getSubmissionItem().getID()));
 
+        String itemId = request.getParameter("workspace_item_id");
+
+        WorkspaceItem ws = WorkspaceItem.find(context, Integer.parseInt(itemId));
+        Item item = ws.getItem();
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date();
+
+        item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + item.getID());
+
+
+        try {
+            ItemExport.exportItemToFolder(context,item,"/home/dspace",0,false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         // Start the workflow for this Submission
@@ -119,16 +139,7 @@ public class CompleteStep extends AbstractProcessingStep
             }
         }
 
-        String itemId = request.getParameter("workspace_item_id");
 
-        Item item = Item.find(context, Integer.parseInt(itemId));
-
-
-        try {
-            ItemExport.exportItemToFolder(context,item,"/home/dspace",0,false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return STATUS_COMPLETE;
     }

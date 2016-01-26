@@ -8,6 +8,7 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.webui.servlet.admin.EditCommunitiesServlet;
+import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.*;
@@ -123,6 +124,7 @@ public class ImportMassServlet extends DSpaceServlet {
                             //response.getWriter().write("test");
 
                             itemItem.setOwningCollection(col);
+                            HandleManager.createHandle(context, itemItem);
 
                             try {
                                 NodeList titleNode = record.getElementsByTagName("Title");
@@ -252,11 +254,12 @@ public class ImportMassServlet extends DSpaceServlet {
                             try {
                                 itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", new Date().toString());
                             } catch(Exception e2){
-                                
+
                             }
 
                             itemItem.setDiscoverable(true);
-                            HandleManager.createHandle(context, itemItem);
+
+                            //itemItem.update();
 
 
 
@@ -311,6 +314,8 @@ public class ImportMassServlet extends DSpaceServlet {
 
                             row.setColumn("collection_id", col.getID());
                             row.setColumn("item_id", itemItem.getID());
+
+                            request.setAttribute("link", HandleManager.getCanonicalForm(col.getHandle()));
 
 
 
@@ -403,6 +408,8 @@ public class ImportMassServlet extends DSpaceServlet {
             Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+                SoapHelper sh = new SoapHelper();
+                sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
             }else {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }

@@ -35,17 +35,17 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.dspace.content.Collection" %>
 
+
 <%
 
-String link = (String) request.getAttribute("link");
+String colId = (String) request.getAttribute("collection_id");
 
 
 %>
-
-
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
-    <b>Данные загружены в коллекцию!</b><br>
+    <b>Ничего не найдено!<br>
     <br>
-    <a href="<%=link%>">Перейти в коллекцию</a><br>
+    <a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
+
 
 </dspace:layout>

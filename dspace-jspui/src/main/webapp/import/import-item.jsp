@@ -167,8 +167,8 @@
   <b>Дата: </b><%=date%> <br>
   <b>Языки: </b><%=languages%><br>
 
-  <form action="/jspui/submit" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
-    <input type="hidden" name="collection" value="<%=collection_id %>" />
+  <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+    <input type="hidden" name="collection_id" value="<%=collection_id %>" />
     <input type="hidden" name="community_id" value="<%=community_id %>" />
     <input type="hidden" name="titles" value="<%=titles %>" />
     <input type="hidden" name="tags" value="<%=tagsString %>" />
@@ -177,7 +177,8 @@
     <input type="hidden" name="coverages" value="<%=coverages %>" />
     <input type="hidden" name="author" value="<%=author %>" />
     <input type="hidden" name="identifier" value="<%=uuid %>" />
-    <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Найти">
+    <input type="hidden" name="action" value="write_ident"/>
+    <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Импортировать">
   </form>
 
 

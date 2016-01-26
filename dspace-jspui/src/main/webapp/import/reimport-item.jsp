@@ -37,15 +37,15 @@
 
 <%
 
+String colId = (String) request.getAttribute("collection_id");
 String link = (String) request.getAttribute("link");
 
 
 %>
 
-
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
-    <b>Данные загружены в коллекцию!</b><br>
+    <b>Данные успешно обновлены!</b><br>
     <br>
-    <a href="<%=link%>">Перейти в коллекцию</a><br>
+    <a href="<%=link%>">Перейти на обновленный ресурс</a><br>
 
 </dspace:layout>

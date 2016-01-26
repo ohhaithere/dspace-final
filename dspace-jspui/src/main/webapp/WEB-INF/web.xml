@@ -213,6 +213,11 @@
         <servlet-class>org.dspace.app.webui.servlet.ImportMassServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>reimport-item</servlet-name>
+        <servlet-class>org.dspace.app.webui.servlet.ReimportServlet</servlet-class>
+    </servlet>
+
   <servlet>
     <servlet-name>community-list</servlet-name>
     <servlet-class>org.dspace.app.webui.servlet.CommunityListServlet</servlet-class>
@@ -544,6 +549,11 @@
     <servlet-mapping>
         <servlet-name>import-mass</servlet-name>
         <url-pattern>/import-mass/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>reimport-item</servlet-name>
+        <url-pattern>/reimport-item/*</url-pattern>
     </servlet-mapping>
 
   <servlet-mapping>

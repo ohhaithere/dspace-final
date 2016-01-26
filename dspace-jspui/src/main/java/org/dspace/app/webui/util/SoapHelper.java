@@ -1,5 +1,7 @@
 package org.dspace.app.webui.util;
 
+import org.apache.log4j.Logger;
+import org.dspace.app.webui.servlet.admin.EditCommunitiesServlet;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -18,6 +20,8 @@ import java.nio.charset.Charset;
  * Created by root on 1/1/16.
  */
 public class SoapHelper {
+
+    private static Logger log = Logger.getLogger(EditCommunitiesServlet.class);
 
     public Document getRecordByCode(String id){
         HttpURLConnection connection = null;
@@ -359,5 +363,95 @@ public class SoapHelper {
 
         //return responseString;
     }
+
+    public void writeLink(String iden, String link){
+        HttpURLConnection connection = null;
+        URL url = null;
+        try {
+            url = new URL("http://doc.ssau.ru/ssau_biblioteka_test/ws/DspaceIntegration.1cws");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            connection = (HttpURLConnection)url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        connection.setRequestProperty("Authorization", "Basic d2Vic2VydmljZTp3ZWJzZXJ2aWNl");
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Accept-Encoding", "gzip,deflate");
+        try {
+            connection.setRequestMethod("POST");
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+        connection.setDoOutput(true);
+
+        DataOutputStream wr = null;
+        try {
+            wr = new DataOutputStream(
+                    connection.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Charset charset = Charset.forName("UTF-8");
+        try {
+
+            wr.write(new String("<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:imc=\"http://imc.parus-s.ru\" xmlns:imc1=\"http://www.imc-dspace.org\">\n" +
+                    "   <soap:Header/>\n" +
+                    "   <soap:Body>\n" +
+                    "      <imc:PutRecordsInfo>\n" +
+                    "         <imc:Records>\n" +
+                    "            <!--Zero or more repetitions:-->\n" +
+                    "            <imc1:Records>\n" +
+                    "               <imc1:Identifier>\n" +
+                    "                  <imc1:Qualifier>Identifier</imc1:Qualifier>\n" +
+                    "                  <imc1:Value>"+iden+"</imc1:Value>\n" +
+                    "               </imc1:Identifier>\n" +
+                    "               <imc1:Link>"+link+"</imc1:Link>\n" +
+                    "            </imc1:Records>\n" +
+                    "         </imc:Records>\n" +
+                    "      </imc:PutRecordsInfo>\n" +
+                    "   </soap:Body>\n" +
+                    "</soap:Envelope>").getBytes(charset));
+        } catch (IOException e) {
+            log.info("smth is wrong 1");
+        }
+        try {
+            wr.close();
+        } catch (IOException e) {
+            log.info("smth is wrong 2");
+        }
+        InputStream is = null;
+        try {
+            is = connection.getInputStream();
+        } catch (IOException e) {
+            log.info("smth is wrong 3");
+        }
+
+        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+        StringBuilder response = new StringBuilder(); // or StringBuffer if not Java 5+
+        String line;
+        String responseString = "";
+        try {
+            while((line = rd.readLine()) != null) {
+                responseString+=line;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            rd.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.info("LINKTOWRITE: "+link);
+        log.info("RESPONSSTRING: "+responseString);
+    }
+
+
 
 }

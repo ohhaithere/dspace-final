@@ -1042,22 +1042,12 @@ public class SubmissionController extends DSpaceServlet
                         WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
                         Item ti = wi.getItem();
 
-                        Metadatum[] id = ti.getMetadata(MetadataSchema.DC_SCHEMA, "subject","lcc", "ru");
-                        if (id.length > 0) {
-                            String langg = "";
-                            Metadatum[] lng = ti.getMetadata(MetadataSchema.DC_SCHEMA, "subject","lcsh", "ru");
-                            if(lng.length > 0)
-                                langg = lng[0].value;
-                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", id[0].value);
-                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "language", "iso", "ru", langg);
-                            ti.clearMetadata(MetadataSchema.DC_SCHEMA, "subject","lcc", "ru");
-                            ti.clearMetadata(MetadataSchema.DC_SCHEMA, "subject","lcsh", "ru");
-                        } else {
-                                       DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
                             Date date = new Date();
-                            ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + ti.getID());
 
-                        }
+                            //ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + ti.getID());
+
+
                     }
                 }
 

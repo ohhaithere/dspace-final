@@ -695,7 +695,7 @@ public class ItemExport
                 {
                     qualifier = "none";
                 }
-                utf8 = ("<Creator"+dcv.value+"</Creator>\n")
+                utf8 = ("<Creator>"+dcv.value+"</Creator>\n")
                         .getBytes("UTF-8");
                 out2.write(utf8, 0, utf8.length);
             }
@@ -801,7 +801,7 @@ public class ItemExport
                 {
                     qualifier = "none";
                 }
-                utf8 = ("<Identifier><Qualifier>Identifier</Qualifier><Value>"+dcv.value+"</Value></Identifier>\n")
+                utf8 = ("<Identifier><Qualifier>"+qualifier+"</Qualifier><Value>"+dcv.value+"</Value></Identifier>\n")
                         .getBytes("UTF-8");
                 out2.write(utf8, 0, utf8.length);
             }
@@ -1058,7 +1058,7 @@ public class ItemExport
                     if (qualifier == null) {
                         qualifier = "none";
                     }
-                    utf8 = ("<Creator" + dcv.value + "</Creator>\n")
+                    utf8 = ("<Creator>" + dcv.value + "</Creator>\n")
                             .getBytes("UTF-8");
                     out2.write(utf8, 0, utf8.length);
                 }
