@@ -35,17 +35,18 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.dspace.content.Collection" %>
 
+
 <%
 
-String link = (String) request.getAttribute("link");
+String colId = (String) request.getAttribute("collection_id");
 
 
 %>
-
-
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
-    <b>Данные загружены в коллекцию!</b><br>
+<dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+    <b>В каталоге нет файлов.<br>
     <br>
-    <a href="<%=link%>">Перейти в коллекцию</a><br>
+    <a href="/jspui/import-mass">Повторить загрузку</a> </b><br>
+
+
 
 </dspace:layout>

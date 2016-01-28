@@ -88,6 +88,9 @@ public class ImportMassServlet extends DSpaceServlet {
         Collection col = Collection.find(context, Integer.parseInt(collectionId));
         Integer lel = directoryListing.length;
         log.debug("WTFDIRECTO " + lel.toString());
+        if(directoryListing.length <= 0){
+            request.getRequestDispatcher("/import/import-no-file.jsp").forward(request, response);
+        }
         if (directoryListing != null) {
             for (int j = 0; j < directoryListing.length; j++) {
                 String absolutePath = directoryListing[j].getAbsolutePath();

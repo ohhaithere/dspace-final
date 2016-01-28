@@ -50,6 +50,7 @@
     <b>Массовый импорт</b><br>
     <form action="/jspui/import-mass" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
   <span class="col-md-5">
+    Путь к каталогу:
     <select name="folder_path">
                             <% if(name != null){
                             while(name.hasNext()) {
@@ -58,6 +59,7 @@
                             <% } } %>
                         </select>
   </span>
+  Коллекция для загрузки:
   <select name="collection_id">
                           <% if(paths != null){
                           for(int i = 0; i < paths.length; i++){
@@ -67,7 +69,8 @@
                       </select>
         <br>
         <br>
-        <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Найти">
+        <input class="btn btn-primary pull-left col-md-3" id="button_spin" type="submit" name="submit" value="Найти">
+<div id="wow-spinner"></div>
     </form>
 
 

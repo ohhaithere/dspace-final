@@ -65,7 +65,7 @@
     <input type="hidden" name="action" value="write_name"/>
     <input type="hidden" name="collection_id" value="<%=collection_id %>" />
     <input type="hidden" name="community_id" value="<%=community_id %>" />
-    <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Импортировать">
+    <input class="btn btn-primary pull-left col-md-3" id="button_spin" type="submit" name="submit" value="Импортировать">
   </form>
   <br>
 
