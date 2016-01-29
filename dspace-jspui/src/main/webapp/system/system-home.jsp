@@ -45,8 +45,6 @@
         Integer i = row.getIntColumn("id");%>
     <tr>
     <th class="oddRowEvenCol"><%=row.getStringColumn("system_name") %></th><th class="oddRowEvenCol"><%=row.getStringColumn("folder_path") %></th><th class="oddRowEvenCol"><a href="systems?action=edit&id=<%=i%>">Редактировать</a></th><th class="oddRowEvenCol"><a href="systems?action=delete&id=<%=i%>">Удалить</a></th></tr>
-    <br>
-    <br>
 
     <% } %>
     </table>

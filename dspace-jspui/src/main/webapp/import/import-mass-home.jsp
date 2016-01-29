@@ -69,7 +69,7 @@
                       </select>
         <br>
         <br>
-        <input class="btn btn-primary pull-left col-md-3" id="button_spin" type="submit" name="submit" value="Найти">
+        <input class="btn btn-primary pull-left col-md-3" id="button_spin" type="submit" name="submit" value="Загрузить">
 <div id="wow-spinner"></div>
     </form>
 

@@ -32,21 +32,21 @@
 <%@ page import="org.dspace.core.Utils" %>
 <%@ page import="org.dspace.storage.rdbms.TableRowIterator" %>
 <%@ page import="org.dspace.storage.rdbms.TableRow" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.dspace.content.Collection" %>
 
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
-    <table>
-    <tr>
-        <th id="t1" class="oddRowEvenCol">Наименование</th><th id="t3" class="oddRowEvenCol">Путь</th><th id="t4" class="oddRowEvenCol"></th><th id="t5" class="oddRowEvenCol"></th></tr>
-    <%
-        TableRowIterator name = (TableRowIterator) request.getAttribute("systems");
-        while(name.hasNext()){
-        TableRow row = name.next();
-        Integer i = row.getIntColumn("id");%>
-    <tr>
-    <th class="oddRowEvenCol"><%=row.getStringColumn("system_name") %></th><th class="oddRowEvenCol"><%=row.getStringColumn("folder_path") %></th><th class="oddRowEvenCol"><a href="fold?action=edit&id=<%=i%>">Редактировать</a></th><th class="oddRowEvenCol"><a href="fold?action=delete&id=<%=i%>">Удалить</a></th></tr>
-    <% } %>
-    </table>
-<a href="/jspui/fold?action=add"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Добавить"></a>
+
+<%
+
+String colId = (String) request.getAttribute("collection_id");
+
+
+%>
+<dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+    <b>Файл неправильного расширения или формата <br>
+    <br>
+    <a href="/jspui/import-mass">Повторить загрузку</a> </b><br>
+
 
 
 </dspace:layout>

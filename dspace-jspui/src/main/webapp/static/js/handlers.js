@@ -54,6 +54,17 @@ $( document ).ready(function() {
 
         });
 
+        $("#metadata_import_name_wtf").click(function( event ) {
+
+        	var value1 = $("#author_name").val();
+        	var value2 = $("#import_name").val();
+                    if((value1.length == 0)||(value2.length == 0)){
+                        alert('Поля пустые');
+        		        return false;
+                    }
+
+                });
+
   $("#button_spin").click(function( event ) {
 var docHeight = $(document).height();
 
@@ -72,9 +83,9 @@ var docHeight = $(document).height();
       });
 var opts = {
   lines: 13 // The number of lines to draw
-, length: 28 // The length of each line
+, length: 24 // The length of each line
 , width: 14 // The line thickness
-, radius: 42 // The radius of the inner circle
+, radius: 28 // The radius of the inner circle
 , scale: 1 // Scales overall size of the spinner
 , corners: 1 // Corner roundness (0..1)
 , color: '#000' // #rgb or #rrggbb or array of colors
