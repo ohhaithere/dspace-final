@@ -30,6 +30,8 @@ import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.content.ItemIterator;
 import org.apache.log4j.Logger;
+import org.dspace.storage.rdbms.DatabaseManager;
+import org.dspace.storage.rdbms.TableRowIterator;
 
 /**
  * Servlet for browsing through indices, as they are defined in 
@@ -79,6 +81,8 @@ public class BrowserServlet extends AbstractBrowserServlet {
             return;
         }
 
+        TableRowIterator tri = DatabaseManager.queryTable(context, "systems", "SELECT * FROM systems");
+        request.setAttribute("systems", tri);
         // Is this a request to export the metadata, or a normal browse request?
         if ("submit_export_metadata".equals(UIUtil.getSubmitButton(request, "submit"))) {
             exportMetadata(context, request, response, scope);
@@ -102,10 +106,14 @@ public class BrowserServlet extends AbstractBrowserServlet {
                 jb.append(line);
         } catch (Exception e) { /*report an error*/ }
 
-        String result = jb.toString();
+        String result = request.getParameter("items");
+        String path = request.getParameter("system_to");
         result = result.replace("[","");
         result = result.replace("]","");
         result = result.replace("\"","");
+        result = result.replace("%22","");
+        log.info("OMGWTF: "+ result);
+        log.info("OMGWTF: "+ path);
         String[] parts = result.split(",");
         ArrayList<Item> items = new ArrayList<>();
         for(String s : parts){
@@ -115,7 +123,7 @@ public class BrowserServlet extends AbstractBrowserServlet {
         }
 
         try {
-            ItemExport.exportItemToFolderMass(context, items, "/home/dspace", 0, false);
+            ItemExport.exportItemToFolderMass(context, items, path, 0, false);
         } catch (Exception e) {
             log.trace(e);
         }

@@ -53,6 +53,7 @@ public class ImportMassServlet extends DSpaceServlet {
     private static Logger log = Logger.getLogger(EditCommunitiesServlet.class);
 
 
+    public static final String UTF8_BOM = "\uFEFF";
 
     protected void doDSGet(Context context, HttpServletRequest request,
                            HttpServletResponse response) throws ServletException, IOException,
@@ -113,8 +114,13 @@ public class ImportMassServlet extends DSpaceServlet {
                         }
                         //inputReader.close();
                         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+                        String dbString = sb.toString();
+                        log.info("WTFLOL: " + dbString);
+                        dbString = removeUTF8BOM(dbString);
+
                         InputSource is = new InputSource();
-                        is.setCharacterStream(new StringReader(sb.toString()));
+                        is.setCharacterStream(new StringReader(dbString));
 
                         Document doc = db.parse(is);
                         NodeList records = doc.getElementsByTagName("Records");
@@ -425,7 +431,7 @@ public class ImportMassServlet extends DSpaceServlet {
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                 SoapHelper sh = new SoapHelper();
-                sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
+                //sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
             }else {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }
@@ -443,6 +449,13 @@ public class ImportMassServlet extends DSpaceServlet {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }
         }
+    }
+
+    private static String removeUTF8BOM(String s) {
+        if (s.startsWith(UTF8_BOM)) {
+            s = s.substring(1);
+        }
+        return s;
     }
 
 }

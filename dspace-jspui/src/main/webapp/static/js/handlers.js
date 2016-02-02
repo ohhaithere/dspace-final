@@ -12,8 +12,11 @@ $( document ).ready(function() {
             async: false,
             type: "POST",
             contentType: "application/json",
-            url: "browse?type=title&submit_export_metadata=Export+metadata",
-            data: JSON.stringify(arr),
+            url: "browse?type=title&submit_export_metadata=Export+metadata&items="+JSON.stringify(arr)+"&system_to="+$( "#system_to option:selected" ).val(),
+            data: {
+            items : JSON.stringify(arr),
+            path : $( "#system_to option:selected" ).text()
+            },
             dataType : "json",
             success: function(response){
             }
@@ -32,6 +35,17 @@ $( document ).ready(function() {
 
 
     });
+
+  $("#metadata_full_wtf").click(function( event ) {
+         var arr = [];
+         $('.exportThisItem').each(function(i, obj) {
+
+                 obj.checked = false;
+
+         });
+
+
+     });
 
      $( "#metadata_import_omg" ).click(function( event ) {
 
@@ -108,5 +122,11 @@ var spinner = new Spinner(opts).spin(target);
 
 
           });
+
+$(document).on("click", "a.deleteText", function() {
+    if (!confirm('Вы действительно хотите удалить позицию?')) {
+        return false;
+    }
+});
 
 });
