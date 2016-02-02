@@ -398,7 +398,7 @@
         %>
         <%
                             TableRowIterator name = (TableRowIterator) request.getAttribute("systems"); %>
-                            <select style="width:100%" id="system_to" name="path">
+                            <select style="width:30%" id="system_to" name="path">
                                 <% while(name.hasNext()) {
                                     TableRow row = name.next();%>
                                 <option value="<%=row.getStringColumn("folder_path")%>"><%=row.getStringColumn("system_name")%></option>
