@@ -135,7 +135,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                 //response.getWriter().write("test");
 
                                 itemItem.setOwningCollection(col);
-                                HandleManager.createHandle(context, itemItem);
+
 
                                 try {
                                     NodeList titleNode = record.getElementsByTagName("Title");
@@ -323,6 +323,8 @@ public class ImportMassServlet extends DSpaceServlet {
                                 }
 
 
+                                HandleManager.createHandle(context, itemItem);
+
                                 // Group groups = Group.findByName(context, "Anonymous");
                                 TableRow row = DatabaseManager.row("collection2item");
 
@@ -380,7 +382,11 @@ public class ImportMassServlet extends DSpaceServlet {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-           // FileDeleteStrategy.FORCE.delete(file);
+            try {
+                FileDeleteStrategy.FORCE.delete(file);
+            } catch(Exception e){
+                
+            }
         }
         context.complete();
         if(howManyWasSubmited > 0){
