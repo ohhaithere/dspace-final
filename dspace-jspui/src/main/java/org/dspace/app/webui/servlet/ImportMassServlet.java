@@ -101,7 +101,7 @@ public class ImportMassServlet extends DSpaceServlet {
                 String filename = directoryListing[j].getName();
 
 
-                if (filename.endsWith(".xml")) {
+                if (filename.toLowerCase().endsWith(".xml")) {
                     try {
 
                         // List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
@@ -385,7 +385,7 @@ public class ImportMassServlet extends DSpaceServlet {
             try {
                 FileDeleteStrategy.FORCE.delete(file);
             } catch(Exception e){
-                
+
             }
         }
         context.complete();
