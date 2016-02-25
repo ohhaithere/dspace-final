@@ -1,6 +1,10 @@
 package org.dspace.app.webui.servlet;
 
 import org.apache.log4j.Logger;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
@@ -69,7 +73,7 @@ public class ImportServlet extends DSpaceServlet {
         //response.getWriter().write("test");
 
         itemItem.setOwningCollection(col);
-        HandleManager.createHandle(context, itemItem);
+
 
         String test = request.getParameter("action");
         String item_id = request.getParameter("import_item");
@@ -540,7 +544,8 @@ public class ImportServlet extends DSpaceServlet {
                 e.printStackTrace();
             }
 
-
+           // HandleManager.
+            HandleManager.createHandle(context, ti);
 
             NodeList linkList = null;
             try {
@@ -557,6 +562,28 @@ public class ImportServlet extends DSpaceServlet {
             String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('\\') + 1);
 
             InputStream iss  = new URL(firstUrl+linkEncode).openStream();
+            InputStream issforPdf  = new URL(firstUrl+linkEncode).openStream();
+
+            PDFTextStripper pdfStripper = null;
+            PDDocument docum = null;
+            PDFParser parser = new PDFParser(issforPdf);
+            COSDocument cosDoc = null;
+
+            parser.parse();
+            cosDoc = parser.getDocument();
+            pdfStripper = new PDFTextStripper();
+            docum = new PDDocument(cosDoc);
+            //pdfStripper.getText(docum);
+            String parsedText = pdfStripper.getText(docum);
+            //log.info(parsedText);
+
+            Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+            Integer toCut = 500;
+            if((parsedText.length() - fifty) < 500){
+                toCut = parsedText.length();
+            }
+            String subText = parsedText.substring(fifty, toCut-1);
+            ti.addMetadata("dc", "textpart", null, null, subText + "...");
 
             log.info("wowlol: "+firstUrl+linkEncode);
 

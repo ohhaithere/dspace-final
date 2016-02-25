@@ -502,7 +502,11 @@ public class BrowseListTag extends TagSupport
                         if (isDate[colIdx])
                         {
                             DCDate dd = new DCDate(metadataArray[0].value);
-                            metadata = UIUtil.displayDate(dd, false, false, hrq);
+                            try {
+                                metadata = UIUtil.displayDate(dd, false, false, hrq);
+                            } catch(Exception r){
+
+                            }
                         }
                         // format the title field correctly for withdrawn and private items (ie. don't link)
                         else if (field.equals(titleField) && items[i].isWithdrawn())

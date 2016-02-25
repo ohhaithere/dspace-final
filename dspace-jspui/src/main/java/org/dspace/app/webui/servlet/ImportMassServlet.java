@@ -303,11 +303,13 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                     InputStream iss = new URL(firstUrl + linkEncode).openStream();
 
+                                    InputStream issforPdf = new URL(firstUrl + linkEncode).openStream();
+
                                     log.info("wowlol: " + firstUrl + linkEncode);
 
                                     PDFTextStripper pdfStripper = null;
                                     PDDocument docum = null;
-                                    PDFParser parser = new PDFParser(iss);
+                                    PDFParser parser = new PDFParser(issforPdf);
                                     COSDocument cosDoc = null;
 
                                     parser.parse();
@@ -316,7 +318,14 @@ public class ImportMassServlet extends DSpaceServlet {
                                     docum = new PDDocument(cosDoc);
                                     //pdfStripper.getText(docum);
                                     String parsedText = pdfStripper.getText(docum);
-                                    log.info(parsedText);
+                                    //log.info(parsedText);
+                                    Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                                    Integer toCut = 500;
+                                    if((parsedText.length() - fifty) < 500){
+                                        toCut = parsedText.length();
+                                    }
+                                    String subText = parsedText.substring(fifty, toCut-1);
+                                    itemItem.addMetadata("dc", "textpart", null, null, subText + "...");
 
                                     itemItem.createBundle("ORIGINAL");
                                     Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
