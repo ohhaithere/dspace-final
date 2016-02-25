@@ -7,6 +7,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.apache.pdfbox.PDFReader;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.dspace.app.webui.servlet.admin.EditCommunitiesServlet;
 import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
@@ -99,6 +104,7 @@ public class ImportMassServlet extends DSpaceServlet {
                 String filepath = absolutePath.
                         substring(0, absolutePath.lastIndexOf(File.separator));
                 String filename = directoryListing[j].getName();
+
 
 
                 if (filename.toLowerCase().endsWith(".xml")) {
@@ -299,6 +305,19 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                     log.info("wowlol: " + firstUrl + linkEncode);
 
+                                    PDFTextStripper pdfStripper = null;
+                                    PDDocument docum = null;
+                                    PDFParser parser = new PDFParser(iss);
+                                    COSDocument cosDoc = null;
+
+                                    parser.parse();
+                                    cosDoc = parser.getDocument();
+                                    pdfStripper = new PDFTextStripper();
+                                    docum = new PDDocument(cosDoc);
+                                    //pdfStripper.getText(docum);
+                                    String parsedText = pdfStripper.getText(docum);
+                                    log.info(parsedText);
+
                                     itemItem.createBundle("ORIGINAL");
                                     Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
                                     b.setName(filenamelel);
@@ -439,7 +458,11 @@ public class ImportMassServlet extends DSpaceServlet {
                 SoapHelper sh = new SoapHelper();
                 //sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
             }else {
-                item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
+                if(qulSubject.getTextContent().toLowerCase().equals("doi")){
+                    item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, "uri", "ru", textSubject.getTextContent());
+                } else {
+                    item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
+                }
             }
         }
     }

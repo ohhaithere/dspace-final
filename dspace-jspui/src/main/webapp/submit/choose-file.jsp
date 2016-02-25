@@ -399,14 +399,14 @@
       <div class="resumable-files">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  Files To Upload
+                  Загружаемые файлы
               </div>
 
               <table class="table resumable-list">
                   <thead>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Status</th>
+                      <th>Имя</th>
+                      <th>Статус</th>
                   </thead>
                   <tbody></tbody>
               </table>

@@ -18,6 +18,7 @@
 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Enumeration"%>
+<%@ page import="org.dspace.content.Item" %>
 <%@ page import="org.dspace.app.webui.util.JSPManager" %>
 <%@ page import="org.dspace.core.ConfigurationManager" %>
 <%@ page import="org.dspace.app.util.Util" %>
@@ -40,15 +41,34 @@
     String dsVersion = Util.getSourceVersion();
     String generator = dsVersion == null ? "DSpace" : "DSpace "+dsVersion;
     String analyticsKey = ConfigurationManager.getProperty("jspui.google.analytics.key");
+    Item test = (Item) request.getAttribute("item");
+    String titleTag = (String) request.getAttribute("titleTag");
+    String metaTag = (String) request.getAttribute("metaTag");
+    String h1 = (String) request.getAttribute("h1");
+    String descrTag = (String) request.getAttribute("descrTag");
+    String testTag = (String) request.getAttribute("testAttr");
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= siteName %>: <%= title %></title>
+
+    <title><% if(titleTag == null){ %>
+        <%= siteName %>: <%= title %> <% }else{ %>
+        <%= titleTag %> <%}%></title>
+        <% if(descrTag != null){ %>
+         <meta name="description" content="<%=descrTag%>">
+                                <% } %>
+           <% if(metaTag != null){ %>
+                <meta name="keywords" content="<%=metaTag%>">
+            <% } %>
+             <% if(h1 != null){ %>
+                               <meta name="h1" content="<%=h1%>">
+             <% } %>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="Generator" content="<%= generator %>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="shortcut icon" href="<%= request.getContextPath() %>/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/static/css/jquery-ui-1.10.3.custom/redmond/jquery-ui-1.10.3.custom.css" type="text/css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/static/css/bootstrap/bootstrap.min.css" type="text/css" />

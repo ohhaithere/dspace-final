@@ -7,8 +7,7 @@
  */
 package org.dspace.submit.step;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
@@ -16,8 +15,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
@@ -463,11 +471,26 @@ public class UploadStep extends AbstractProcessingStep
                 //strip off the -path to get the actual parameter 
                 //that the file was uploaded as
                 String param = attr.replace("-path", "");
-                
+                String exten = param.substring(param.length() - 3);
                 // Load the file's path and input stream and description
                 String filePath = (String) request.getAttribute(param + "-path");
-                InputStream fileInputStream = (InputStream) request.getAttribute(param + "-inputstream");
-                
+                InputStream fileInputStreamTest = (InputStream) request.getAttribute(param + "-inputstream");
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buf = new byte[1024];
+                int n = 0;
+                while ((n = fileInputStreamTest.read(buf)) >= 0)
+                    baos.write(buf, 0, n);
+                byte[] content = baos.toByteArray();
+
+                InputStream fileInputStream = new ByteArrayInputStream(content);
+
+                InputStream fileInputStreamPdf = new ByteArrayInputStream(content);
+
+                InputStream ifAnsi = new ByteArrayInputStream(content);
+
+                //InputStream fss = fileInputStream.cl
+
                 //attempt to get description from attribute first, then direct from a parameter
                 String fileDescription =  (String) request.getAttribute(param + "-description");
                 if(fileDescription==null ||fileDescription.length()==0)
@@ -493,8 +516,11 @@ public class UploadStep extends AbstractProcessingStep
                 // Create the bitstream
                 Item item = subInfo.getSubmissionItem().getItem();
 
+
                 // do we already have a bundle?
                 Bundle[] bundles = item.getBundles("ORIGINAL");
+
+
 
                 if (bundles.length < 1)
                 {
@@ -505,6 +531,104 @@ public class UploadStep extends AbstractProcessingStep
                 {
                     // we have a bundle already, just add bitstream
                     b = bundles[0].createBitstream(fileInputStream);
+                }
+
+                //fileDescription.op
+
+                if(exten.toLowerCase().equals("pdf")) {
+                    try {
+                        PDFTextStripper pdfStripper = null;
+                        PDDocument docum = null;
+                        PDFParser parser = new PDFParser(fileInputStreamPdf);
+                        COSDocument cosDoc = null;
+
+                        parser.parse();
+                        cosDoc = parser.getDocument();
+                        pdfStripper = new PDFTextStripper();
+                        docum = new PDDocument(cosDoc);
+                        //pdfStripper.getText(docum);
+
+                        String parsedText = pdfStripper.getText(docum);
+                        Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                        Integer toCut = 500;
+                        if((parsedText.length() - fifty) < 500){
+                            toCut = parsedText.length();
+                        }
+                        String subText = parsedText.substring(fifty, toCut-1);
+                        item.addMetadata("dc", "textpart", null, null, subText + "...");
+                        item.update();
+                        context.commit();
+                        log.info(parsedText);
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                if(exten.toLowerCase().equals("txt")){
+                    StringWriter writer = new StringWriter();
+                    IOUtils.copy(fileInputStreamPdf, writer, "UTF-8");
+
+                    String theString = writer.toString();
+                    if (theString.startsWith("\uFEFF")) {
+
+                    } else {
+                        StringWriter writerAnsi = new StringWriter();
+                        IOUtils.copy(ifAnsi, writerAnsi, "Cp1252");
+                        theString = writerAnsi.toString();
+                    }
+                    Integer fifty = (Integer) Math.round(50 * 100 / theString.length());
+                    Integer toCut = 500;
+                    if((theString.length() - fifty) < 500){
+                        toCut = theString.length();
+                    }
+                    String subText = theString.substring(fifty, toCut-1);
+                    item.addMetadata("dc", "textpart", null, null, subText + "...");
+                    item.update();
+                    context.commit();
+                    log.info(subText);
+                }
+
+                log.info("OMGTEST: " + exten);
+
+                if(exten.toLowerCase().equals("doc")){
+                    WordExtractor extractor = null;
+                    try
+                    {
+
+                        HWPFDocument document = new HWPFDocument(fileInputStreamPdf);
+                        extractor = new WordExtractor(document);
+                        String fileData = extractor.getText();
+                        Integer fifty = (Integer) Math.round(50 * 100 / fileData.length());
+                        Integer toCut = 500;
+                        if((fileData.length() - fifty) < 500){
+                            toCut = fileData.length();
+                        }
+                        String subText = fileData.substring(fifty, toCut-1);
+                        item.addMetadata("dc", "textpart", null, null, subText +"...");
+                        item.update();
+                        context.commit();
+                    }
+                    catch (Exception exep)
+                    {
+                        log.info("OMGTESTIK:" + exep);
+                    }
+                }
+
+                if((exten.toLowerCase().equals("ocx"))){
+                    XWPFDocument document = new XWPFDocument(fileInputStreamPdf);
+                    XWPFWordExtractor extractor = null ;
+                    extractor = new XWPFWordExtractor(document);
+
+                    String text = extractor.getText();
+                    Integer fifty = (Integer) Math.round(50 * 100 / text.length());
+                    Integer toCut = 500;
+                    if((text.length() - fifty) < 500){
+                        toCut = text.length();
+                    }
+                    String subText = text.substring(fifty, toCut-1);
+                    item.addMetadata("dc", "textpart", null, null, subText +"...");
+                    item.update();
+                    context.commit();
                 }
 
                 // Strip all but the last filename. It would be nice
@@ -532,6 +656,8 @@ public class UploadStep extends AbstractProcessingStep
                 // Update to DB
                 b.update();
                 item.update();
+
+
 
                 if ((bf != null) && (bf.isInternal()))
                 {

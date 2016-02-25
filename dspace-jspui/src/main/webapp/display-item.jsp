@@ -228,8 +228,13 @@
 
     String displayStyle = (displayAll ? "full" : "");
 %>
+
+<br>
     <dspace:item-preview item="<%= item %>" />
+<% String textToPass = (String) request.getAttribute("textToPass"); %>
+<b>Отрывок: </b><%= textToPass %> <br>
     <dspace:item item="<%= item %>" collections="<%= collections %>" style="<%= displayStyle %>" />
+
 <div class="container row">
 <%
     String locationLink = request.getContextPath() + "/handle/" + handle;
@@ -256,6 +261,7 @@
 <%
         }
 %>
+
 <%
     }
     else
@@ -269,6 +275,7 @@
         <input type="hidden" name="workspace_id" value="<%= workspace_id.intValue() %>" />
         <input class="btn btn-default" type="submit" name="submit_full" value="<fmt:message key="jsp.display-item.text2"/>" />
     </form>
+
 <%
         }
         else
@@ -288,6 +295,7 @@
         <input type="hidden" name="workspace_id" value="<%= workspace_id.intValue() %>"/>
         <input class="btn btn-primary" type="submit" name="submit_open" value="<fmt:message key="jsp.display-item.back_to_workspace"/>"/>
     </form>
+
 <%
     } else {
 
@@ -318,6 +326,8 @@
 %>
 </div>
 <br/>
+
+<br>
     <%-- Versioning table --%>
 <%
     if (versioningEnabled && hasVersionHistory)
