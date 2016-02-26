@@ -238,10 +238,12 @@ public class ImportServlet extends DSpaceServlet {
             Node creator = creators.item(0);
 
             String creatorsString = creator.getTextContent();
-            ti.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", creatorsString);
-            String[] creatorsAr = creatorsString.split(",");
-            for(int i = 0; i<creatorsAr.length; i++){
-                ti.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", creatorsAr[i]);
+            if(!creatorsString.equals("|||") || (creatorsString != null)) {
+                ti.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", creatorsString);
+                String[] creatorsAr = creatorsString.split(",");
+                for (int i = 0; i < creatorsAr.length; i++) {
+                    ti.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", creatorsAr[i]);
+                }
             }
         } catch (Exception e){
 
