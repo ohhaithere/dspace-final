@@ -165,7 +165,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                 try {
                                     Node author = record.getElementsByTagName("Creator").item(0);
                                     String authorName = author.getTextContent();
-                                    if(!authorName.equals("|||") || (authorName != null)) {
+                                    if(!authorName.equals("|||") && (authorName != null)) {
                                         itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", author.getTextContent());
                                         itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", author.getTextContent());
                                     }
@@ -177,7 +177,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                 try {
                                     Node contrib = record.getElementsByTagName("Contributor").item(0);
                                     String authorName = contrib.getTextContent();
-                                    if(!authorName.equals("|||") || (authorName != null)) {
+                                    if(!authorName.equals("|||") && (authorName != null)) {
                                         itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contrib.getTextContent());
                                         //itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", author.getTextContent());
                                     }
