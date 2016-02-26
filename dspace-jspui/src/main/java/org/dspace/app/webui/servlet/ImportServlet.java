@@ -238,7 +238,7 @@ public class ImportServlet extends DSpaceServlet {
             Node creator = creators.item(0);
 
             String creatorsString = creator.getTextContent();
-            if(!creatorsString.equals("|||") || (creatorsString != null)) {
+            if((!creatorsString.equals("|||")) && (creatorsString != null) && (!creatorsString.equals(""))) {
                 ti.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", creatorsString);
                 String[] creatorsAr = creatorsString.split(",");
                 for (int i = 0; i < creatorsAr.length; i++) {
