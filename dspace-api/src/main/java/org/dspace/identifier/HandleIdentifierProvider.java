@@ -356,7 +356,7 @@ public class HandleIdentifierProvider extends IdentifierProvider {
     }
 
     protected String modifyHandleRecord(Context context, DSpaceObject dso, TableRow handle, String handleId) throws SQLException {
-        handle.setColumn("handle", handleId);
+        handle.setColumn("handle", handleId +"_test");
         handle.setColumn("resource_type_id", dso.getType());
         handle.setColumn("resource_id", dso.getID());
         DatabaseManager.update(context, handle);

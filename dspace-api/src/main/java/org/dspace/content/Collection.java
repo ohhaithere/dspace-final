@@ -230,7 +230,7 @@ public class Collection extends DSpaceObject
         TableRow row = DatabaseManager.create(context, "collection");
         Collection c = new Collection(context, row);
 
-        try
+      /*  try
         {
             c.handle = (handle == null) ?
                        HandleManager.createHandle(context, c) :
@@ -250,7 +250,7 @@ public class Collection extends DSpaceObject
 
             //pass exception on up the chain
             throw ie;
-        }
+        }*/
 
         // create the default authorization policy for collections
         // of 'anonymous' READ

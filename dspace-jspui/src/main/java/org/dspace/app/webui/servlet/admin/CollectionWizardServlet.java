@@ -43,6 +43,8 @@ import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
+import org.dspace.handle.HandleManager;
+import org.dspace.identifier.VersionedHandleIdentifierProvider;
 
 /**
  * Collection creation wizard UI
@@ -302,6 +304,7 @@ public class CollectionWizardServlet extends DSpaceServlet
             collection.createTemplateItem();
         }
 
+
         // Need to set a name so that the indexer won't throw an exception
         collection.setMetadata("name", "");
         collection.update();
@@ -471,6 +474,7 @@ public class CollectionWizardServlet extends DSpaceServlet
             }
 
             // Get metadata
+
             collection.setMetadata("name", wrapper.getParameter("name"));
             collection.setMetadata("short_description", wrapper.getParameter("short_description"));
             collection.setMetadata("introductory_text", wrapper.getParameter("introductory_text"));
@@ -480,6 +484,7 @@ public class CollectionWizardServlet extends DSpaceServlet
             // Need to be more careful about license -- make sure it's null if
             // nothing was entered
             String license = wrapper.getParameter("license");
+            HandleManager.createHandle(context, collection);
 
             if (!StringUtils.isEmpty(license))
             {

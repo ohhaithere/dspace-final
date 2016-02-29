@@ -9,14 +9,12 @@ package org.dspace.handle;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.dspace.content.Collection;
-import org.dspace.content.Community;
-import org.dspace.content.DSpaceObject;
-import org.dspace.content.Item;
-import org.dspace.content.Site;
+import org.dspace.content.*;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
@@ -39,6 +37,79 @@ import org.dspace.storage.rdbms.TableRowIterator;
  */
 public class HandleManager
 {
+
+    private static final Map<Character, String> charMap = new HashMap<Character, String>();
+
+    static {
+        charMap.put('А', "A");
+        charMap.put('Б', "B");
+        charMap.put('В', "V");
+        charMap.put('Г', "G");
+        charMap.put('Д', "D");
+        charMap.put('Е', "E");
+        charMap.put('Ё', "E");
+        charMap.put('Ж', "Zh");
+        charMap.put('З', "Z");
+        charMap.put('И', "I");
+        charMap.put('Й', "I");
+        charMap.put('К', "K");
+        charMap.put('Л', "L");
+        charMap.put('М', "M");
+        charMap.put('Н', "N");
+        charMap.put('О', "O");
+        charMap.put('П', "P");
+        charMap.put('Р', "R");
+        charMap.put('С', "S");
+        charMap.put('Т', "T");
+        charMap.put('У', "U");
+        charMap.put('Ф', "F");
+        charMap.put('Х', "H");
+        charMap.put('Ц', "C");
+        charMap.put('Ч', "Ch");
+        charMap.put('Ш', "Sh");
+        charMap.put('Щ', "Sh");
+        charMap.put('Ъ', "'");
+        charMap.put('Ы', "Y");
+        charMap.put('Ь', "'");
+        charMap.put('Э', "E");
+        charMap.put('Ю', "U");
+        charMap.put('Я', "Ya");
+        charMap.put('а', "a");
+        charMap.put('б', "b");
+        charMap.put('в', "v");
+        charMap.put('г', "g");
+        charMap.put('д', "d");
+        charMap.put('е', "e");
+        charMap.put('ё', "e");
+        charMap.put('ж', "zh");
+        charMap.put('з', "z");
+        charMap.put('и', "i");
+        charMap.put('й', "i");
+        charMap.put('к', "k");
+        charMap.put('л', "l");
+        charMap.put('м', "m");
+        charMap.put('н', "n");
+        charMap.put('о', "o");
+        charMap.put('п', "p");
+        charMap.put('р', "r");
+        charMap.put('с', "s");
+        charMap.put('т', "t");
+        charMap.put('у', "u");
+        charMap.put('ф', "f");
+        charMap.put('х', "h");
+        charMap.put('ц', "c");
+        charMap.put('ч', "ch");
+        charMap.put('ш', "sh");
+        charMap.put('щ', "sh");
+        charMap.put('ъ', "'");
+        charMap.put('ы', "y");
+        charMap.put('ь', "'");
+        charMap.put('э', "e");
+        charMap.put('ю', "u");
+        charMap.put('я', "ya");
+
+    }
+
     /** log4j category */
     private static Logger log = Logger.getLogger(HandleManager.class);
 
@@ -183,7 +254,189 @@ public class HandleManager
         TableRow handle = DatabaseManager.create(context, "Handle");
         String handleId = createId(handle.getIntColumn("handle_id"));
 
-        handle.setColumn("handle", handleId);
+        if(dso instanceof Item) {
+            try {
+                Item i = (Item) dso;
+                Metadatum[] dcorevalues2 = i.getMetadata("dc", "title", Item.ANY,
+                        Item.ANY);
+
+                Metadatum tit = dcorevalues2[0];
+
+                Collection c = i.getOwningCollection();
+
+                Metadatum[] dcorevalues3 = c.getMetadata("dc", "title", Item.ANY,
+                        Item.ANY);
+
+                Metadatum tit2 = dcorevalues3[0];
+
+                String titleCol = tit2.value;
+
+                String title = tit.value;
+                title = title.replace(",", "");
+                title = title.replace(".", "");
+                title = title.replace(":", "");
+                title = title.replace(";", "");
+                title = title.replace("\"", "");
+                title = title.replace("'", "");
+                title = title.replace("-", "");
+                title = title.replace("+", "");
+                title = title.replace("=", "");
+                title = title.replace("(", "");
+                title = title.replace(")", "");
+                title = title.replace("%", "");
+                title = title.replace("?", "");
+                title = title.replace("!", "");
+                title = title.replace("^", "");
+                title = title.replace("#", "");
+                title = title.replace("<", "");
+                title = title.replace(">", "");
+                title = title.replace("\\", "");
+                title = title.replace("~", "");
+                title = title.replace("~", "");
+                title = title.replace("@", "");
+                title = title.replace("|", "");
+                title = title.replace("$", "");
+                title = title.replace("&", "");
+                title = title.replace("*", "");
+                title = title.replace("[", "");
+                title = title.replace("]", "");
+                title = title.replace("/", "");
+
+                titleCol = titleCol.replace(",", "");
+                titleCol = titleCol.replace(".", "");
+                titleCol = titleCol.replace(":", "");
+                titleCol = titleCol.replace(";", "");
+                titleCol = titleCol.replace("\"", "");
+                titleCol = titleCol.replace("'", "");
+                titleCol = titleCol.replace("-", "");
+                titleCol = titleCol.replace("+", "");
+                titleCol = titleCol.replace("=", "");
+                titleCol = titleCol.replace("(", "");
+                titleCol = titleCol.replace(")", "");
+                titleCol = titleCol.replace("%", "");
+                titleCol = titleCol.replace("?", "");
+                titleCol = titleCol.replace("!", "");
+                titleCol = titleCol.replace("^", "");
+                titleCol = titleCol.replace("#", "");
+                titleCol = titleCol.replace("<", "");
+                titleCol = titleCol.replace(">", "");
+                titleCol = titleCol.replace("\\", "");
+                titleCol = titleCol.replace("~", "");
+                titleCol = titleCol.replace("~", "");
+                titleCol = titleCol.replace("@", "");
+                titleCol = titleCol.replace("|", "");
+                titleCol = titleCol.replace("$", "");
+                titleCol = titleCol.replace("&", "");
+                titleCol = titleCol.replace("*", "");
+                titleCol = titleCol.replace("[", "");
+                titleCol = titleCol.replace("]", "");
+                titleCol = titleCol.replace("/", "");
+
+                if(title.length() > 200){
+                    title = title.substring(0, 200);
+                }
+
+                handle.setColumn("handle", transliterate(titleCol).replace(" ", "-")+"/"+ transliterate(title).replace(" ", "-") +"-"+i.getID());
+            } catch (Exception e) {
+
+            }
+        }
+        if(dso instanceof Collection) {
+
+            Collection i = (Collection) dso;
+            Metadatum[] dcorevalues2 = i.getMetadata("dc", "title", Item.ANY,
+                    Item.ANY);
+
+            Metadatum tit = dcorevalues2[0];
+
+           // unbindHandle(context, i);
+
+            String title = tit.value;
+            title = title.replace(",", "");
+            title = title.replace(".", "");
+            title = title.replace(":", "");
+            title = title.replace(";", "");
+            title = title.replace("\"", "");
+            title = title.replace("'", "");
+            title = title.replace("-", "");
+            title = title.replace("+", "");
+            title = title.replace("=", "");
+            title = title.replace("(", "");
+            title = title.replace(")", "");
+            title = title.replace("%", "");
+            title = title.replace("?", "");
+            title = title.replace("!", "");
+            title = title.replace("^", "");
+            title = title.replace("#", "");
+            title = title.replace("<", "");
+            title = title.replace(">", "");
+            title = title.replace("\\", "");
+            title = title.replace("~", "");
+            title = title.replace("~", "");
+            title = title.replace("@", "");
+            title = title.replace("|", "");
+            title = title.replace("$", "");
+            title = title.replace("&", "");
+            title = title.replace("*", "");
+            title = title.replace("[", "");
+            title = title.replace("]", "");
+            title = title.replace("/", "");
+
+            if(title.length() > 200){
+                title = title.substring(0, 200);
+            }
+
+            handle.setColumn("handle", transliterate(title).replace(" ", "-").replaceAll("-+", "-") +"/"+i.getID());
+
+        }
+
+        if(dso instanceof Community) {
+            Community i = (Community) dso;
+            Metadatum[] dcorevalues2 = i.getMetadata("dc", "title", Item.ANY,
+                    Item.ANY);
+
+           // Metadatum tit = dcorevalues2[0];
+
+            // unbindHandle(context, i);
+
+            String title = dso.getName();
+            title = title.replace(",", "");
+            title = title.replace(".", "");
+            title = title.replace(":", "");
+            title = title.replace(";", "");
+            title = title.replace("\"", "");
+            title = title.replace("'", "");
+            title = title.replace("-", "");
+            title = title.replace("+", "");
+            title = title.replace("=", "");
+            title = title.replace("(", "");
+            title = title.replace(")", "");
+            title = title.replace("%", "");
+            title = title.replace("?", "");
+            title = title.replace("!", "");
+            title = title.replace("^", "");
+            title = title.replace("#", "");
+            title = title.replace("<", "");
+            title = title.replace(">", "");
+            title = title.replace("\\", "");
+            title = title.replace("~", "");
+            title = title.replace("~", "");
+            title = title.replace("@", "");
+            title = title.replace("|", "");
+            title = title.replace("$", "");
+            title = title.replace("&", "");
+            title = title.replace("*", "");
+            title = title.replace("[", "");
+            title = title.replace("]", "");
+            title = title.replace("/", "");
+
+            if(title.length() > 200){
+                title = title.substring(0, 200);
+            }
+
+            handle.setColumn("handle", transliterate(title).replace(" ", "-").replaceAll("-+", "-") +"/"+i.getID());
+        }
+
         handle.setColumn("resource_type_id", dso.getType());
         handle.setColumn("resource_id", dso.getID());
         DatabaseManager.update(context, handle);
@@ -249,7 +502,7 @@ public class HandleManager
         {
             //handle not found in DB table -- create a new table entry
             handle = DatabaseManager.create(context, "Handle");
-            handle.setColumn("handle", suppliedHandle);
+            handle.setColumn("handle", suppliedHandle +"_testp[;");
         }
 
         handle.setColumn("resource_type_id", dso.getType());
@@ -550,5 +803,19 @@ public class HandleManager
 
         return new StringBuffer().append(handlePrefix).append(
                 handlePrefix.endsWith("/") ? "" : "/").append(id).toString();
+    }
+
+    public static String transliterate(String string) {
+        StringBuilder transliteratedString = new StringBuilder();
+        for (int i = 0; i < string.length(); i++) {
+            Character ch = string.charAt(i);
+            String charFromMap = charMap.get(ch);
+            if (charFromMap == null) {
+                transliteratedString.append(ch);
+            } else {
+                transliteratedString.append(charFromMap);
+            }
+        }
+        return transliteratedString.toString();
     }
 }

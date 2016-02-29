@@ -34,11 +34,13 @@ import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.FormatIdentifier;
 import org.dspace.content.Item;
+import org.dspace.handle.HandleManager;
 import org.dspace.harvest.HarvestedCollection;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.eperson.Group;
+import org.dspace.identifier.VersionedHandleIdentifierProvider;
 
 /**
  * Servlet for editing communities and collections, including deletion,
@@ -442,7 +444,7 @@ public class EditCommunitiesServlet extends DSpaceServlet
         {
             response.sendRedirect(response.encodeRedirectURL(request
                     .getContextPath()
-                    + "/handle/" + community.getHandle()));
+                    + "/handle/" + HandleManager.findHandle(context, community)));
         }
         else
         {
@@ -502,16 +504,26 @@ public class EditCommunitiesServlet extends DSpaceServlet
             {
                 community = Community.create(null, context);
             }
-
+            HandleManager.unbindHandle(context, community);
             // Set attribute
             request.setAttribute("community", community);
         }
 
         storeAuthorizeAttributeCommunityEdit(context, request, community);
-        
+
+
+
         community.setMetadata("name", request.getParameter("name"));
         community.setMetadata("short_description", request
                 .getParameter("short_description"));
+
+        try {
+            HandleManager.createHandle(context, community);
+        } catch(Exception e){
+            context.commit();
+        }
+
+
 
         String intro = request.getParameter("introductory_text");
 

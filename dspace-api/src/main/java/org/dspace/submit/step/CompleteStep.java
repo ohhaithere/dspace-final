@@ -21,9 +21,11 @@ import org.apache.log4j.Logger;
 
 import org.dspace.app.itemexport.ItemExport;
 import org.dspace.app.util.SubmissionInfo;
+import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataSchema;
 import org.dspace.core.ConfigurationManager;
+import org.dspace.handle.HandleManager;
 import org.dspace.submit.AbstractProcessingStep;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkspaceItem;
@@ -91,6 +93,12 @@ public class CompleteStep extends AbstractProcessingStep
 
         WorkspaceItem ws = WorkspaceItem.find(context, Integer.parseInt(itemId));
         Item item = ws.getItem();
+
+        Collection cc = ws.getCollection();
+
+        item.setOwningCollection(cc);
+        item.update();
+        context.commit();
 
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
