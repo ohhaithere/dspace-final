@@ -12,6 +12,7 @@ import org.dspace.core.Context;
 import org.dspace.handle.HandleManager;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
+import org.dspace.storage.rdbms.TableRowIterator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -194,6 +195,9 @@ public class ImportServlet extends DSpaceServlet {
 
     private void createItem(Document docMeta, Item ti, HttpServletRequest request, Context context, Collection col, WorkspaceItem wsitem) throws SQLException, AuthorizeException {
 
+
+        Boolean exists = false;
+        Integer itemId = 0;
         XPathFactory xpathFactory = XPathFactory.newInstance();
 
         // Create XPath object
@@ -211,6 +215,45 @@ public class ImportServlet extends DSpaceServlet {
             e.printStackTrace();
         }
 
+        try {
+            expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Identifier']");
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+
+
+
+        NodeList identsToCheck = null;
+        try {
+            identsToCheck = (NodeList) expr.evaluate(docMeta, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        for(int k = 0; k < identsToCheck.getLength(); k++){
+            Element subjectNode = (Element) identsToCheck.item(k);
+            Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
+            Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+            if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
+                TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue", "SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"+textSubject.getTextContent()+"'");
+                if(tri.hasNext()){
+                    log.info("OKIGOTIT: ");
+
+                    exists = true;
+                    TableRow row = tri.next();
+                    log.info(row);
+                    itemId = row.getIntColumn("resource_id");
+                    log.info("OKIGOTIT: "+itemId.toString());
+                }
+                //item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+                //SoapHelper sh = new SoapHelper();
+                //sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
+            }
+        }
+
+        if(exists == true) {
+            ti = Item.find(context, itemId);
+            ti.clearDC(Item.ANY, Item.ANY, Item.ANY);
+        }
 
 
         NodeList subject = null;
@@ -547,7 +590,8 @@ public class ImportServlet extends DSpaceServlet {
             }
 
            // HandleManager.
-            HandleManager.createHandle(context, ti);
+            if(exists == false)
+                HandleManager.createHandle(context, ti);
 
             NodeList linkList = null;
             try {
@@ -617,27 +661,34 @@ public class ImportServlet extends DSpaceServlet {
 
 
         // Group groups = Group.findByName(context, "Anonymous");
-        TableRow row = DatabaseManager.row("collection2item");
+        if(exists == false ) {
+            TableRow row = DatabaseManager.row("collection2item");
 
 
-        PreparedStatement statement = null;
-        //      ResultSet rs = null;
-        statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id="+wsitem.getID());
-        int ij = statement.executeUpdate();
-
-        row.setColumn("collection_id", col.getID());
-        row.setColumn("item_id", ti.getID());
+            PreparedStatement statement = null;
+            //      ResultSet rs = null;
+            statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
+            int ij = statement.executeUpdate();
 
 
+            row.setColumn("collection_id", col.getID());
+            row.setColumn("item_id", ti.getID());
 
-        DatabaseManager.insert(context, row);
 
-        ti.inheritCollectionDefaultPolicies(col);
 
-        ti.setArchived(true);
+            DatabaseManager.insert(context, row);
+
+            ti.inheritCollectionDefaultPolicies(col);
+
+            ti.setArchived(true);
+        }
+
+
 
         ti.update();
         context.commit();
+
+        request.setAttribute("existed", exists);
 
         try {
             String link = ti.getHandle();

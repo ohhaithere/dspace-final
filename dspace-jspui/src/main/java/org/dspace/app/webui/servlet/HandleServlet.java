@@ -471,7 +471,7 @@ public class HandleServlet extends DSpaceServlet
         titleTag = titleTag + tit.value;
         String h1 = tit.value;
 
-        Metadatum[] subj = item.getMetadata("dc", "subject", Item.ANY, Item.ANY);
+        Metadatum[] subj = item.getMetadata("dc", "subject", null, Item.ANY);
         String metaTag = "";
 
         for (Metadatum meta:

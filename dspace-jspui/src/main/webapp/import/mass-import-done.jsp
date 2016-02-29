@@ -38,7 +38,7 @@
 <%
 
 String link = (String) request.getAttribute("link");
-
+ArrayList<String> updatedLinks = (ArrayList<String>) request.getAttribute("updatedLinks");
 
 %>
 
@@ -47,5 +47,11 @@ String link = (String) request.getAttribute("link");
     <b>Данные загружены в коллекцию!</b><br>
     <br>
     <a href="<%=link%>">Перейти в коллекцию</a><br>
+    <br>
+    <% if(updatedLinks.size() > 0){ %>
+        Ранее загруженные ресурсы были обновлены:<br>
+      <% for(String links : updatedLinks){ %>
+            <a href="<%=links%>"><%=links%></a> <br>
+    <% } } %>
 
 </dspace:layout>

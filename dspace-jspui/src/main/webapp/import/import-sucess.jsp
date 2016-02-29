@@ -40,14 +40,19 @@
 
 String colId = (String) request.getAttribute("collection_id");
 String link = (String) request.getAttribute("link");
+Boolean exists = (Boolean) request.getAttribute("existed");
 
 
 %>
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>Данные загружены в коллекцию!<br>
     <br>
+    <% if(!exists){ %>
     <a href="<%=link%>">Перейти на загруженный ресурс</a><br>
+    <% }else{ %>
+    Данный ресурс ранее был загружен в систему, его данные обновленны. <a href="<%=link%>">Перейти на обновленный ресурс</a><br>
     <a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
+    <% } %>
 
 
 </dspace:layout>

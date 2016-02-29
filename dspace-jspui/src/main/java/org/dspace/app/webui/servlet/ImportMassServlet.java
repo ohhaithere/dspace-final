@@ -95,6 +95,9 @@ public class ImportMassServlet extends DSpaceServlet {
         Integer lel = directoryListing.length;
         log.debug("WTFDIRECTO " + lel.toString());
         int howManyWasSubmited = 0;
+
+        ArrayList<String> links = new ArrayList<String>();
+
         if(directoryListing.length <= 0){
             request.getRequestDispatcher("/import/import-no-file.jsp").forward(request, response);
         }
@@ -134,13 +137,55 @@ public class ImportMassServlet extends DSpaceServlet {
                         for (int i = 0; i < records.getLength(); i++) {
                             try {
                                 Element record = (Element) records.item(i);
+                                Boolean exists = false;
+                                Integer itemId = 0;
 
+                                try {
+                                    NodeList identifier = record.getElementsByTagName("Identifier");
+                                    //  itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title", null, "ru", tex.getTextContent());
+                                    for(int k = 0; k < identifier.getLength(); k++){
+                                        Element subjectNode = (Element) identifier.item(k);
+                                        Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
+                                        Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+                                        if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
+                                            TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue", "SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"+textSubject.getTextContent()+"'");
+                                            if(tri.hasNext()){
+                                                log.info("OKIGOTIT: ");
 
-                                WorkspaceItem wsitem = WorkspaceItem.createMass(context, col, false);
-                                Item itemItem = wsitem.getItem();
-                                //response.getWriter().write("test");
+                                                exists = true;
+                                                TableRow row = tri.next();
+                                                log.info(row);
+                                                itemId = row.getIntColumn("resource_id");
+                                                log.info("OKIGOTIT: "+itemId.toString());
+                                            }
+                                            //item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+                                            //SoapHelper sh = new SoapHelper();
+                                            //sh.writeLink(qualifier, "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
+                                        }
+                                    }
+                                    identifier = null;
+                                } catch (Exception e) {
+                                    log.info("OKERROR: "+ e);
+                                }
 
-                                itemItem.setOwningCollection(col);
+                                WorkspaceItem wsitem = null;
+                                Item itemItem = null;
+
+                                if(exists == false) {
+                                     wsitem = WorkspaceItem.createMass(context, col, false);
+                                     itemItem = wsitem.getItem();
+                                    //response.getWriter().write("test");
+
+                                    itemItem.setOwningCollection(col);
+                                }
+                                else{
+                                    log.info("OKIGOTIT: " + itemId.toString());
+                                    itemItem = Item.find(context,itemId);
+                                    itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+                                    log.info("OKIGOTIT: " + itemId.toString());
+                                    itemItem.update();
+                                }
+
 
 
                                 try {
@@ -166,7 +211,10 @@ public class ImportMassServlet extends DSpaceServlet {
                                     Node author = record.getElementsByTagName("Creator").item(0);
                                     String authorName = author.getTextContent();
                                     if(!authorName.equals("|||") && (authorName != null)) {
-                                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", author.getTextContent());
+                                        String contribs[] = authorName.split(",");
+                                        for (int l = 0; l < contribs.length; l++) {
+                                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contribs[l]);
+                                        }
                                         itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", author.getTextContent());
                                     }
                                     author = null;
@@ -178,7 +226,10 @@ public class ImportMassServlet extends DSpaceServlet {
                                     Node contrib = record.getElementsByTagName("Contributor").item(0);
                                     String authorName = contrib.getTextContent();
                                     if(!authorName.equals("|||") && (authorName != null)) {
-                                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contrib.getTextContent());
+                                        String contribs[] = authorName.split(",");
+                                        for (int l = 0; l < contribs.length; l++) {
+                                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contribs[l]);
+                                        }
                                         //itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "creator", null, "ru", author.getTextContent());
                                     }
                                     contrib = null;
@@ -365,47 +416,56 @@ public class ImportMassServlet extends DSpaceServlet {
                                 }
 
 
-                                HandleManager.createHandle(context, itemItem);
+                                if(exists == false) {
+                                    HandleManager.createHandle(context, itemItem);
 
-                                // Group groups = Group.findByName(context, "Anonymous");
-                                TableRow row = DatabaseManager.row("collection2item");
+                                    // Group groups = Group.findByName(context, "Anonymous");
+                                    TableRow row = DatabaseManager.row("collection2item");
+
+                                    PreparedStatement statement = null;
+                                    //      ResultSet rs = null;
+                                    statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
+                                    int ij = statement.executeUpdate();
+                                    row.setColumn("collection_id", col.getID());
+                                    row.setColumn("item_id", itemItem.getID());
+                                    DatabaseManager.insert(context, row);
 
 
-                                PreparedStatement statement = null;
-                                //      ResultSet rs = null;
-                                statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
-                                int ij = statement.executeUpdate();
+                                    itemItem.inheritCollectionDefaultPolicies(col);
 
-                                row.setColumn("collection_id", col.getID());
-                                row.setColumn("item_id", itemItem.getID());
+                                    itemItem.setArchived(true);
+                                } else{
+                                    links.add(HandleManager.getCanonicalForm(itemItem.getHandle()));
+                                }
+
+
+
+
+
+
+
+                                request.setAttribute("updatedLinks", links);
+
 
                                 request.setAttribute("link", HandleManager.getCanonicalForm(col.getHandle()));
-
-
-                                DatabaseManager.insert(context, row);
-
-                                itemItem.inheritCollectionDefaultPolicies(col);
-
-                                itemItem.setArchived(true);
-
                                 itemItem.update();
                                 context.commit();
 
 
                                 //break;
                             } catch (Exception e) {
-                                log.error("omg error", e);
+                                log.error("omg error 1", e);
                             }
 
                         }
 
 
                     } catch (ParserConfigurationException e) {
-                        log.error("omg error", e);
+                        log.error("omg error 2", e);
                     } catch (SAXException e) {
-                        log.error("omg error", e);
+                        log.error("omg error 3", e);
                     } catch (Exception e) {
-                        log.error("omg error", e);
+                        log.error("omg error 4", e);
                     }
                 }
             }
