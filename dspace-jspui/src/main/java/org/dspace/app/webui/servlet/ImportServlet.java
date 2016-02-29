@@ -209,11 +209,6 @@ public class ImportServlet extends DSpaceServlet {
         XPathExpression expr =
                 null;
 
-        try {
-            expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Subject']");
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-        }
 
         try {
             expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Identifier']");
@@ -253,6 +248,12 @@ public class ImportServlet extends DSpaceServlet {
         if(exists == true) {
             ti = Item.find(context, itemId);
             ti.clearDC(Item.ANY, Item.ANY, Item.ANY);
+        }
+
+        try {
+            expr = xpath.compile("/*/*/*/*/*[local-name()='Records']/*[local-name()='Subject']");
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
         }
 
 
