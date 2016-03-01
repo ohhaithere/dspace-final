@@ -392,21 +392,23 @@ public class ImportMassServlet extends DSpaceServlet {
                                     String subText = parsedText.substring(fifty, toCut-1);
                                     itemItem.addMetadata("dc", "textpart", null, null, subText + "...");
 
-                                    itemItem.createBundle("ORIGINAL");
-                                    Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
-                                    b.setName(filenamelel);
-                                    b.setDescription("from 1C");
-                                    b.setSource("1C");
+                                    if(exists == false) {
+                                        itemItem.createBundle("ORIGINAL");
+                                        Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
+                                        b.setName(filenamelel);
+                                        b.setDescription("from 1C");
+                                        b.setSource("1C");
 
-                                    itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+                                        itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
 
 
-                                    BitstreamFormat bf = null;
+                                        BitstreamFormat bf = null;
 
-                                    bf = FormatIdentifier.guessFormat(context, b);
-                                    b.setFormat(bf);
+                                        bf = FormatIdentifier.guessFormat(context, b);
+                                        b.setFormat(bf);
 
-                                    b.update();
+                                        b.update();
+                                    }
                                     itemItem.update();
 
 

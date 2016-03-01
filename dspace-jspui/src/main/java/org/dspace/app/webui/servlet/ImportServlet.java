@@ -154,8 +154,12 @@ public class ImportServlet extends DSpaceServlet {
 
             if(title.equals(""))
                 title = null;
-
-            Document doc = sh.getRecordByName(name, title);
+            Document doc = null;
+            try {
+                doc = sh.getRecordByName(name, title);
+            } catch(Exception e){
+                doc = sh.getRecordByName(name, title);
+            }
 
 
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -634,23 +638,23 @@ public class ImportServlet extends DSpaceServlet {
 
             log.info("wowlol: "+firstUrl+linkEncode);
 
-            ti.createBundle("ORIGINAL");
-            Bitstream b = ti.getBundles("ORIGINAL")[0].createBitstream(iss);
-            b.setName(filenamelel);
-            b.setDescription("from 1C");
-            b.setSource("1C");
+            if(exists == false) {
+                ti.createBundle("ORIGINAL");
+                Bitstream b = ti.getBundles("ORIGINAL")[0].createBitstream(iss);
+                b.setName(filenamelel);
+                b.setDescription("from 1C");
+                b.setSource("1C");
 
-            ti.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+                ti.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
 
 
+                BitstreamFormat bf = null;
 
+                bf = FormatIdentifier.guessFormat(context, b);
+                b.setFormat(bf);
 
-            BitstreamFormat bf = null;
-
-            bf = FormatIdentifier.guessFormat(context, b);
-            b.setFormat(bf);
-
-            b.update();
+                b.update();
+            }
             ti.update();
 
             iss.close();
