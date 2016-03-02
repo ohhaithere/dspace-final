@@ -479,6 +479,13 @@ public class HandleServlet extends DSpaceServlet
             metaTag = metaTag + meta.value + ", ";
         }
 
+        subj = item.getMetadata("dc", "coverage", "spatial", Item.ANY);
+
+        for (Metadatum meta:
+                subj) {
+            metaTag = metaTag + meta.value + ", ";
+        }
+
         metaTag = metaTag.trim();
         if (metaTag.length() > 0 ) {
             metaTag = metaTag.substring(0, metaTag.length()-1);

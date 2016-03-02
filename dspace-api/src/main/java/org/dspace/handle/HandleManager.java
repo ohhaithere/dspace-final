@@ -101,9 +101,9 @@ public class HandleManager
         charMap.put('ч', "ch");
         charMap.put('ш', "sh");
         charMap.put('щ', "sh");
-        charMap.put('ъ', "'");
+        charMap.put('ъ', "");
         charMap.put('ы', "y");
-        charMap.put('ь', "'");
+        charMap.put('ь', "");
         charMap.put('э', "e");
         charMap.put('ю', "u");
         charMap.put('я', "ya");
@@ -301,6 +301,7 @@ public class HandleManager
                 title = title.replace("[", "");
                 title = title.replace("]", "");
                 title = title.replace("/", "");
+                title = title.replace(" ", "-");
 
                 titleCol = titleCol.replace(",", "");
                 titleCol = titleCol.replace(".", "");
@@ -333,10 +334,10 @@ public class HandleManager
                 titleCol = titleCol.replace("/", "");
 
                 if(title.length() > 200){
-                    title = title.substring(0, 200);
+                    title = title.substring(0, 150);
                 }
 
-                handle.setColumn("handle", transliterate(titleCol).replace(" ", "-")+"/"+ transliterate(title).replace(" ", "-") +"-"+i.getID());
+                handle.setColumn("handle", transliterate(titleCol).replace(" ", "-").replaceAll("-+", "-")+"/"+ transliterate(title).replace(" ", "-").replaceAll("-+", "-") +"-"+i.getID());
             } catch (Exception e) {
 
             }
@@ -381,9 +382,10 @@ public class HandleManager
             title = title.replace("[", "");
             title = title.replace("]", "");
             title = title.replace("/", "");
+            title = title.replace(" ", "-");
 
             if(title.length() > 200){
-                title = title.substring(0, 200);
+                title = title.substring(0, 150);
             }
 
             handle.setColumn("handle", transliterate(title).replace(" ", "-").replaceAll("-+", "-") +"/"+i.getID());
@@ -431,7 +433,7 @@ public class HandleManager
             title = title.replace("/", "");
 
             if(title.length() > 200){
-                title = title.substring(0, 200);
+                title = title.substring(0, 150);
             }
 
             handle.setColumn("handle", transliterate(title).replace(" ", "-").replaceAll("-+", "-") +"/"+i.getID());

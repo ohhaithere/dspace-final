@@ -51,8 +51,8 @@ Boolean exists = (Boolean) request.getAttribute("existed");
     <a href="<%=link%>">Перейти на загруженный ресурс</a><br>
     <% }else{ %>
     Данный ресурс ранее был загружен в систему, его данные обновлены. <a href="<%=link%>">Перейти на обновленный ресурс</a><br>
-    <a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
-    <% } %>
 
+    <% } %>
+    <a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
 
 </dspace:layout>
