@@ -347,6 +347,7 @@
                 </form>
                 <% } %>
                 <% if( editor_button || admin_button) { %>
+                <!--
                 <form method="post" action="<%=request.getContextPath()%>/mydspace">
                     <input type="hidden" name="collection_id" value="<%= collection.getID() %>" />
                     <input type="hidden" name="step" value="<%= MyDSpaceServlet.REQUEST_EXPORT_ARCHIVE %>" />
@@ -361,6 +362,7 @@
                     <input type="hidden" name="handle" value="<%= collection.getHandle() %>" />
                     <input class="btn btn-default col-md-12" type="submit" value="<fmt:message key="jsp.general.metadataexport.button"/>" />
                 </form>
+                -->
             </div>
         </div>
         <% } %>

@@ -385,6 +385,7 @@
                  </form>
              <% } %>
             <% if( editor_button ) { %>
+            <!--
                 <form method="post" action="<%=request.getContextPath()%>/mydspace">
                   <input type="hidden" name="community_id" value="<%= community.getID() %>" />
                   <input type="hidden" name="step" value="<%= MyDSpaceServlet.REQUEST_EXPORT_ARCHIVE %>" />
@@ -398,7 +399,7 @@
                <form method="post" action="<%=request.getContextPath()%>/dspace-admin/metadataexport">
                  <input type="hidden" name="handle" value="<%= community.getHandle() %>" />
                  <input class="btn btn-default col-md-12" type="submit" value="<fmt:message key="jsp.general.metadataexport.button"/>" />
-               </form>
+               </form> -->
 			<% } %>
 			</div>
 		</div>

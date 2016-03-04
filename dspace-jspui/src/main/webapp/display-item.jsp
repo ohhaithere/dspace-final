@@ -191,7 +191,7 @@
                         <% } %>
                     </select>
                 </form>
-                <form method="post" action="<%= request.getContextPath() %>/mydspace">
+         <!--       <form method="post" action="<%= request.getContextPath() %>/mydspace">
                     <input type="hidden" name="item_id" value="<%= item.getID() %>" />
                     <input type="hidden" name="step" value="<%= MyDSpaceServlet.REQUEST_MIGRATE_ARCHIVE %>" />
                     <input class="btn btn-default col-md-12" type="submit" name="submit" value="<fmt:message key="jsp.mydspace.request.export.migrateitem"/>" />
@@ -204,7 +204,7 @@
                 <form method="post" action="<%= request.getContextPath() %>/dspace-admin/metadataexport">
                     <input type="hidden" name="handle" value="<%= item.getHandle() %>" />
                     <input class="btn btn-default col-md-12" type="submit" name="submit" value="<fmt:message key="jsp.general.metadataexport.button"/>" />
-                </form>
+                </form> -->
 					<% if(hasVersionButton) { %>
                 	<form method="get" action="<%= request.getContextPath() %>/tools/version">
                     	<input type="hidden" name="itemID" value="<%= item.getID() %>" />
