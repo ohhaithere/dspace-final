@@ -9,6 +9,10 @@ package org.dspace.content;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Constants;
@@ -115,12 +119,15 @@ public class InstallItem
         // Even though we are restoring an item it may not have the proper dates. So let's
         // double check its associated date(s)
         DCDate now = DCDate.getCurrent();
+        DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+        Date today = Calendar.getInstance().getTime();
+        String dateNow = df.format(today);
         
         // If the item doesn't have a date.accessioned, set it to today
         Metadatum[] dateAccessioned = item.getDC("date", "accessioned", Item.ANY);
         if (dateAccessioned.length == 0)
         {
-	        item.addDC("date", "accessioned", null, now.toString());
+	        item.addDC("date", "accessioned", null, dateNow);
         }
         
         // If issue date is set as "today" (literal string), then set it to current date
@@ -155,7 +162,11 @@ public class InstallItem
     {
         // create accession date
         DCDate now = DCDate.getCurrent();
-        item.addDC("date", "accessioned", null, now.toString());
+        DateFormat df = new SimpleDateFormat("YYYY-dd-mm HH:mm:ss");
+        Date today = Calendar.getInstance().getTime();
+        String dateNow = df.format(today);
+
+        item.addDC("date", "accessioned", null, dateNow);
 
         // add date available if not under embargo, otherwise it will
         // be set when the embargo is lifted.
@@ -163,7 +174,7 @@ public class InstallItem
         // problems before we set inArchive.
         if (EmbargoManager.getEmbargoTermsAsDate(c, item) == null)
         {
-             item.addDC("date", "available", null, now.toString());
+             item.addDC("date", "available", null, dateNow);
         }
 
         // If issue date is set as "today" (literal string), then set it to current date

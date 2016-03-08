@@ -68,9 +68,9 @@ public class HandleManager
         charMap.put('Ч', "Ch");
         charMap.put('Ш', "Sh");
         charMap.put('Щ', "Sh");
-        charMap.put('Ъ', "'");
+        charMap.put('Ъ', "");
         charMap.put('Ы', "Y");
-        charMap.put('Ь', "'");
+        charMap.put('Ь', "");
         charMap.put('Э', "E");
         charMap.put('Ю', "U");
         charMap.put('Я', "Ya");

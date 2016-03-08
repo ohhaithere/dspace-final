@@ -68,9 +68,9 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         charMap.put('Ч', "Ch");
         charMap.put('Ш', "Sh");
         charMap.put('Щ', "Sh");
-        charMap.put('Ъ', "'");
+        charMap.put('Ъ', "");
         charMap.put('Ы', "Y");
-        charMap.put('Ь', "'");
+        charMap.put('Ь', "");
         charMap.put('Э', "E");
         charMap.put('Ю', "U");
         charMap.put('Я', "Ya");
@@ -101,9 +101,9 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         charMap.put('ч', "ch");
         charMap.put('ш', "sh");
         charMap.put('щ', "sh");
-        charMap.put('ъ', "'");
+        charMap.put('ъ', "");
         charMap.put('ы', "y");
-        charMap.put('ь', "'");
+        charMap.put('ь', "");
         charMap.put('э', "e");
         charMap.put('ю', "u");
         charMap.put('я', "ya");
@@ -646,6 +646,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         title = title.replace("[", "");
         title = title.replace("]", "");
         title = title.replace("/", "");
+        title = title.replace("№", "");
 
         title = title.trim();
 
@@ -679,6 +680,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         titleCommunity = titleCommunity.replace("[", "");
         titleCommunity = titleCommunity.replace("]", "");
         titleCommunity = titleCommunity.replace("/", "");
+        titleCommunity = titleCommunity.replace("№", "");
 
         titleCommunity = titleCommunity.trim();
         if(title.length() > 200){

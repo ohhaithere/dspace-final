@@ -386,7 +386,7 @@
         <property name="indexFieldName" value="subject"/>
         <property name="metadataFields">
             <list>
-                <value>dc.subject.*</value>
+                <value>dc.coverage.*</value>
             </list>
         </property>
         <property name="facetLimit" value="10"/>
@@ -403,6 +403,18 @@
         </property>
         <property name="type" value="date"/>
         <property name="sortOrder" value="VALUE"/>
+    </bean>
+
+<bean id="searchFilterCoverage" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="coverage"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.coverage.*</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
     </bean>
 
     <!--Sort properties-->

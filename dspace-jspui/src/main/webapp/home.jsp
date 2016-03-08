@@ -181,7 +181,7 @@ if (communities != null && communities.length != 0)
 <% } else { %>
 	<div class="col-md-12">
 <% }  %>		
-		<h4 class="list-group-item-heading"><a href="<%= request.getContextPath() %>/handle/<%= communities[i].getHandle() %>"><%= communities[i].getMetadata("name") %></a>
+		<h4 class="list-group-item-heading"><a href="<%= request.getContextPath() %>/handle/<%= communities[i].getHandle() %>"><%= communities[i].getMetadata("name").substring(4) %></a>
 <%
         if (ConfigurationManager.getBooleanProperty("webui.strengths.show"))
         {
