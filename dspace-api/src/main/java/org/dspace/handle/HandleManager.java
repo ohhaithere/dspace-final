@@ -386,6 +386,7 @@ public class HandleManager
             title = title.replace("]", "");
             title = title.replace("/", "");
             title = title.replace(" ", "-");
+            title = title.replace("№", "");
 
             if(title.length() > 200){
                 title = title.substring(0, 150);

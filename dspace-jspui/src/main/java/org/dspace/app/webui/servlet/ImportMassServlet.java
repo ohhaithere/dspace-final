@@ -45,7 +45,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -341,13 +344,17 @@ public class ImportMassServlet extends DSpaceServlet {
                                     //response.getWriter().write(e.getMessage());
                                 }
 
+                                DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+                                Date today = Calendar.getInstance().getTime();
+                                String dateNow = df.format(today);
+
                                 try {
-                                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", new Date().toString());
+                                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
                                 } catch (Exception e1) {
 
                                 }
                                 try {
-                                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", new Date().toString());
+                                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
                                 } catch (Exception e2) {
 
                                 }

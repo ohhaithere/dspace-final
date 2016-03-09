@@ -33,6 +33,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -569,14 +572,18 @@ public class ImportServlet extends DSpaceServlet {
         }
         writeMetaDataToItemLowerCase(ti, "relation", relation);
 
+        DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+        Date today = Calendar.getInstance().getTime();
+        String dateNow = df.format(today);
+
         try {
-            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", new Date().toString());
+            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
         }
         catch(Exception e1){
 
         }
         try {
-            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", new Date().toString());
+            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
         } catch(Exception e2){
 
         }
