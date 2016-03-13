@@ -270,16 +270,29 @@ public class UploadStep extends AbstractProcessingStep
         // Step #3: Check for a change in file description
         // -------------------------------------------------
         String fileDescription = request.getParameter("description");
-
         if (fileDescription != null && fileDescription.length() > 0)
         {
-            // save this file description
-            int status = processSaveFileDescription(context, request, response,
-                    subInfo);
 
-            // if error occurred, return immediately
+            if (subInfo.getBitstream() == null)
+             {
+                 if (item != null)
+                 {
+                     Bundle[] bundle = item.getBundles("ORIGINAL");
+                     if (bundle.length!=0)
+                    {
+                         Bitstream[] bitstreams = bundle[0].getBitstreams();
+                         if (bitstreams[0] !=null) subInfo.setBitstream(bitstreams[0]);
+                     }
+                 }
+             } // - - end of DI insert
+
+             // save this file description
+             int status = processSaveFileDescription(context, request, response, subInfo);
+
+
+             // if error occurred, return immediately
             if (status != STATUS_COMPLETE)
-            {
+             {
                 return status;
             }
         }

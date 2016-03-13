@@ -91,13 +91,25 @@ public class ImportMassServlet extends DSpaceServlet {
         String folder = request.getParameter("folder_path");
         String collectionId = request.getParameter("collection_id");
 
+        File dir = null;
+        File[] directoryListing = null;
 
-        File dir = new File(folder);
-        File[] directoryListing = dir.listFiles();
-        Collection col = Collection.find(context, Integer.parseInt(collectionId));
-        Integer lel = directoryListing.length;
-        log.debug("WTFDIRECTO " + lel.toString());
-        int howManyWasSubmited = 0;
+        try {
+             dir = new File(folder);
+             directoryListing = dir.listFiles();
+        } catch(Exception e){
+            request.getRequestDispatcher("/import/import-no-file.jsp").forward(request, response);
+        }
+
+        if (directoryListing == null) {
+            request.getRequestDispatcher("/import/import-no-file.jsp").forward(request, response);
+        }
+
+            Collection col = Collection.find(context, Integer.parseInt(collectionId));
+            Integer lel = directoryListing.length;
+            log.debug("WTFDIRECTO " + lel.toString());
+            int howManyWasSubmited = 0;
+
 
         ArrayList<String> links = new ArrayList<String>();
 
@@ -213,7 +225,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                 try {
                                     Node author = record.getElementsByTagName("Creator").item(0);
                                     String authorName = author.getTextContent();
-                                    if(!authorName.equals("|||") && (authorName != null)) {
+                                    if(!authorName.equals("|||") && (authorName != null) && (!authorName.equals(""))) {
                                         String contribs[] = authorName.split(",");
                                         for (int l = 0; l < contribs.length; l++) {
                                             itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contribs[l]);
@@ -228,7 +240,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                 try {
                                     Node contrib = record.getElementsByTagName("Contributor").item(0);
                                     String authorName = contrib.getTextContent();
-                                    if(!authorName.equals("|||") && (authorName != null)) {
+                                    if(!authorName.equals("|||") && (authorName != null) && (!authorName.equals(""))) {
                                         String contribs[] = authorName.split(",");
                                         for (int l = 0; l < contribs.length; l++) {
                                             itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", contribs[l]);
@@ -344,7 +356,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                     //response.getWriter().write(e.getMessage());
                                 }
 
-                                DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+                                DateFormat df = new SimpleDateFormat("YYYY-dd-MM HH:mm:ss");
                                 Date today = Calendar.getInstance().getTime();
                                 String dateNow = df.format(today);
 

@@ -109,6 +109,13 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
+		<ref bean="searchFilterDescription" />
+		<ref bean="searchFilterUdc" />
+		<ref bean="searchFilterRubbk" />
+		<ref bean="searchFilterRugasnti" />
+		<ref bean="searchFilterSource" />
+		<ref bean="searchFilterPublisher" />
+		<ref bean="searchFilterDOI" />
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -180,6 +187,7 @@
                         <value>dc.contributor.author</value>
                         <value>dc.creator</value>
                         <value>dc.subject</value>
+			<value>dc.coverage</value>
                     </list>
                 </property>
                 <!--The minimum number of matching terms across the metadata fields above before an item is found as related -->
@@ -203,6 +211,7 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
+		
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -214,6 +223,13 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
+		<ref bean="searchFilterDescription" />
+		<ref bean="searchFilterUdc" />
+		<ref bean="searchFilterRubbk" />
+		<ref bean="searchFilterRugasnti" />
+		<ref bean="searchFilterSource" />
+		<ref bean="searchFilterPublisher" />
+		<ref bean="searchFilterDOI" />
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -410,6 +426,90 @@
         <property name="metadataFields">
             <list>
                 <value>dc.coverage.*</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterDescription" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="description"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.description.abstract</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterUdc" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="udc"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.subject.udc</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterRubbk" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="rubbk"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.subject.rubbk</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterRugasnti" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="rugasnti"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.subject.rugasnti</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterSource" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="source"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.source.*</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterPublisher" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="publisher"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.publisher.*</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+<bean id="searchFilterDOI" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="doi"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.identifier.doi</value>
             </list>
         </property>
         <property name="facetLimit" value="10"/>

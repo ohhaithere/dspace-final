@@ -572,7 +572,7 @@ public class ImportServlet extends DSpaceServlet {
         }
         writeMetaDataToItemLowerCase(ti, "relation", relation);
 
-        DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("YYYY-dd-MM HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         String dateNow = df.format(today);
 

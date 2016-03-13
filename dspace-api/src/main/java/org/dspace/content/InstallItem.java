@@ -119,7 +119,7 @@ public class InstallItem
         // Even though we are restoring an item it may not have the proper dates. So let's
         // double check its associated date(s)
         DCDate now = DCDate.getCurrent();
-        DateFormat df = new SimpleDateFormat("YY-dd-mm HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("YYYY-dd-MM HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         String dateNow = df.format(today);
         
@@ -162,7 +162,7 @@ public class InstallItem
     {
         // create accession date
         DCDate now = DCDate.getCurrent();
-        DateFormat df = new SimpleDateFormat("YYYY-dd-mm HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("YYYY-dd-MM HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         String dateNow = df.format(today);
 

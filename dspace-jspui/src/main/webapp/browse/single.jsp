@@ -192,6 +192,14 @@
 	    }
 %>
 		<br/>
+<%
+        for (char c = '\u0410'; c <= '\u042F'; c++)
+        {
+%>
+                            <a class="label label-default" href="<%= sharedLink %>&amp;starts_with=<%= c %>"><%= c %></a>
+<%
+        }
+%> <br><br>
 		<label for="starts_with"><fmt:message key="browse.nav.enter"/></label>
 		<input type="text" name="starts_with"/>
 		<input type="submit" class="btn btn-default" value="<fmt:message key="browse.nav.go"/>" />
