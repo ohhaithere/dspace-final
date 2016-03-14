@@ -356,7 +356,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                     //response.getWriter().write(e.getMessage());
                                 }
 
-                                DateFormat df = new SimpleDateFormat("YYYY-dd-MM HH:mm:ss");
+                                DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
                                 Date today = Calendar.getInstance().getTime();
                                 String dateNow = df.format(today);
 

@@ -108,7 +108,6 @@
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
-		<ref bean="searchFilterCoverage" />
                 <ref bean="searchFilterIssued" />
 		<ref bean="searchFilterDescription" />
 		<ref bean="searchFilterUdc" />
@@ -223,7 +222,6 @@
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
-		<ref bean="searchFilterCoverage" />
                 <ref bean="searchFilterIssued" />
 		<ref bean="searchFilterDescription" />
 		<ref bean="searchFilterUdc" />
