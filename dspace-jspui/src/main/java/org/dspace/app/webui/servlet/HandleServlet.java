@@ -670,6 +670,17 @@ public class HandleServlet extends DSpaceServlet
                 test = test.substring(2);
             }
 
+            try{
+                Metadatum[] dcorevalues4 = community.getMetadata("dc", "description", "tableofcontents",
+                        Item.ANY);
+
+                Metadatum tit3 = dcorevalues4[0];
+                test = tit3.value;
+            }catch(Exception ex){
+                test = "";
+            }
+
+
             request.setAttribute("titleTag", titleTag);
             request.setAttribute("descrTag", descrTag);
             request.setAttribute("h1", h1);
@@ -870,6 +881,16 @@ public class HandleServlet extends DSpaceServlet
 
             if(test.length() > 3) {
                 test = test.substring(2);
+            }
+
+            try{
+                Metadatum[] dcorevalues4 = collection.getMetadata("dc", "description", "tableofcontents",
+                        Item.ANY);
+
+                Metadatum tit3 = dcorevalues4[0];
+                test = tit3.value;
+            }catch(Exception ex){
+
             }
 
             request.setAttribute("collection", collection);

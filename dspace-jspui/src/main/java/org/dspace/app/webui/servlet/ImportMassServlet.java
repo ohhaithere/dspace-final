@@ -560,7 +560,7 @@ public class ImportMassServlet extends DSpaceServlet {
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                 SoapHelper sh = new SoapHelper();
-                sh.writeLink(qualifier, HandleManager.getCanonicalForm(item.getHandle()));
+                sh.writeLink(textSubject.getTextContent(), HandleManager.getCanonicalForm(item.getHandle()));
             }else {
                 if(qulSubject.getTextContent().toLowerCase().equals("doi")){
                     item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, "uri", "ru", textSubject.getTextContent());

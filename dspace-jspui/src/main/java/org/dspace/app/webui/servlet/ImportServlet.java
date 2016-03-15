@@ -745,7 +745,7 @@ public class ImportServlet extends DSpaceServlet {
                 //item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcc", "ru", textSubject.getTextContent());
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                 SoapHelper sh = new SoapHelper();
-                sh.writeLink(qualifier, HandleManager.getCanonicalForm(item.getHandle()));
+                sh.writeLink(textSubject.getTextContent(), HandleManager.getCanonicalForm(item.getHandle()));
             }else {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }
