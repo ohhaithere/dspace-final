@@ -402,7 +402,7 @@
         <property name="indexFieldName" value="subject"/>
         <property name="metadataFields">
             <list>
-                <value>dc.subject.*</value>
+                <value>dc.coverage.*</value>
             </list>
         </property>
         <property name="facetLimit" value="10"/>
@@ -509,7 +509,7 @@
         <property name="indexFieldName" value="doi"/>
         <property name="metadataFields">
             <list>
-                <value>dc.identifier.doi</value>
+                <value>dc.identifier.uri</value>
             </list>
         </property>
         <property name="facetLimit" value="10"/>

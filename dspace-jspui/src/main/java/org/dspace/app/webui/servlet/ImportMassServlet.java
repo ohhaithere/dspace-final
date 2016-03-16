@@ -439,6 +439,14 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                 if(exists == false) {
                                     HandleManager.createHandle(context, itemItem);
+                                    Metadatum[] dcorevalues2 = itemItemll.getMetadata("dc", "identifier", null,
+                                            Item.ANY);
+
+                                    Metadatum tit = dcorevalues2[0];
+
+                                    SoapHelper sh = new SoapHelper();
+
+                                    sh.writeLink(tit.value, HandleManager.getCanonicalForm(itemItem.getHandle()));
 
                                     // Group groups = Group.findByName(context, "Anonymous");
                                     TableRow row = DatabaseManager.row("collection2item");
@@ -560,7 +568,7 @@ public class ImportMassServlet extends DSpaceServlet {
             if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                 SoapHelper sh = new SoapHelper();
-                sh.writeLink(textSubject.getTextContent(), HandleManager.getCanonicalForm(item.getHandle()));
+               // sh.writeLink(textSubject.getTextContent(), HandleManager.getCanonicalForm(item.getHandle()));
             }else {
                 if(qulSubject.getTextContent().toLowerCase().equals("doi")){
                     item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, "uri", "ru", textSubject.getTextContent());

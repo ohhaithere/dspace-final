@@ -602,8 +602,20 @@ public class ImportServlet extends DSpaceServlet {
             }
 
            // HandleManager.
-            if(exists == false)
+            if(exists == false) {
                 HandleManager.createHandle(context, ti);
+                Metadatum[] dcorevalues2 = ti.getMetadata("dc", "identifier", null,
+                        Item.ANY);
+
+                Metadatum tit = dcorevalues2[0];
+
+                SoapHelper sh = new SoapHelper();
+
+                sh.writeLink(tit.value, HandleManager.getCanonicalForm(ti.getHandle()));
+            }
+
+
+
 
             NodeList linkList = null;
             try {
@@ -745,7 +757,7 @@ public class ImportServlet extends DSpaceServlet {
                 //item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcc", "ru", textSubject.getTextContent());
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                 SoapHelper sh = new SoapHelper();
-                sh.writeLink(textSubject.getTextContent(), HandleManager.getCanonicalForm(item.getHandle()));
+
             }else {
                 item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase(), "ru", textSubject.getTextContent());
             }
