@@ -439,7 +439,7 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                 if(exists == false) {
                                     HandleManager.createHandle(context, itemItem);
-                                    Metadatum[] dcorevalues2 = itemItemll.getMetadata("dc", "identifier", null,
+                                    Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null,
                                             Item.ANY);
 
                                     Metadatum tit = dcorevalues2[0];
