@@ -88,7 +88,11 @@ public class ImportServlet extends DSpaceServlet {
 
             if (test.equals("write_ident")) {
                 String iden = request.getParameter("identifier");
-                docMeta = sh.getRecordById(iden);
+                try {
+                    docMeta = sh.getRecordById(iden);
+                } catch(Exception e){
+                    docMeta = sh.getRecordById(iden);
+                }
                 createItem(docMeta, itemItem, request, context, col, wsitem);
                 request.getRequestDispatcher("/import/import-sucess.jsp").forward(request, response);
             }
@@ -101,7 +105,11 @@ public class ImportServlet extends DSpaceServlet {
                 String idItem = idNode.item(0).getTextContent();
 
                 //request.setAttribute(idItem, "identifier");
-                docMeta = sh.getRecordById(idItem);
+                try {
+                    docMeta = sh.getRecordById(idItem);
+                } catch(Exception e){
+                    docMeta = sh.getRecordById(idItem);
+                }
                 createItem(docMeta, itemItem, request, context, col, wsitem);
                 request.getRequestDispatcher("/import/import-sucess.jsp").forward(request, response);
             }
@@ -109,7 +117,13 @@ public class ImportServlet extends DSpaceServlet {
 
         if(test == null) {
             String uuid = request.getParameter("uuid_search");
-            Document doc = sh.getRecordById(uuid);
+            Document doc = null;
+
+            try{
+                doc = sh.getRecordById(uuid);
+            } catch(Exception e){
+                doc = sh.getRecordById(uuid);
+            }
 
 
             TransformerFactory tf = TransformerFactory.newInstance();
