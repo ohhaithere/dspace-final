@@ -648,26 +648,30 @@ public class ImportServlet extends DSpaceServlet {
             InputStream iss  = new URL(firstUrl+linkEncode).openStream();
             InputStream issforPdf  = new URL(firstUrl+linkEncode).openStream();
 
-            PDFTextStripper pdfStripper = null;
-            PDDocument docum = null;
-            PDFParser parser = new PDFParser(issforPdf);
-            COSDocument cosDoc = null;
+            try {
+                PDFTextStripper pdfStripper = null;
+                PDDocument docum = null;
+                PDFParser parser = new PDFParser(issforPdf);
+                COSDocument cosDoc = null;
 
-            parser.parse();
-            cosDoc = parser.getDocument();
-            pdfStripper = new PDFTextStripper();
-            docum = new PDDocument(cosDoc);
-            //pdfStripper.getText(docum);
-            String parsedText = pdfStripper.getText(docum);
-            //log.info(parsedText);
+                parser.parse();
+                cosDoc = parser.getDocument();
+                pdfStripper = new PDFTextStripper();
+                docum = new PDDocument(cosDoc);
+                //pdfStripper.getText(docum);
+                String parsedText = pdfStripper.getText(docum);
+                //log.info(parsedText);
 
-            Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
-            Integer toCut = 500;
-            if((parsedText.length() - fifty) < 500){
-                toCut = parsedText.length();
+                Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                Integer toCut = 500;
+                if ((parsedText.length() - fifty) < 500) {
+                    toCut = parsedText.length();
+                }
+                String subText = parsedText.substring(fifty, toCut - 1);
+                ti.addMetadata("dc", "textpart", null, null, subText + "...");
+            } catch(Exception e){
+
             }
-            String subText = parsedText.substring(fifty, toCut-1);
-            ti.addMetadata("dc", "textpart", null, null, subText + "...");
 
             log.info("wowlol: "+firstUrl+linkEncode);
 

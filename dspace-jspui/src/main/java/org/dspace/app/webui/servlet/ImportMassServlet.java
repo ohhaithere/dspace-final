@@ -391,25 +391,29 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                     log.info("wowlol: " + firstUrl + linkEncode);
 
-                                    PDFTextStripper pdfStripper = null;
-                                    PDDocument docum = null;
-                                    PDFParser parser = new PDFParser(issforPdf);
-                                    COSDocument cosDoc = null;
+                                    try {
+                                        PDFTextStripper pdfStripper = null;
+                                        PDDocument docum = null;
+                                        PDFParser parser = new PDFParser(issforPdf);
+                                        COSDocument cosDoc = null;
 
-                                    parser.parse();
-                                    cosDoc = parser.getDocument();
-                                    pdfStripper = new PDFTextStripper();
-                                    docum = new PDDocument(cosDoc);
-                                    //pdfStripper.getText(docum);
-                                    String parsedText = pdfStripper.getText(docum);
-                                    //log.info(parsedText);
-                                    Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
-                                    Integer toCut = 500;
-                                    if((parsedText.length() - fifty) < 500){
-                                        toCut = parsedText.length();
+                                        parser.parse();
+                                        cosDoc = parser.getDocument();
+                                        pdfStripper = new PDFTextStripper();
+                                        docum = new PDDocument(cosDoc);
+                                        //pdfStripper.getText(docum);
+                                        String parsedText = pdfStripper.getText(docum);
+                                        //log.info(parsedText);
+                                        Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                                        Integer toCut = 500;
+                                        if ((parsedText.length() - fifty) < 500) {
+                                            toCut = parsedText.length();
+                                        }
+                                        String subText = parsedText.substring(fifty, toCut - 1);
+                                        itemItem.addMetadata("dc", "textpart", null, null, subText + "...");
+                                    } catch(Exception e){
+
                                     }
-                                    String subText = parsedText.substring(fifty, toCut-1);
-                                    itemItem.addMetadata("dc", "textpart", null, null, subText + "...");
 
                                     if(exists == false) {
                                         itemItem.createBundle("ORIGINAL");
