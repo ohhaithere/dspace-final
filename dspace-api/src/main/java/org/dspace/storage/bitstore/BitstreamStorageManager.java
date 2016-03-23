@@ -285,58 +285,52 @@ public class BitstreamStorageManager
             throw sqle;
         }
 
-        // Where on the file system will this new bitstream go?
-		GeneralFile file = getFile(bitstream);
+		try {
+			// Where on the file system will this new bitstream go?
+			GeneralFile file = getFile(bitstream);
 
-        // Make the parent dirs if necessary
-		GeneralFile parent = file.getParentFile();
+			// Make the parent dirs if necessary
+			GeneralFile parent = file.getParentFile();
 
-        if (!parent.exists())
-        {
-            parent.mkdirs();
-        }
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
 
-        //Create the corresponding file and open it
-        file.createNewFile();
+			//Create the corresponding file and open it
+			file.createNewFile();
 
-		GeneralFileOutputStream fos = FileFactory.newFileOutputStream(file);
+			GeneralFileOutputStream fos = FileFactory.newFileOutputStream(file);
 
-		// Read through a digest input stream that will work out the MD5
-        DigestInputStream dis = null;
+			// Read through a digest input stream that will work out the MD5
+			DigestInputStream dis = null;
 
-        try
-        {
-            dis = new DigestInputStream(is, MessageDigest.getInstance("MD5"));
-        }
-        // Should never happen
-        catch (NoSuchAlgorithmException nsae)
-        {
-            log.warn("Caught NoSuchAlgorithmException", nsae);
-        }
+			try {
+				dis = new DigestInputStream(is, MessageDigest.getInstance("MD5"));
+			}
+			// Should never happen
+			catch (NoSuchAlgorithmException nsae) {
+				log.warn("Caught NoSuchAlgorithmException", nsae);
+			}
 
-        Utils.bufferedCopy(dis, fos);
-        fos.close();
-        is.close();
+			Utils.bufferedCopy(dis, fos);
+			fos.close();
+			is.close();
 
-        bitstream.setColumn("size_bytes", file.length());
+			bitstream.setColumn("size_bytes", file.length());
 
-        if (dis != null)
-        {
-            bitstream.setColumn("checksum", Utils.toHex(dis.getMessageDigest()
-                    .digest()));
-            bitstream.setColumn("checksum_algorithm", "MD5");
-        }
-        
-        bitstream.setColumn("deleted", false);
+			if (dis != null) {
+				bitstream.setColumn("checksum", Utils.toHex(dis.getMessageDigest()
+						.digest()));
+				bitstream.setColumn("checksum_algorithm", "MD5");
+			}
+
+			bitstream.setColumn("deleted", false);
+		} catch(Exception e){
+
+		}
         DatabaseManager.update(context, bitstream);
 
         int bitstreamId = bitstream.getIntColumn("bitstream_id");
-
-        if (log.isDebugEnabled())
-        {
-            log.debug("Stored bitstream " + bitstreamId + " in file "
-                    + file.getAbsolutePath());
-        }
 
         return bitstreamId;
     }

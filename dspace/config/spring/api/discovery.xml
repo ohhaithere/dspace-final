@@ -427,7 +427,7 @@
         <property name="indexFieldName" value="coverage"/>
         <property name="metadataFields">
             <list>
-                <value>dc.coverage.*</value>
+                <value>dc.coverage.spatial</value>
             </list>
         </property>
         <property name="facetLimit" value="10"/>
