@@ -326,7 +326,45 @@ public class BitstreamStorageManager
 
 			bitstream.setColumn("deleted", false);
 		} catch(Exception e){
+			// Where on the file system will this new bitstream go?
+			GeneralFile file = getFile(bitstream);
 
+			// Make the parent dirs if necessary
+			GeneralFile parent = file.getParentFile();
+
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+
+			//Create the corresponding file and open it
+			file.createNewFile();
+
+			GeneralFileOutputStream fos = FileFactory.newFileOutputStream(file);
+
+			// Read through a digest input stream that will work out the MD5
+			DigestInputStream dis = null;
+
+			try {
+				dis = new DigestInputStream(is, MessageDigest.getInstance("MD5"));
+			}
+			// Should never happen
+			catch (NoSuchAlgorithmException nsae) {
+				log.warn("Caught NoSuchAlgorithmException", nsae);
+			}
+
+			Utils.bufferedCopy(dis, fos);
+			fos.close();
+			is.close();
+
+			bitstream.setColumn("size_bytes", file.length());
+
+			if (dis != null) {
+				bitstream.setColumn("checksum", Utils.toHex(dis.getMessageDigest()
+						.digest()));
+				bitstream.setColumn("checksum_algorithm", "MD5");
+			}
+
+			bitstream.setColumn("deleted", false);
 		}
         DatabaseManager.update(context, bitstream);
 
