@@ -1348,7 +1348,11 @@ public class Collection extends DSpaceObject
         ourContext.removeCached(this, getID());
 
         // Delete collection row
-        DatabaseManager.delete(ourContext, collectionRow);
+        try {
+            DatabaseManager.delete(ourContext, collectionRow);
+        } catch(Exception e){
+            
+        }
 
         // Remove any workflow groups - must happen after deleting collection
         Group g = null;
