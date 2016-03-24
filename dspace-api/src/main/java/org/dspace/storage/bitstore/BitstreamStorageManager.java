@@ -326,6 +326,7 @@ public class BitstreamStorageManager
 
 			bitstream.setColumn("deleted", false);
 		} catch(Exception e){
+			log.info("OMGGOTINTO");
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e1) {
