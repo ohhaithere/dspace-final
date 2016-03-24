@@ -326,6 +326,11 @@ public class BitstreamStorageManager
 
 			bitstream.setColumn("deleted", false);
 		} catch(Exception e){
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			// Where on the file system will this new bitstream go?
 			GeneralFile file = getFile(bitstream);
 
