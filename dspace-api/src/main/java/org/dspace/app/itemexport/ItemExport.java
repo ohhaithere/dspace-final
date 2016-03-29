@@ -520,7 +520,7 @@ public class ItemExport
             File destDir, boolean migrate, Integer files) throws Exception
     {
 
-        log.info("OK, TIMETOWRITE");
+        log.info("OK, TIMETOWRITE " + files);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
         String zeroes = "";
