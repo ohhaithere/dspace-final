@@ -45,7 +45,7 @@ String colId = (String) request.getAttribute("collection_id");
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>В каталоге нет файлов.<br>
     <br>
-    <a href="/jspui/import-mass">Повторить загрузку</a> </b><br>
+    <a href="/import-mass">Повторить загрузку</a> </b><br>
 
 
 

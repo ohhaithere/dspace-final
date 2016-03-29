@@ -48,7 +48,7 @@
 
 <dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>Массовый импорт</b><br>
-    <form action="/jspui/import-mass" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+    <form action="/import-mass" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
   <span class="col-md-5">
     Путь к каталогу:
     <select name="folder_path">
