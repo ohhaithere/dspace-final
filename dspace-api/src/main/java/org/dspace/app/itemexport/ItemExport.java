@@ -387,7 +387,7 @@ public class ItemExport
                    //     writeHandle(c, myItem, itemDir);
                     }
 
-                    // throw new Exception("Error, can't make dir " + itemDir);
+                     throw new Exception("Error, can't make dir " + itemDir);
 
             } else {
                 //   throw new Exception("Error, directory " + destDirName
