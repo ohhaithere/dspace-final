@@ -524,7 +524,7 @@ public class ItemExport
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
         String zeroes = "";
-        if(files < 0)
+        if(files == 0)
             files = 1;
 
         if(files == null)
