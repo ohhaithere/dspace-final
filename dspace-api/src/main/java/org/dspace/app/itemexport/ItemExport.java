@@ -520,6 +520,7 @@ public class ItemExport
             File destDir, boolean migrate, Integer files) throws Exception
     {
 
+        log.info("OK, TIMETOWRITE");
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
         String zeroes = "";
@@ -544,6 +545,8 @@ public class ItemExport
         File outFile = new File(destDir, filename);
         File outFile2 = new File(destDir, filename2);
 
+        log.info("OK, WRITING");
+
       /*  outFile.setReadable(true, false);
         outFile.setWritable(true, false);
         outFile.setExecutable(true, false);
@@ -556,6 +559,7 @@ public class ItemExport
 
         if (outFile2.createNewFile())
         {
+            log.info("OK, GO");
           /*  BufferedOutputStream out = new BufferedOutputStream(
                     new FileOutputStream(outFile));*/
             BufferedOutputStream out2 = new BufferedOutputStream(
