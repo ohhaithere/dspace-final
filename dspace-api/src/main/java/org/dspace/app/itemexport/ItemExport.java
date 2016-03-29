@@ -544,13 +544,13 @@ public class ItemExport
         File outFile = new File(destDir, filename);
         File outFile2 = new File(destDir, filename2);
 
-        outFile.setReadable(true, false);
+      /*  outFile.setReadable(true, false);
         outFile.setWritable(true, false);
         outFile.setExecutable(true, false);
 
         outFile2.setReadable(true, false);
         outFile2.setWritable(true, false);
-        outFile2.setExecutable(true, false);
+        outFile2.setExecutable(true, false); */
 
         System.out.println("Attempting to create file " + outFile);
 

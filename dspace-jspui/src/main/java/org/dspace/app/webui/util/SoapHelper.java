@@ -186,7 +186,7 @@ public class SoapHelper {
                     "   <soap:Header/>\n" +
                     "   <soap:Body>\n" +
                     "      <bibl:GetShortRecordList>\n" +
-                    "         <bibl:SearchExpression>" + authors + " " + titles + "(DSpace Равно Истина)</bibl:SearchExpression>\n" +
+                    "         <bibl:SearchExpression>" + authors + " " + titles + "(DSpace Равно Истина)(Диапазон 1-25)</bibl:SearchExpression>\n" +
                     "         <bibl:Size></bibl:Size>\n" +
                     "         <bibl:Direction></bibl:Direction>\n" +
                     "         <bibl:CurrentPosition></bibl:CurrentPosition>\n" +
