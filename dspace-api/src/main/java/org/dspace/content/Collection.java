@@ -1351,7 +1351,7 @@ public class Collection extends DSpaceObject
         try {
             DatabaseManager.delete(ourContext, collectionRow);
         } catch(Exception e){
-            
+
         }
 
         // Remove any workflow groups - must happen after deleting collection

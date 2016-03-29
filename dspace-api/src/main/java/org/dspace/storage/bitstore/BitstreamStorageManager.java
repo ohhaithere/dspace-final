@@ -343,6 +343,7 @@ public class BitstreamStorageManager
 			}
 
 			//Create the corresponding file and open it
+
 			file.createNewFile();
 
 			GeneralFileOutputStream fos = FileFactory.newFileOutputStream(file);
