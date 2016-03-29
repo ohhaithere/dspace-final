@@ -855,7 +855,7 @@ public class EditItemServlet extends DSpaceServlet
                 try {
                     ItemExport.exportItemToFolder(context, item, "/home/dspace/export", 0, false);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.info("OHFUCK: " + e.toString());
                 }
             }
             // Show edit page again
