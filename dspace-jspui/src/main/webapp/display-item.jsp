@@ -163,7 +163,7 @@
                 if(imported)
                 {
                 %>
-                <form method="post" action="/jspui/reimport-item">
+                <form method="post" action="/reimport-item">
                                     <input type="hidden" name="item_id" value="<%= item.getID() %>" />
                                     <input type="hidden" name="action" value="reimport" />
                                     <%--<input type="submit" name="submit" value="Обновить метаданные">--%>
