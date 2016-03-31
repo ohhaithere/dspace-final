@@ -42,6 +42,7 @@ import java.io.UnsupportedEncodingException;
 
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -457,8 +458,12 @@ public class ItemListTag extends TagSupport
                         // format the date field correctly
                         if (isDate[colIdx])
                         {
-                            DCDate dd = new DCDate(metadataArray[0].value);
-                            metadata = UIUtil.displayDate(dd, false, false, hrq);
+                            try {
+                                DCDate dd = new DCDate(metadataArray[0].value);
+                                metadata = UIUtil.displayDate(dd, false, false, hrq);
+                            }catch(Exception e){
+                                metadata = UIUtil.displayDate(new DCDate(new Date()), false, false, hrq);
+                            }
                         }
                         // format the title field correctly for withdrawn items (ie. don't link)
                         else if (field.equals(titleField) && items[i].isWithdrawn())
