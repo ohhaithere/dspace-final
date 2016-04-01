@@ -562,7 +562,7 @@ public class UploadStep extends AbstractProcessingStep
                         //pdfStripper.getText(docum);
 
                         String parsedText = pdfStripper.getText(docum);
-                        Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                        Integer fifty = (Integer) Math.round(parsedText.length()*(50/100.0f));
                         Integer toCut = 500;
                         if((parsedText.length() - fifty) < 500){
                             toCut = parsedText.length();
@@ -594,7 +594,7 @@ public class UploadStep extends AbstractProcessingStep
                         IOUtils.copy(ifAnsi, writerAnsi, "Cp1252");
                         theString = writerAnsi.toString();
                     }
-                    Integer fifty = (Integer) Math.round(50 * 100 / theString.length());
+                    Integer fifty = (Integer) Math.round(theString.length()*(50/100.0f));
                     Integer toCut = 500;
                     if((theString.length() - fifty) < 500){
                         toCut = theString.length();

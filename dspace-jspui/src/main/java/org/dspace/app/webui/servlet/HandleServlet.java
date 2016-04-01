@@ -498,7 +498,14 @@ public class HandleServlet extends DSpaceServlet
                     Item.ANY);
 
             Metadatum tit2 = dcorevalues3[0];
-            descrTag = tit2.value;
+            int max = 0;
+            for(int i = 0; i < dcorevalues3.length; i++){
+                if(max < dcorevalues3[i].value.length()){
+                    max = dcorevalues3[i].value.length();
+                    descrTag = dcorevalues3[i].value;
+                }
+            }
+           // descrTag = tit2.value;
         }catch(Exception e){
 
         }

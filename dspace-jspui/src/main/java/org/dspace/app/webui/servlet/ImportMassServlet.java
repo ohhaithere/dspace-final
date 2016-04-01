@@ -404,7 +404,7 @@ public class ImportMassServlet extends DSpaceServlet {
                                         //pdfStripper.getText(docum);
                                         String parsedText = pdfStripper.getText(docum);
                                         //log.info(parsedText);
-                                        Integer fifty = (Integer) Math.round(50 * 100 / parsedText.length());
+                                        Integer fifty = (Integer) Math.round(parsedText.length()*(50/100.0f));
                                         Integer toCut = 500;
                                         if ((parsedText.length() - fifty) < 500) {
                                             toCut = parsedText.length();
