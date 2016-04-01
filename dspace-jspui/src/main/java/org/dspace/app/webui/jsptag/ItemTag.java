@@ -619,13 +619,9 @@ public class ItemTag extends TagSupport
 	                    }
                         else
                         {
-                            if(label.startsWith("Краткий осмотр")){
-                                if(values[j].value.length() > 42){
-                                    out.print(Utils.addEntities(values[j].value));
-                                }
-                            }else {
+
                                 out.print(Utils.addEntities(values[j].value));
-                            }
+
                         }
                     }
                 }
