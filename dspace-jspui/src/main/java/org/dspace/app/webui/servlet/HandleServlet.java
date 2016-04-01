@@ -527,7 +527,7 @@ public class HandleServlet extends DSpaceServlet
         request.setAttribute("titleTag", titleTag);
         request.setAttribute("metaTag", metaTag);
         request.setAttribute("h1", h1);
-        request.setAttribute("descrTag", descrTag);
+        request.setAttribute("descrTag", descrTag + "...");
         request.setAttribute("textToPass", textTag);
         JSPManager.showJSP(request, response, "/display-item.jsp");
     }

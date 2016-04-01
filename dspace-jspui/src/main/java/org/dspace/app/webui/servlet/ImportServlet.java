@@ -668,6 +668,11 @@ public class ImportServlet extends DSpaceServlet {
                     toCut = parsedText.length();
                 }
                 String subText = parsedText.substring(fifty, toCut - 1);
+                try {
+                    subText = subText.substring(subText.indexOf(".") + 1);
+                } catch(Exception e){
+
+                }
                 ti.addMetadata("dc", "textpart", null, null, subText + "...");
             } catch(Exception e){
 

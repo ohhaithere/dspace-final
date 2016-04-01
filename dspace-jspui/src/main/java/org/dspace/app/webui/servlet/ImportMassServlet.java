@@ -410,6 +410,11 @@ public class ImportMassServlet extends DSpaceServlet {
                                             toCut = parsedText.length();
                                         }
                                         String subText = parsedText.substring(fifty, toCut - 1);
+                                        try {
+                                            subText = subText.substring(subText.indexOf(".") + 1);
+                                        } catch(Exception e){
+
+                                        }
                                         itemItem.addMetadata("dc", "textpart", null, null, subText + "...");
                                     } catch(Exception e){
 

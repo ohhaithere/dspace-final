@@ -483,7 +483,9 @@ public class ItemTag extends TagSupport
                     label = LocaleSupport.getLocalizedMessage(pageContext,
                             "metadata." + field);
                 }
-                
+
+                log.info("WOWLABEL: "+label);
+
                 out.print(label);
                 out.print(":&nbsp;</td><td class=\"metadataFieldValue\">");
                 
@@ -498,11 +500,15 @@ public class ItemTag extends TagSupport
                         {
                             for (int d = 0; d < displayValues.size(); d++)
                             {
+                                //if(label.startsWith("Краткий осмотр"))
+                                   // out.print("wow lol");
                                 out.print(displayValues.get(d));
+
                                 if (d<displayValues.size()-1)  out.print(" <br/>");
                                 
                             }
                         }
+
                     out.print("</td>");
                     continue;
                  }   
@@ -613,7 +619,13 @@ public class ItemTag extends TagSupport
 	                    }
                         else
                         {
-                            out.print(Utils.addEntities(values[j].value));
+                            if(label.startsWith("Краткий осмотр")){
+                                if(values[j].value.length() > 42){
+                                    out.print(Utils.addEntities(values[j].value));
+                                }
+                            }else {
+                                out.print(Utils.addEntities(values[j].value));
+                            }
                         }
                     }
                 }

@@ -568,6 +568,11 @@ public class UploadStep extends AbstractProcessingStep
                             toCut = parsedText.length();
                         }
                         String subText = parsedText.substring(fifty, toCut-1);
+                        try {
+                            subText = subText.substring(subText.indexOf(".") + 1);
+                        } catch(Exception e){
+
+                        }
                         item.addMetadata("dc", "textpart", null, null, subText + "...");
                         item.update();
                         context.commit();
