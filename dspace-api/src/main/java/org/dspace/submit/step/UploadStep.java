@@ -562,12 +562,18 @@ public class UploadStep extends AbstractProcessingStep
                         //pdfStripper.getText(docum);
 
                         String parsedText = pdfStripper.getText(docum);
-                        Integer fifty = (Integer) Math.round(parsedText.length()*(50/100.0f));
+                        Integer fifty = (Integer) Math.round(parsedText.length() / 2);
+                        if(fifty < 0){
+                            fifty = fifty *(-1);
+                        }
                         Integer toCut = 500;
                         if((parsedText.length() - fifty) < 500){
                             toCut = parsedText.length();
                         }
-                        String subText = parsedText.substring(fifty, toCut-1);
+
+
+                        log.info("FUCKTHISSHIT: "+fifty +" " +toCut);
+                        String subText = parsedText.substring(fifty, fifty + toCut-1);
                         try {
                             subText = subText.substring(subText.indexOf(".") + 1);
                         } catch(Exception e){
@@ -578,7 +584,7 @@ public class UploadStep extends AbstractProcessingStep
                         context.commit();
                         log.info(parsedText);
                     } catch (Exception e) {
-
+                        log.info("omgerror: " + e.toString());
                     }
                 }
 
