@@ -9,6 +9,7 @@ import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
 import org.dspace.core.Context;
+import org.dspace.core.LogManager;
 import org.dspace.handle.HandleManager;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
@@ -703,6 +704,10 @@ public class ImportServlet extends DSpaceServlet {
             ti.update();
 
             iss.close();
+
+            log.info(LogManager.getHeader(context, "submission_complete",
+                    "Completed submission with id="
+                            + ti.getID()));
         } catch (Exception e) {
             log.error("wtferror", e);
         }
