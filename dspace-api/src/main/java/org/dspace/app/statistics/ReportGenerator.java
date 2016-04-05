@@ -278,7 +278,7 @@ public class ReportGenerator
         
         Statistics overview = new Statistics();
         
-        overview.setSectionHeader("General Overview");
+        overview.setSectionHeader("Общий обзор");
         
         Iterator<String> summaryEntries = generalSummary.iterator();
         while (summaryEntries.hasNext())
@@ -361,7 +361,7 @@ public class ReportGenerator
         fullInfo.setStatName("Action");
         fullInfo.setResultName("Number of times");
         
-        report.addBlock(fullInfo);
+        //report.addBlock(fullInfo);
         
         // prepare the user login statistics package
         if (!userEmail.equals("off"))
@@ -376,7 +376,7 @@ public class ReportGenerator
                 userLogins.setExplanation(explanation);
             }
         
-            report.addBlock(userLogins);
+            //report.addBlock(userLogins);
         }
 
         // prepare the search word statistics package
@@ -416,7 +416,7 @@ public class ReportGenerator
         
         levels.add(level);
         
-        report.addBlock(levels);
+        //report.addBlock(levels);
         
         // get the display processing time information
         Calendar endTime = new GregorianCalendar();
@@ -437,7 +437,7 @@ public class ReportGenerator
         
         process.add(proc);
         
-        report.addBlock(process);
+        //report.addBlock(process);
 
         report.render();
         

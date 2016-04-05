@@ -1,17 +1,17 @@
 # Log file action to human readable action map file
 
 # FIXME: these are the same action but are spelled differently.  Why?
-reject_license=Licence Rejections
-reject_licence=Licence Rejections
+reject_license=Отвергнуто лицензий
+reject_licence=Отвергнуто лицензий
 
-archive_item=Items Archived
-view_bitstream=Bitstream Views
-view_item=Item Views
-view_collection=Collection Views
-view_community=Community Views
-login=User Logins
-search=Searches Performed
-oai_request=OAI Requests
+archive_item=Ресурсов загружено
+view_bitstream=Файлов ресурсов просмотрено
+view_item=Ресурсов загружено
+view_collection=Коллекций просмотрено
+view_community=Разделов просмотрено
+login=Кол-во аутентификаций пользователей
+search=Выполнено поисков
+oai_request=Запросов OAI
 items_by_author=Browse Items by Author
 browse_author=Browse by Author
 browse_title=Browse by Title

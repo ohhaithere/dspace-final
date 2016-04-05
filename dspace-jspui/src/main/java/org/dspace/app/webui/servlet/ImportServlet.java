@@ -8,12 +8,15 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.handle.HandleManager;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
+import org.dspace.workflow.WorkflowManager;
+import org.dspace.xmlworkflow.XmlWorkflowManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -701,13 +704,22 @@ public class ImportServlet extends DSpaceServlet {
 
                 b.update();
             }
+
+            if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
+                try{
+                    XmlWorkflowManager.start(context, wsitem);
+                }catch (Exception e){
+                    log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+                    throw new ServletException(e);
+                }
+            }else{
+                WorkflowManager.start(context, wsitem);
+            }
             ti.update();
 
             iss.close();
 
-            log.info(LogManager.getHeader(context, "submission_complete",
-                    "Completed submission with id="
-                            + ti.getID()));
+
         } catch (Exception e) {
             log.error("wtferror", e);
         }
@@ -744,6 +756,10 @@ public class ImportServlet extends DSpaceServlet {
         context.commit();
 
         request.setAttribute("existed", exists);
+
+        log.info(LogManager.getHeader(context, "submission_complete",
+                "Completed submission with id="
+                        + ti.getID()));
 
         try {
             String link = ti.getHandle();

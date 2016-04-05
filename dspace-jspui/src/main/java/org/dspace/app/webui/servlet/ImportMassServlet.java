@@ -17,14 +17,18 @@ import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.*;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.core.LogManager;
 import org.dspace.eperson.Group;
 import org.dspace.handle.HandleManager;
 import org.dspace.identifier.Handle;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
+import org.dspace.workflow.WorkflowManager;
+import org.dspace.xmlworkflow.XmlWorkflowManager;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.w3c.dom.Document;
@@ -487,6 +491,16 @@ public class ImportMassServlet extends DSpaceServlet {
 
                                 request.setAttribute("updatedLinks", links);
 
+                                if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
+                                    try{
+                                        XmlWorkflowManager.start(context, wsitem);
+                                    }catch (Exception e){
+                                        log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+                                        throw new ServletException(e);
+                                    }
+                                }else{
+                                    WorkflowManager.start(context, wsitem);
+                                }
 
                                 request.setAttribute("link", HandleManager.getCanonicalForm(col.getHandle()));
                                 itemItem.update();
