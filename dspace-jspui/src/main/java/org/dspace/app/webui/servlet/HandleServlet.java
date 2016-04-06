@@ -455,20 +455,23 @@ public class HandleServlet extends DSpaceServlet
             				context,
             				item));
 
-        Metadatum[] authors = item.getMetadata("dc", "contributor", "author", Item.ANY);
         String titleTag = "";
-
-        for (Metadatum meta:
-             authors) {
-            titleTag = titleTag + meta.value + ", ";
-        }
-
         Metadatum[] dcorevalues2 = item.getMetadata("dc", "title", Item.ANY,
                 Item.ANY);
 
         Metadatum tit = dcorevalues2[0];
 
         titleTag = titleTag + tit.value;
+
+        Metadatum[] authors = item.getMetadata("dc", "contributor", "author", Item.ANY);
+
+
+        for (Metadatum meta:
+             authors) {
+            titleTag = titleTag + meta.value + ", ";
+        }
+
+
         String h1 = tit.value;
 
         Metadatum[] subj = item.getMetadata("dc", "subject", null, Item.ANY);

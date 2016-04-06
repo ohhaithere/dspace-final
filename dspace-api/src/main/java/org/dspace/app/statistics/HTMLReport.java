@@ -138,23 +138,14 @@ public class HTMLReport implements Report
         StringBuffer frag = new StringBuffer();
         
         frag.append("<div class=\"reportNavigation\">");
-        frag.append("<a href=\"#general_overview\">General Overview</a>");
+        frag.append("<a href=\"#general_overview\">Общий обзор</a>");
         frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#archive_information\">Archive Information</a>");
+        frag.append("<a href=\"#archive_information\">Информация о архиве</a>");
         frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#items_viewed\">Items Viewed</a>");
+        frag.append("<a href=\"#items_viewed\">Ресурсов просмотрено</a>");
         frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#all_actions_performed\">All Actions Performed</a>");
+        frag.append("<a href=\"#words_searched\">Поиск слов</a>");
         frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#user_logins\">User Logins</a>");
-        frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#words_searched\">Words Searched</a>");
-        frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#averaging_information\">Averaging Information</a>");
-        frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#log_level_information\">Log Level Information</a>");
-        frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#processing_information\">Processing Information</a>");
         frag.append("</div>");
         
         return frag.toString();

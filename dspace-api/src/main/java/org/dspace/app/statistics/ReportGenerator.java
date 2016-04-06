@@ -297,9 +297,9 @@ public class ReportGenerator
         if (archiveStats.size() > 0)
         {
             Statistics archiveInfo = prepareStats(archiveStats, true, false);
-            archiveInfo.setSectionHeader("Archive Information");
-            archiveInfo.setStatName("Content Type");
-            archiveInfo.setResultName("Number of items");
+            archiveInfo.setSectionHeader("Информация о архиве");
+            archiveInfo.setStatName("Тип");
+            archiveInfo.setResultName("Количество элементов");
         
             report.addBlock(archiveInfo);
         }
@@ -309,8 +309,8 @@ public class ReportGenerator
         // process the items in preparation to be displayed.  This includes sorting
         // by view number, building the links, and getting further info where
         // necessary
-        Statistics viewedItems = new Statistics("Item/Handle", "Number of views", itemFloor);
-        viewedItems.setSectionHeader("Items Viewed");
+        Statistics viewedItems = new Statistics("Ресурс", "Кол-во просмотров", itemFloor);
+        viewedItems.setSectionHeader("Ресурсов просмотрено");
         
         Stat[] items = new Stat[itemAggregator.size()];
         
@@ -367,7 +367,7 @@ public class ReportGenerator
         if (!userEmail.equals("off"))
         {
             Statistics userLogins = prepareStats(userAggregator, true, false);
-            userLogins.setSectionHeader("User Logins");
+            userLogins.setSectionHeader("Кол-во аутентификаций пользователей (разные адреса)");
             userLogins.setStatName("User");
             userLogins.setResultName("Number of logins");
             if (userEmail.equals("alias"))
@@ -381,9 +381,9 @@ public class ReportGenerator
 
         // prepare the search word statistics package
         Statistics searchWords = prepareStats(searchAggregator, true, false);
-        searchWords.setSectionHeader("Words Searched");
-        searchWords.setStatName("Word");
-        searchWords.setResultName("Number of searches");
+        searchWords.setSectionHeader("Поиск слов");
+        searchWords.setStatName("Слово");
+        searchWords.setResultName("Кол-во поисковых запросов");
         searchWords.setFloor(searchFloor);
         
         report.addBlock(searchWords);
@@ -395,11 +395,11 @@ public class ReportGenerator
         if (avgItemViews > 0)
         {
             Statistics avg = new Statistics();
-            avg.setSectionHeader("Averaging Information");
+            avg.setSectionHeader("Усредненная информация");
 
             Stat[] average = new Stat[1];
         
-            average[0] = new Stat("Average views per item", avgItemViews);
+            average[0] = new Stat("Среднее кол-во просмотров на ресурс", avgItemViews);
             avg.add(average);
             report.addBlock(avg);
         }
