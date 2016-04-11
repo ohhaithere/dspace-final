@@ -461,7 +461,7 @@ public class HandleServlet extends DSpaceServlet
 
         Metadatum tit = dcorevalues2[0];
 
-        titleTag = titleTag + tit.value;
+        titleTag = titleTag + " "+ tit.value;
 
         Metadatum[] authors = item.getMetadata("dc", "contributor", "author", Item.ANY);
 
