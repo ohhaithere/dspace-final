@@ -471,9 +471,9 @@ public class ImportMassServlet extends DSpaceServlet {
                                     //      ResultSet rs = null;
                                     statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
                                     int ij = statement.executeUpdate();
-                                    row.setColumn("collection_id", col.getID());
-                                    row.setColumn("item_id", itemItem.getID());
-                                    DatabaseManager.insert(context, row);
+                                   // row.setColumn("collection_id", col.getID());
+                                   // row.setColumn("item_id", itemItem.getID());
+                                   // DatabaseManager.insert(context, row);
 
 
                                     itemItem.inheritCollectionDefaultPolicies(col);
