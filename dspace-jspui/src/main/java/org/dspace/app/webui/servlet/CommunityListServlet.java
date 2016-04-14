@@ -73,6 +73,20 @@ public class CommunityListServlet extends DSpaceServlet
             request.setAttribute("communities", communities);
             request.setAttribute("collections.map", colMap);
             request.setAttribute("subcommunities.map", commMap);
+               request.setAttribute("titleTag", "Список разделов и коллекций репозитория Самарского университета");
+               request.setAttribute("metaTag", "учебные материалы сгау, методические материалы сгау, монографии сгау,\n" +
+                       "\n" +
+                       "авторефераты сгау, диссертации сгау, ученые сгау");
+               request.setAttribute("descrTag", "В репозитории СГАУ (ныне – Самарский университет) ресурсы вынесены в три\n" +
+                       "\n" +
+                       "основных раздела библиотеки – Учебные материалы, Монографии, Авторефераты и диссертации. \n" +
+                       "\n" +
+                       "Первый из них содержит коллекции методических указаний и учебных пособий. Второй – труды \n" +
+                       "\n" +
+                       "ведущих ученых Самарского национального исследовательского университета. Авторефераты и \n" +
+                       "\n" +
+                       "диссертации в третьем разделе вынесены в две отдельные коллекции.");
+
             JSPManager.showJSP(request, response, "/community-list.jsp");
            }
     }
