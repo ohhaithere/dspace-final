@@ -170,7 +170,7 @@
 <main id="content" role="main">
     <div class="container banner">
         <div class="row">
-            <div class="col-md-3"><img class="pull-right" src="<%= request.getContextPath() %>/image/logo.png" alt="DSpace logo" />
+            <div class="col-md-3"><img class="pull-right" src="<%= request.getContextPath() %>/image/logo.svg" alt="DSpace logo" />
             </div>
         </div>
     </div>
