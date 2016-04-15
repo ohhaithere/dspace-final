@@ -41,7 +41,7 @@
              <footer class="navbar navbar-inverse navbar-bottom">
              <div id="designedby" class="container text-muted">
 			<div id="footer_feedback" class="pull-right">                                    
-                                <p class="text-muted">2005-1026 <a href="http://ssau.ru">SSAU</a>&nbsp;-
+                                <p class="text-muted"><a href="http://ssau.ru">Самарский университет</a> © 2016&nbsp;-
                                 <a target="_blank" href="<%= request.getContextPath() %>/feedback"><fmt:message key="jsp.layout.footer-default.feedback"/></a>
                                 <a href="<%= request.getContextPath() %>/htmlmap"></a></p>
                                 </div>

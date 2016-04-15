@@ -656,7 +656,7 @@ public class WorkflowManager
             Item myitem = archive(c, wi);
 
             // now email notification
-            notifyOfArchive(c, myitem, mycollection);
+            //notifyOfArchive(c, myitem, mycollection);
             archived = true;
 
             break;
