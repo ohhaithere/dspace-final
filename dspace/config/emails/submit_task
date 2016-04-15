@@ -6,19 +6,20 @@
 # {3}  Description of task
 # {4}  link to 'my DSpace' page 
 #
-Subject: DSpace: You have a new task
+Subject: DSpace: у Вас новая задача
 
-A new item has been submitted:
+Новый ресурс был размещен:
 
-Title:        {0}
-Collection:   {1}
-Submitted by: {2}
+Заголовок::        {0}
+Коллекция::   {1}
+Размещено: by: {2}
 
 {3}
 
-To claim this task, please visit your "My DSpace"
-page:  {4}
+Ресурс должен быть проверен для его размещения в архиве.
 
-Many thanks!
+Для выполнения задачи посетите страницу «Мой архив ресурсов»:  http://repo.ssau.ru/mydspace
+
+Большое спасибо!
 
 DSpace
