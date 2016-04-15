@@ -58,7 +58,7 @@
       String title = node.getElementsByTagName("m:Title").item(0).getTextContent();
       String item_id = node.getElementsByTagName("m:Id").item(0).getTextContent();%>
  <br>
-  <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+  <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
 
     <%="<b>Автор:</b> " + author + "<br> <b>Наименование:</b>  " + title + "<br>"%>
     <input type="hidden" name="import_item" value="<%=item_id %>" />
