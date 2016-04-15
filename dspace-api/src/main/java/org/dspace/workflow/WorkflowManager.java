@@ -547,7 +547,7 @@ public class WorkflowManager
                 wi.update();
 
                 // email notification
-                notifyGroupOfTask(c, wi, mygroup, epa);
+               // notifyGroupOfTask(c, wi, mygroup, epa);
             }
             else
             {
@@ -588,7 +588,7 @@ public class WorkflowManager
                 createTasks(c, wi, epa);
 
                 // email notification
-                notifyGroupOfTask(c, wi, mygroup, epa);
+                //notifyGroupOfTask(c, wi, mygroup, epa);
             }
             else
             {
@@ -625,7 +625,7 @@ public class WorkflowManager
                 createTasks(c, wi, epa);
 
                 // email notification
-                notifyGroupOfTask(c, wi, mygroup, epa);
+                //notifyGroupOfTask(c, wi, mygroup, epa);
             }
             else
             {
