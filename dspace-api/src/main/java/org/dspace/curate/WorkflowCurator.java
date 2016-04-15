@@ -172,7 +172,7 @@ public class WorkflowCurator {
             throws AuthorizeException, IOException, SQLException  {
         EPerson[] epa = resolveContacts(c, task.getContacts(status), wfi);
         if (epa.length > 0) {
-            WorkflowManager.notifyOfCuration(c, wfi, epa, task.name, action, message);
+            //WorkflowManager.notifyOfCuration(c, wfi, epa, task.name, action, message);
         }
     }
     
