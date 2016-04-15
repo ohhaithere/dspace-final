@@ -109,46 +109,24 @@
 
     <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/choice-support.js"> </script>
 
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-76484016-1', 'auto');
-      ga('send', 'pageview');
 
-    </script>
-
-    <!-- Yandex.Metrika counter -->
+    <%--Gooogle Analytics recording.--%>
+    <%
+        if (analyticsKey != null && analyticsKey.length() > 0)
+        {
+    %>
     <script type="text/javascript">
-        (function (d, w, c) {
-            (w[c] = w[c] || []).push(function() {
-                try {
-                    w.yaCounter36802295 = new Ya.Metrika({
-                        id:36802295,
-                        clickmap:true,
-                        trackLinks:true,
-                        accurateTrackBounce:true
-                    });
-                } catch(e) { }
-            });
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '<%= analyticsKey %>']);
+        _gaq.push(['_trackPageview']);
 
-            var n = d.getElementsByTagName("script")[0],
-                s = d.createElement("script"),
-                f = function () { n.parentNode.insertBefore(s, n); };
-            s.type = "text/javascript";
-            s.async = true;
-            s.src = "https://mc.yandex.ru/metrika/watch.js";
-
-            if (w.opera == "[object Opera]") {
-                d.addEventListener("DOMContentLoaded", f, false);
-            } else { f(); }
-        })(document, window, "yandex_metrika_callbacks");
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
     </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/36802295" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
-
     <%
         }
         if (extraHeadDataLast != null)
