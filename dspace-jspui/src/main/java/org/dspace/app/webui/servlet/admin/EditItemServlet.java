@@ -853,7 +853,7 @@ public class EditItemServlet extends DSpaceServlet
         {
             if (itIs == false) {
                 try {
-                    ItemExport.exportItemToFolder(context, item, "/home/dspace/export", 0, false);
+                    ItemExport.exportItemToFolder(context, item, "/home/dspace/1C", 0, false);
                 } catch (Exception e) {
                     log.info("OHFUCK: " + e.toString());
                 }

@@ -28,7 +28,7 @@ public class SoapHelper {
         URL url = null;
 
         try {
-            url = new URL("http://doc.ssau.ru/ssau_biblioteka_test/ws/BiblRecords.1cws");
+            url = new URL("http://doc.ssau.ru/ssau_biblioteka/ws/BiblRecords.1cws");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -151,7 +151,7 @@ public class SoapHelper {
 
 
         try {
-            url = new URL("http://doc.ssau.ru/ssau_biblioteka_test/ws/BiblRecords.1cws");
+            url = new URL("http://doc.ssau.ru/ssau_biblioteka/ws/BiblRecords.1cws");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -258,7 +258,7 @@ public class SoapHelper {
         HttpURLConnection connection = null;
         URL url = null;
         try {
-            url = new URL("http://doc.ssau.ru/ssau_biblioteka_test/ws/DspaceIntegration.1cws");
+            url = new URL("http://doc.ssau.ru/ssau_biblioteka/ws/DspaceIntegration.1cws");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -368,7 +368,7 @@ public class SoapHelper {
         HttpURLConnection connection = null;
         URL url = null;
         try {
-            url = new URL("http://doc.ssau.ru/ssau_biblioteka_test/ws/DspaceIntegration.1cws");
+            url = new URL("http://doc.ssau.ru/ssau_biblioteka/ws/DspaceIntegration.1cws");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
