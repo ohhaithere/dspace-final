@@ -55,7 +55,7 @@
         createOrEdit = "Изменить";
       }
       %>
-  <form action="/jspui/fold" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+  <form action="/fold" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
   <span class="col-md-5">
     <input class="form-control" id="author_name" type="text" name="system_name" placeholder="Наименование" size="23" value="<%=systemName%>"/>
   </span>
@@ -67,7 +67,7 @@
     <br>
     <br>
     <input class="btn btn-primary pull-left col-md-3" id="metadata_import_name_wtf" type="submit" name="submit" value="<%=createOrEdit%>">
-  </form> <a href="/jspui/fold/"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Назад"></a>
+  </form> <a href="/fold/"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Назад"></a>
 
 
 </dspace:layout>

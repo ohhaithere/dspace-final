@@ -48,7 +48,7 @@
 
     <% } %>
     </table>
-<a href="/jspui/systems?action=add"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Добавить"></a>
+<a href="/systems?action=add"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Добавить"></a>
 
 
 </dspace:layout>
