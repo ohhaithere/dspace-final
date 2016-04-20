@@ -937,9 +937,15 @@ public class ItemExport
     {
 
 
+        log.info("OK, TIMETOWRITE " + files);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
         String zeroes = "";
+        if(files == 0)
+            files = 1;
+
+        if(files == null)
+            files = 1;
         Integer digits =  (int) Math.log10(files) + 1;
 
         for(int j = digits; j <= 6; j++){
@@ -951,6 +957,7 @@ public class ItemExport
 
         String filename;
         String filename2 = "";
+
         if (schema.equals(MetadataSchema.DC_SCHEMA))
         {
             filename = "dublin_core.xml";
