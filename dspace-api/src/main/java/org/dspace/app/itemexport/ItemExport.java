@@ -952,6 +952,7 @@ public class ItemExport
             zeroes = zeroes + "0";
         }
         files = files + 1;
+        log.info("OK, TIMETOWRITE 2" + files);
         zeroes = zeroes + files.toString();
 
 
