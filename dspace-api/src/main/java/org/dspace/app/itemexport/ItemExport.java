@@ -954,7 +954,7 @@ public class ItemExport
         if(files == 1)
             files+= 2;
         else
-            files = files + 1;
+            files = files + 2;
         log.info("OK, TIMETOWRITE 2" + files);
         zeroes = zeroes + files.toString();
 
