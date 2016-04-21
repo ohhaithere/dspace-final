@@ -205,8 +205,9 @@ public class XOAI {
 
     private int index(TableRowIterator iterator)
             throws DSpaceSolrIndexerException {
+        int i = 0;
         try {
-            int i = 0;
+
             SolrServer server = solrServerResolver.getServer();
             while (iterator.hasNext()) {
                 try {
@@ -230,11 +231,14 @@ public class XOAI {
             server.commit();
             return i;
         } catch (SQLException ex) {
-            throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+           // throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+            return i;
         } catch (SolrServerException ex) {
-            throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+         //   throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+            return i;
         } catch (IOException ex) {
-            throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+         //   throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+            return i;
         }
     }
 
