@@ -529,7 +529,7 @@ public class HandleServlet extends DSpaceServlet
         }
 
 
-        PreparedStatement statement = null;
+     /*   PreparedStatement statement = null;
         //      ResultSet rs = null;
         statement = context.getDBConnection().prepareStatement("INSERT INTO statistic (event, date_updated, parent_id) VALUES (?,?,?)");
         statement.setString(1, "show_item");
@@ -537,7 +537,7 @@ public class HandleServlet extends DSpaceServlet
         statement.setInt(3, item.getID());
         int i = statement.executeUpdate();
         context.getDBConnection().commit();
-        statement.close();
+        statement.close();*/
 
         // Set attributes and display
         request.setAttribute("suggest.enable", Boolean.valueOf(suggestEnable));
@@ -703,7 +703,7 @@ public class HandleServlet extends DSpaceServlet
                 test = "";
             }
 
-            StatisticsWriter statisticsWriter = new StatisticsWriter();
+            //StatisticsWriter statisticsWriter = new StatisticsWriter();
           //  statisticsWriter.writeStatistics(context, "show_community", null);
 
             request.setAttribute("titleTag", titleTag);
