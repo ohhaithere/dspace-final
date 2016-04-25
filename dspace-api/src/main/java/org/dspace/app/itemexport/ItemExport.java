@@ -808,7 +808,7 @@ public class ItemExport
 
                 if (qualifier == null)
                 {
-                    qualifier = "none";
+                    qualifier = "identifier";
                 }
                 utf8 = ("<Identifier><Qualifier>"+qualifier+"</Qualifier><Value>"+dcv.value+"</Value></Identifier>\n")
                         .getBytes("UTF-8");
@@ -1216,7 +1216,7 @@ public class ItemExport
 
                     if (qualifier == null)
                     {
-                        qualifier = "none";
+                        qualifier = "identifier";
                     }
                     utf8 = ("<Identifier><Qualifier>"+qualifier+"</Qualifier><Value>"+dcv.value+"</Value></Identifier>\n")
                             .getBytes("UTF-8");
