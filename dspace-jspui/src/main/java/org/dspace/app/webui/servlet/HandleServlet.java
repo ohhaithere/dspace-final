@@ -704,7 +704,7 @@ public class HandleServlet extends DSpaceServlet
             }
 
             StatisticsWriter statisticsWriter = new StatisticsWriter();
-            statisticsWriter.writeStatistics(context, "show_community", null);
+          //  statisticsWriter.writeStatistics(context, "show_community", null);
 
             request.setAttribute("titleTag", titleTag);
             request.setAttribute("descrTag", descrTag);
@@ -919,7 +919,7 @@ public class HandleServlet extends DSpaceServlet
             }
 
             StatisticsWriter statisticsWriter = new StatisticsWriter();
-            statisticsWriter.writeStatistics(context, "show_collection", null);
+           // statisticsWriter.writeStatistics(context, "show_collection", null);
 
             request.setAttribute("collection", collection);
             request.setAttribute("community", community);
