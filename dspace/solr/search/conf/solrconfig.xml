@@ -1295,6 +1295,30 @@
     </arr>
   </requestHandler>
 
+<queryResponseWriter name="velocity" class="solr.VelocityResponseWriter"/>
+ 
+<requestHandler name="/browse" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="v.template">browse</str>
+      <str name="v.contentType">text/html;charset=UTF-8</str>
+      <str name="title">Solritas</str>
+      <str name="wt">velocity</str>
+      <str name="defType">dismax</str>
+      <str name="q.alt">*:*</str>
+      <str name="rows">10</str>
+      <str name="fl">*,score</str>
+      <str name="facet">on</str>
+      <str name="facet.field">title</str>
+      <str name="facet.mincount">1</str>
+      <str name="qf">
+         text^0.5 title^1.5
+      </str>
+    </lst>
+    <!--<lst name="invariants">-->
+      <!--<str name="v.base_dir">/solr/contrib/velocity/src/main/templates</str>-->
+    <!--</lst>-->
+ </requestHandler>
+
   <searchComponent name="tvComponent" class="org.apache.solr.handler.component.TermVectorComponent"/>
   <!-- A Req Handler for working with the tvComponent.  This is purely as an example.
   You will likely want to add the component to your already specified request handlers. -->

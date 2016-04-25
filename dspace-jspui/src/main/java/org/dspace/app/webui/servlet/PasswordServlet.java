@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.core.Config;
 
 import org.apache.log4j.Logger;
+import org.dspace.app.util.StatisticsWriter;
 import org.dspace.app.webui.util.Authenticate;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authenticate.AuthenticationManager;
@@ -80,6 +81,9 @@ public class PasswordServlet extends DSpaceServlet
 
             // Logged in OK.
             Authenticate.loggedIn(context, request, context.getCurrentUser());
+
+            StatisticsWriter statisticsWriter = new StatisticsWriter();
+            statisticsWriter.writeStatistics(context, "user_login", null);
 
             // Set the Locale according to user preferences
             Locale epersonLocale = I18nUtil.getEPersonLocale(context.getCurrentUser());

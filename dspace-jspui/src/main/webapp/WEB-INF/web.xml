@@ -199,6 +199,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>reports</servlet-name>
+        <servlet-class>org.dspace.app.webui.servlet.StatisticsNewServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>folders</servlet-name>
         <servlet-class>org.dspace.app.webui.servlet.FoldersServlet</servlet-class>
     </servlet>
@@ -535,6 +540,11 @@
     <servlet-mapping>
         <servlet-name>systems</servlet-name>
         <url-pattern>/systems/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>reports</servlet-name>
+        <url-pattern>/reports/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
