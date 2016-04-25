@@ -952,9 +952,9 @@ public class ItemExport
             zeroes = zeroes + "0";
         }
         if(files == 1)
-            files+= 2;
+            files = 2;
         else
-            files = files + 2;
+            files = files + 3;
         log.info("OK, TIMETOWRITE 2" + files);
         zeroes = zeroes + files.toString();
 
@@ -1233,7 +1233,7 @@ public class ItemExport
 
                     if (qualifier == null)
                     {
-                        qualifier = "none";
+                        qualifier = "identifier";
                     }
                     utf8 = ("<Relation><Qualifier>"+qualifier+"</Qualifier><Value>"+dcv.value+"</Value></Relation>\n")
                             .getBytes("UTF-8");
