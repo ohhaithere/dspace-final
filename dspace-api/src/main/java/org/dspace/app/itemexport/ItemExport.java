@@ -943,6 +943,8 @@ public class ItemExport
         String zeroes = "";
         if(files == 0)
             files = 1;
+        else
+            files = files + 2;
 
         if(files == null)
             files = 1;
