@@ -205,13 +205,14 @@ public class XOAI {
 
     private int index(TableRowIterator iterator)
             throws DSpaceSolrIndexerException {
-
+        Integer fuck = 0;
         try {
             int i = 0;
             SolrServer server = solrServerResolver.getServer();
             while (iterator.hasNext()) {
                 try {
-                    server.add(this.index(find(context, iterator.next().getIntColumn("item_id"))));
+                    fuck = iterator.next().getIntColumn("item_id");
+                    server.add(this.index(find(context, fuck)));
                     context.clearCache();
                 } catch (SQLException ex) {
                     log.error(ex.getMessage(), ex);
@@ -231,14 +232,19 @@ public class XOAI {
             server.commit();
             return i;
         } catch (SQLException ex) {
+            log.info("OMGWTF: " + fuck.toString());
            throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
-          //  log.info();
+
           //  return i;
         } catch (SolrServerException ex) {
+            log.info("OMGWTF: " + fuck.toString());
             throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+
          //   return i;
         } catch (IOException ex) {
+            log.info("OMGWTF: " + fuck.toString());
            throw new DSpaceSolrIndexerException(ex.getMessage(), ex);
+
          //   return i;
         }
     }
