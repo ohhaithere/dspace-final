@@ -224,6 +224,8 @@ public class XOAI {
                     log.error(e.getMessage(), e);
                 } catch (WritingXmlException e) {
                     log.error(e.getMessage(), e);
+                } catch(Exception e){
+                    log.error(e.getMessage(), e);
                 }
                 i++;
                 if (i % 100 == 0) System.out.println(i + " items imported so far...");
