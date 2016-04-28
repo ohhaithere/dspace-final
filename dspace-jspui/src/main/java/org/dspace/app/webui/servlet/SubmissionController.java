@@ -538,45 +538,12 @@ public class SubmissionController extends DSpaceServlet
                 request.setAttribute("wtf_lang", lang2);
 
 
-                if(stepNumber == 1){
 
-                    XPathFactory xpathFactory = XPathFactory.newInstance();
-
-                    // Create XPath object
-                    XPath xpath = xpathFactory.newXPath();
-
-
-                    //Node nodeValue = nodeTitle.getChildNodes().item(3);
-
-                    XPathExpression expr =
-                            null;
-
-                    WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
-                    Item ti = wi.getItem();
-
-
-                    String item_id = request.getParameter("import_item");
-                    if((iden != null) || (item_id != null)) {
-                    }
-
-                }
 
 
 
                 String step = request.getParameter("step");
-                if(step != null) {
-                    if (step.equals("2")) {
-                        WorkspaceItem wi = (WorkspaceItem) subInfo.getSubmissionItem();
-                        Item ti = wi.getItem();
 
-                            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-                            Date date = new Date();
-
-                            //ti.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + ti.getID());
-
-
-                    }
-                }
 
                 context.commit();
 

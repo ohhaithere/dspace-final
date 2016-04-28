@@ -547,7 +547,7 @@ public class WorkflowManager
                 wi.update();
 
                 // email notification
-               // notifyGroupOfTask(c, wi, mygroup, epa);
+                notifyGroupOfTask(c, wi, mygroup, epa);
             }
             else
             {

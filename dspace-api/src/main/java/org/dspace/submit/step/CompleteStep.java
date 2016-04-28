@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,14 +22,11 @@ import org.apache.log4j.Logger;
 
 import org.dspace.app.itemexport.ItemExport;
 import org.dspace.app.util.SubmissionInfo;
-import org.dspace.content.Collection;
-import org.dspace.content.Item;
-import org.dspace.content.MetadataSchema;
+import org.dspace.content.*;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.handle.HandleManager;
 import org.dspace.submit.AbstractProcessingStep;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.WorkspaceItem;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.workflow.WorkflowManager;
@@ -103,7 +101,11 @@ public class CompleteStep extends AbstractProcessingStep
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
 
-        item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + item.getID());
+        Metadatum[] dcorevalues3 = item.getMetadata("dc", "identifier", null,
+                Item.ANY);
+
+        if(dcorevalues3.length == 0)
+            item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + item.getID());
 
 
         try {
