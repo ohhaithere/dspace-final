@@ -632,6 +632,8 @@ public class ImportServlet extends DSpaceServlet {
                 sh.writeLink(tit.value, HandleManager.getCanonicalForm(ti.getHandle()));
             }
 
+            ti.addMetadata("dc", "identifier", "uri", "ru", HandleManager.getCanonicalForm(ti.getHandle()));
+
 
 
 
