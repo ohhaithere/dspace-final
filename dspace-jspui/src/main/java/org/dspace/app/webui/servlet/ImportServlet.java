@@ -58,37 +58,6 @@ public class ImportServlet extends DSpaceServlet {
         request.setAttribute("community_id", request.getParameter("community_id"));
         request.setAttribute("collection_id", request.getParameter("collection_id"));
 
-        ItemIterator itemIterator = Item.findAll(context);
-
-        log.info("OMGITSTARTS");
-       while(itemIterator.hasNext()){
-      /*       log.info("OMGITGOESON");
-            Item item = itemIterator.next();
-            Metadatum[] has = item.getMetadata("dc", "identifier", "uri", Item.ANY);
-            if(has.length == 0){
-                log.info("OMGITHAS");
-                item.addMetadata("dc", "identifier", "uri", "ru", HandleManager.getCanonicalForm(item.getHandle()));
-                item.update();
-                item.updateMetadata();
-            }*/
-
-            Item item = itemIterator.next();
-            Metadatum[] has = item.getMetadata("dc", "identifier", "uri", Item.ANY);
-            try{
-                if(has[0].value.contains("dspace")){
-                    item.clearMetadata("dc", "identifier", "uri", Item.ANY);
-                    log.info("OMGITHAS");
-                    item.addMetadata("dc", "identifier", "uri", "ru", HandleManager.getCanonicalForm(item.getHandle()));
-                    item.update();
-                    item.updateMetadata();
-                }
-            }catch(Exception e){
-
-            }
-        }
-
-
-        context.commit();
 
 
         response.setCharacterEncoding("UTF-8");
