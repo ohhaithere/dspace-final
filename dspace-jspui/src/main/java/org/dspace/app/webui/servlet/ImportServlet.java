@@ -61,8 +61,8 @@ public class ImportServlet extends DSpaceServlet {
         ItemIterator itemIterator = Item.findAll(context);
 
         log.info("OMGITSTARTS");
-        while(itemIterator.hasNext()){
-            log.info("OMGITGOESON");
+       while(itemIterator.hasNext()){
+      /*       log.info("OMGITGOESON");
             Item item = itemIterator.next();
             Metadatum[] has = item.getMetadata("dc", "identifier", "uri", Item.ANY);
             if(has.length == 0){
@@ -70,9 +70,9 @@ public class ImportServlet extends DSpaceServlet {
                 item.addMetadata("dc", "identifier", "uri", "ru", HandleManager.getCanonicalForm(item.getHandle()));
                 item.update();
                 item.updateMetadata();
-            }
+            }*/
 
-           /* Item item = itemIterator.next();
+            Item item = itemIterator.next();
             Metadatum[] has = item.getMetadata("dc", "identifier", "uri", Item.ANY);
             try{
                 if(has[0].value.contains("dspace")){
@@ -84,7 +84,7 @@ public class ImportServlet extends DSpaceServlet {
                 }
             }catch(Exception e){
 
-            } */
+            }
         }
 
 
