@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import org.dspace.app.itemexport.ItemExport;
+import org.dspace.app.util.StatisticsWriter;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.content.*;
 import org.dspace.core.ConfigurationManager;
@@ -86,6 +87,9 @@ public class CompleteStep extends AbstractProcessingStep
         log.info(LogManager.getHeader(context, "submission_complete",
                 "Completed submission with id="
                         + subInfo.getSubmissionItem().getID()));
+
+        StatisticsWriter sw = new StatisticsWriter();
+        sw.writeStatistics(context, "item_added", null);
 
         String itemId = request.getParameter("workspace_item_id");
 

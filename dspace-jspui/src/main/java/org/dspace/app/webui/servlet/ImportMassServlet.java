@@ -12,6 +12,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
+import org.dspace.app.util.StatisticsWriter;
 import org.dspace.app.webui.servlet.admin.EditCommunitiesServlet;
 import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
@@ -479,6 +480,9 @@ public class ImportMassServlet extends DSpaceServlet {
                                     itemItem.inheritCollectionDefaultPolicies(col);
 
                                     itemItem.setArchived(true);
+
+                                    StatisticsWriter sw = new StatisticsWriter();
+                                    sw.writeStatistics(context, "item_added", null);
                                 } else{
                                     links.add(HandleManager.getCanonicalForm(itemItem.getHandle()));
                                 }

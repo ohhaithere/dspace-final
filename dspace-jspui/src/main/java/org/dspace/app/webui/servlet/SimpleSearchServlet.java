@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.dspace.app.util.StatisticsWriter;
 import org.dspace.app.webui.discovery.DiscoverySearchRequestProcessor;
 import org.dspace.app.webui.search.LuceneSearchRequestProcessor;
 import org.dspace.app.webui.search.SearchProcessorException;
@@ -61,6 +62,9 @@ public class SimpleSearchServlet extends DSpaceServlet
         try
         {
             internalLogic.doSimpleSearch(context, request, response);
+            StatisticsWriter sh = new StatisticsWriter();
+            sh.writeStatistics(context, "search_done", null);
+
         }
         catch (SearchProcessorException e)
         {

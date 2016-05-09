@@ -5,6 +5,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
+import org.dspace.app.util.StatisticsWriter;
 import org.dspace.app.webui.util.SoapHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
@@ -752,6 +753,9 @@ public class ImportServlet extends DSpaceServlet {
             ti.inheritCollectionDefaultPolicies(col);
 
             ti.setArchived(true);
+
+            StatisticsWriter sw = new StatisticsWriter();
+            sw.writeStatistics(context, "item_added", null);
         }
 
 

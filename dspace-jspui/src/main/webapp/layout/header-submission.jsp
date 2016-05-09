@@ -86,7 +86,9 @@
 	<script type='text/javascript' src='<%= request.getContextPath() %>/static/js/holder.js'></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/utils.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/choice-support.js"> </script>
+    <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/jquery.mask.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/handlers.js"></script>
+
 
     <%--Gooogle Analytics recording.--%>
     <%

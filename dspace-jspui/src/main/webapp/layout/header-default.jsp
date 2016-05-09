@@ -107,7 +107,9 @@
     <script type='text/javascript' src='<%= request.getContextPath() %>/static/js/spin.js'></script>
     <script type='text/javascript' src='<%= request.getContextPath() %>/static/js/holder.js'></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/utils.js"></script>
+    <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/jquery.mask.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/handlers.js"></script>
+
 
     <script type="text/javascript" src="<%= request.getContextPath() %>/static/js/choice-support.js"> </script>
 

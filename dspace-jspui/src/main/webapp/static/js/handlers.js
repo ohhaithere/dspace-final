@@ -1,5 +1,23 @@
 $( document ).ready(function() {
 
+    $("#dateMask1").datepicker({dateFormat: 'yy-mm-dd'});
+    $("#dateMask2").datepicker({dateFormat: 'yy-mm-dd'});
+
+    $("#send_dates").click(function( event ) {
+
+            	var value1 = $("#dateMask1").val();
+            	var value2 = $("#dateMask2").val();
+                        if((value1.length == 0)||(value2.length == 0)){
+                            alert('Не все даты заполнены!');
+            		        return false;
+                        }
+			if(value2 < value1){
+				alert("Дата с больше даты по");
+				return false;
+			}
+
+                    });
+
     $("#metadata_check_all").click(function( event ) {
         var arr = [];
         $('.exportThisItem').each(function(i, obj) {

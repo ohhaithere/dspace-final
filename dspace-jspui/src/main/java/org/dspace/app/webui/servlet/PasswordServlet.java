@@ -83,7 +83,7 @@ public class PasswordServlet extends DSpaceServlet
             Authenticate.loggedIn(context, request, context.getCurrentUser());
 
             StatisticsWriter statisticsWriter = new StatisticsWriter();
-         //   statisticsWriter.writeStatistics(context, "user_login", null);
+            statisticsWriter.writeStatistics(context, "user_login", null);
 
             // Set the Locale according to user preferences
             Locale epersonLocale = I18nUtil.getEPersonLocale(context.getCurrentUser());
