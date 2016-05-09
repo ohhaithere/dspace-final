@@ -12,7 +12,7 @@ $( document ).ready(function() {
             		        return false;
                         }
 			if(value2 < value1){
-				alert("Дата с больше даты по");
+				alert("Дата 'C' больше даты 'По'");
 				return false;
 			}
 

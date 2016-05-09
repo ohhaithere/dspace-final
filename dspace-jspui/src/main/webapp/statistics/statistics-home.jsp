@@ -66,7 +66,7 @@ if(error != null){
 <%
 } else {
 %>
-<div align="center">За все время</div>
+<div align="center">Отчет за все время</div>
     <br>
     <br>
 <% } %>
@@ -87,11 +87,16 @@ if(error != null){
 <tr class="reportOddRow">		<td>			Разделов просмотрено		</td>		<td class="rightAlign">			<%= comVisits %>		</td>	</tr>
 <tr class="reportEvenRow">		<td>			Количество аутентификаций пользователей		</td>		<td class="rightAlign">			<%= userLogins %>		</td>	</tr>
 <tr class="reportOddRow">		<td>			Ресурсов всего		</td>		<td class="rightAlign">			<%= itemsOverall %>		</td>	</tr>
-<tr class="reportEvenRow">		<td>			Ресурсов просмотрено		</td>		<td class="rightAlign">			<%= itemVisits %>		</td>	</tr>
 <tr class="reportOddRow">		<td>			Ресурсов загружено		</td>		<td class="rightAlign">			<%= itemsUploaded %>		</td>	</tr>
 <tr class="reportEvenRow">		<td>			Выполнено поисков		</td>		<td class="rightAlign">			<%= searchesDone %>		</td>	</tr>
 </table>
 
+<br>
+<br>
+Информация об архиве на текущий момент <br>
+<table align="center" class="reportBlock" cellpadding="5">
+<tr class="reportEvenRow">		<td>			Ресурсов просмотрено		</td>		<td class="rightAlign">			<%= itemVisits %>		</td>	</tr>
+</table>
 
 
 
