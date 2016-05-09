@@ -205,6 +205,7 @@ public class StatisticsNewServlet extends DSpaceServlet{
             request.setAttribute("userLoginsRow", userLogins.toList().size());
             request.setAttribute("searchesDone", searchesDone.toList().size());
             request.setAttribute("itemsUploaded", itemsUploaded.toList().size());
+            request.setAttribute("itemsOverall", itemsOverall.toList().size());
             request.setAttribute("error", "Даты были введены неверно");
 
             request.getRequestDispatcher("/statistics/statistics-home.jsp").forward(request, response);
