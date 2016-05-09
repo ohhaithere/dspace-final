@@ -56,7 +56,7 @@ public class StatisticsNewServlet extends DSpaceServlet{
             TableRowIterator userLogins = DatabaseManager.queryTable(context, "statistic", "SELECT * FROM statistic WHERE event='user_login'");
             // TableRow userLoginsRow  = userLogins.next();
 
-            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item");
+            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true AND owning_collection IS NOT NULL");
 
 
             request.setAttribute("itemVisits", itemVisits.toList().size());
@@ -92,7 +92,7 @@ public class StatisticsNewServlet extends DSpaceServlet{
                 TableRowIterator userLogins = DatabaseManager.queryTable(context, "statistic", "SELECT * FROM statistic WHERE event='user_login' AND date_updated >= '" + dateStart + "' AND date_updated <= '" + dateEnd + "'");
                 // TableRow userLoginsRow  = userLogins.next();
 
-                TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true");
+                TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true AND owning_collection IS NOT NULL");
 
                 String dates = "<b>Отчет с " + dateStart + " по " + dateEnd + "</b>";
 
@@ -160,7 +160,7 @@ public class StatisticsNewServlet extends DSpaceServlet{
             TableRowIterator userLogins = DatabaseManager.queryTable(context, "statistic", "SELECT * FROM statistic WHERE event='user_login' AND date_updated >= '" + dateStart + "' AND date_updated <= '" + dateEnd + "'");
             // TableRow userLoginsRow  = userLogins.next();
 
-            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true");
+            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true AND owning_collection IS NOT NULL");
 
             String dates = "<b>Отчет с " + dateStart + " по " + dateEnd + "</b>";
 
@@ -196,7 +196,7 @@ public class StatisticsNewServlet extends DSpaceServlet{
             TableRowIterator userLogins = DatabaseManager.queryTable(context, "statistic", "SELECT * FROM statistic WHERE event='user_login'");
             // TableRow userLoginsRow  = userLogins.next();
 
-            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item");
+            TableRowIterator itemsOverall = DatabaseManager.queryTable(context, "item", "SELECT submitter_id FROM item WHERE in_archive=true AND owning_collection IS NOT NULL");
 
 
             request.setAttribute("itemVisits", itemVisits.toList().size());
