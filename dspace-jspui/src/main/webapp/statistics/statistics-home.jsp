@@ -58,6 +58,7 @@ if(error != null){
 <a href="/reports?dateStart=2016-04-01&dateEnd=2016-04-30">Апрель 2016</a> - <a href="/reports?dateStart=2016-05-01&dateEnd=2016-05-31">Май 2016</a><br><br>
 
 <style type="text/css">body { font-family: Arial, Helvetica, sans-serif }.reportTitle { width: 100%; clear: both; text-align: center; font-weight: bold; font-size: 200%;  }.reportSection { width: 100%; clear: both; font-weight: bold; font-size: 160%; margin: 10px; text-align: center; margin-top: 30px; }.reportBlock { border: 1px solid #000000; margin: 10px; }.reportOddRow { background: #dddddd; }.reportEvenRow { background: #bbbbbb; }.reportExplanation { font-style: italic; text-align: center; }.reportDate { font-style: italic; text-align: center; font-size: 120% }.reportFloor { text-align: center; }.rightAlign { text-align: right; }.reportNavigation { text-align: center; }</style><div class="reportTitle"><a name="top">Статистика</a></div><br>
+<div class="reportTitle"><a name="top">Общий обзор</a></div><br>
 <% if(dates != null){
 %>
     <div align="center"><%=dates%></div>
@@ -93,7 +94,7 @@ if(error != null){
 
 <br>
 <br>
-Информация об архиве на текущий момент <br>
+<div class="reportTitle"><a name="top">Информация о архиве</a></div><br>
 <table align="center" class="reportBlock" cellpadding="5">
 <tr class="reportOddRow">		<td>			Ресурсов всего		</td>		<td class="rightAlign">			<%= itemsOverall %>		</td>	</tr>
 </table>
