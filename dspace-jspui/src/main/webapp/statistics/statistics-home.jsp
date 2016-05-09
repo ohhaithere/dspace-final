@@ -66,7 +66,7 @@ if(error != null){
 <%
 } else {
 %>
-<div align="center">Отчет за все время</div>
+<div align="center"><b>Отчет за все время</b></div>
     <br>
     <br>
 <% } %>
