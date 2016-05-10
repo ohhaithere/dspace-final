@@ -291,7 +291,7 @@ public class ReportGenerator
             }
         }
         
-        report.addBlock(overview);
+       // report.addBlock(overview);
         
         // prepare the archive statistics package
         if (archiveStats.size() > 0)
@@ -301,7 +301,7 @@ public class ReportGenerator
             archiveInfo.setStatName("Тип");
             archiveInfo.setResultName("Количество элементов");
         
-            report.addBlock(archiveInfo);
+        //    report.addBlock(archiveInfo);
         }
         
         
