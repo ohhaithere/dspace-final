@@ -100,7 +100,7 @@ if(error != null){
 <tr class="reportOddRow">		<td>			Ресурсов всего		</td>		<td class="rightAlign">			<%= itemsOverall %>		</td>	</tr>
 </table>
 
-<br><a href="<%= request.getContextPath() %>/reports">Другие отчеты</a>
+<br><a href="<%= request.getContextPath() %>/statistics">Другие отчеты</a>
 
 
 </dspace:layout>
