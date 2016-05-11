@@ -925,6 +925,8 @@
             currentQual = "";
             currentVal = "";
          }
+         if(currentVal.contains("DSPACE")
+            continue;
 
          // do the dropdown box
          sb.append("<div class=\"row col-md-12\"><span class=\"input-group col-md-10\"><span class=\"input-group-addon\"><select name=\"")

@@ -278,7 +278,7 @@ public class ReportGenerator
         
         Statistics overview = new Statistics();
         
-        overview.setSectionHeader("Общий обзор");
+        //overview.setSectionHeader("Общий обзор");
         
         Iterator<String> summaryEntries = generalSummary.iterator();
         while (summaryEntries.hasNext())
@@ -297,7 +297,7 @@ public class ReportGenerator
         if (archiveStats.size() > 0)
         {
             Statistics archiveInfo = prepareStats(archiveStats, true, false);
-            archiveInfo.setSectionHeader("Информация о архиве");
+           // archiveInfo.setSectionHeader("Информация о архиве");
             archiveInfo.setStatName("Тип");
             archiveInfo.setResultName("Количество элементов");
         
@@ -395,7 +395,7 @@ public class ReportGenerator
         if (avgItemViews > 0)
         {
             Statistics avg = new Statistics();
-            avg.setSectionHeader("Усредненная информация");
+           // avg.setSectionHeader("Усредненная информация");
 
             Stat[] average = new Stat[1];
         
