@@ -925,7 +925,7 @@
             currentQual = "";
             currentVal = "";
          }
-         if(currentVal.contains("DSPACE")
+         if(currentVal.contains("Dspace"))
             continue;
 
          // do the dropdown box
