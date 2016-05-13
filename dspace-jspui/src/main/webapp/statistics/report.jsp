@@ -51,7 +51,7 @@
     <p>
     <strong><fmt:message key="jsp.statistics.report.info2"/></strong>
 <%
-        for (int i = 0; i < months.length; i++)
+        for (int i = months.length-2; i < months.length; i++)
         {
             if (sdfLink.format(months[i]).equals(date))
             {
