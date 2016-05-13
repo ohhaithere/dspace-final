@@ -138,14 +138,14 @@ public class HTMLReport implements Report
         StringBuffer frag = new StringBuffer();
         
         frag.append("<div class=\"reportNavigation\">");
-        frag.append("<a href=\"#general_overview\">Общий обзор</a>");
-        frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#archive_information\">Информация о архиве</a>");
-        frag.append("&nbsp;|&nbsp;");
+       // frag.append("<a href=\"#general_overview\">Общий обзор</a>");
+       // frag.append("&nbsp;|&nbsp;");
+     //   frag.append("<a href=\"#archive_information\">Информация о архиве</a>");
+     ///   frag.append("&nbsp;|&nbsp;");
         frag.append("<a href=\"#items_viewed\">Ресурсов просмотрено</a>");
         frag.append("&nbsp;|&nbsp;");
-        frag.append("<a href=\"#words_searched\">Поиск слов</a>");
-        frag.append("&nbsp;|&nbsp;");
+     //   frag.append("<a href=\"#words_searched\">Поиск слов</a>");
+     //   frag.append("&nbsp;|&nbsp;");
         frag.append("</div>");
         
         return frag.toString();
