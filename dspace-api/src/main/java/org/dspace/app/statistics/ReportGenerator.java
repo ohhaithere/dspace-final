@@ -380,11 +380,11 @@ public class ReportGenerator
         }
 
         // prepare the search word statistics package
-        Statistics searchWords = prepareStats(searchAggregator, true, false);
+     /*   Statistics searchWords = prepareStats(searchAggregator, true, false);
         searchWords.setSectionHeader("Поиск слов");
         searchWords.setStatName("Слово");
         searchWords.setResultName("Кол-во поисковых запросов");
-        searchWords.setFloor(searchFloor);
+        searchWords.setFloor(searchFloor);*/
         
         //report.addBlock(searchWords);
         
@@ -401,7 +401,7 @@ public class ReportGenerator
         
             average[0] = new Stat("Среднее кол-во просмотров на ресурс", avgItemViews);
             avg.add(average);
-            //report.addBlock(avg);
+           // report.addBlock(avg);
         }
       
         

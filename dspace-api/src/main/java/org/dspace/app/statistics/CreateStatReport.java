@@ -69,9 +69,9 @@ public class CreateStatReport {
         FileInputStream fis = new java.io.FileInputStream(new File(configFile));
         Properties config = new Properties();
         config.load(fis);
-        int startMonth = 0;
-        int startYear = 2005;
-        try
+        int startMonth = 4;
+        int startYear = 2016;
+    /*    try
         {
             startYear = Integer.parseInt(config.getProperty("start.year", "1").trim());
         } catch (NumberFormatException nfe)
@@ -86,7 +86,7 @@ public class CreateStatReport {
         {
             System.err.println("start.month is incorrectly set in dstat.cfg. Must be a number between 1 and 12.");
             System.exit(0);
-        }
+        }*/
         reportStartDate = new GregorianCalendar(startYear, startMonth - 1, 1);
         calendar = new GregorianCalendar();
         
