@@ -144,6 +144,24 @@ public class HandleServlet extends DSpaceServlet
             return;
         }
 
+        if("/reports".equals(extraPathInfo))
+        {
+            // Check configuration properties, auth, etc.
+            // Inject handle attribute
+            log.info(LogManager.getHeader(context, "display_statistics", "handle=" + handle + ", path=" + extraPathInfo));
+            request.setAttribute("handle", handle);
+
+            // Forward to DisplayStatisticsServlet without changing path.
+            RequestDispatcher dispatch = getServletContext().getNamedDispatcher("reports");
+            dispatch.forward(request, response);
+
+            // If we don't return here, we keep processing and end up
+            // throwing a NPE when checking community authorization
+            // and firing a usage event for the DSO we're reporting for
+            return;
+
+        }
+
         if("/statistics".equals(extraPathInfo))
         {
             // Check configuration properties, auth, etc.

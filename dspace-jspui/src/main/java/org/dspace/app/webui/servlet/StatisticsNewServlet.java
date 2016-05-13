@@ -3,10 +3,12 @@ package org.dspace.app.webui.servlet;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,12 +30,20 @@ public class StatisticsNewServlet extends DSpaceServlet{
                            HttpServletResponse response) throws ServletException, IOException,
             SQLException, AuthorizeException {
 
+        EPerson person = context.getCurrentUser();
+        if(person == null){
+            RequestDispatcher dispatch = getServletContext().getNamedDispatcher("password-login");
+            dispatch.forward(request, response);
+        }
+
         String dateStart = null;
         String dateEnd = null;
 
         dateStart = request.getParameter("dateStart");
         dateEnd = request.getParameter("dateEnd");
         if(dateStart == null) {
+
+
 
             response.setCharacterEncoding("UTF-8");
             request.setCharacterEncoding("UTF-8");

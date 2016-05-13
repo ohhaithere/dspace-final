@@ -386,7 +386,7 @@ public class ReportGenerator
         searchWords.setResultName("Кол-во поисковых запросов");
         searchWords.setFloor(searchFloor);
         
-        report.addBlock(searchWords);
+        //report.addBlock(searchWords);
         
         // FIXME: because this isn't an aggregator it can't be passed to
         // prepareStats; should we overload this method for use with this kind
@@ -401,7 +401,7 @@ public class ReportGenerator
         
             average[0] = new Stat("Среднее кол-во просмотров на ресурс", avgItemViews);
             avg.add(average);
-            report.addBlock(avg);
+            //report.addBlock(avg);
         }
       
         

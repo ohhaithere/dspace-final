@@ -105,10 +105,11 @@ public class CompleteStep extends AbstractProcessingStep
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
 
-        Metadatum[] dcorevalues3 = item.getMetadata("dc", "identifier", null,
-                Item.ANY);
+     //   Metadatum[] dcorevalues3 = item.getMetadata("dc", "identifier", null,
+     //           Item.ANY);
 
-        if(dcorevalues3.length == 0)
+     //   if(dcorevalues3.length == 0)
+
             item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + item.getID());
 
 
