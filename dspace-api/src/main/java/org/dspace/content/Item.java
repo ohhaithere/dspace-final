@@ -1728,7 +1728,7 @@ public class Item extends DSpaceObject
                          
                  if (!alreadyLinked)
                  {
-                         notLinkedCollections[i++] = collection;
+                         notLinkedCollections[i] = collection;
                  }
         }
         
