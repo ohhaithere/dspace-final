@@ -251,7 +251,7 @@
 						</td>
 						<td>
 							<%  for (int i = 0; i < collections.length; i++) { %> <%= collections[i].getMetadata("name") %>
-							<br /> <%  } %>
+							<br /> <% break; } %>
 						</td>
 					</tr>
 					<tr>
