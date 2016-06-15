@@ -710,16 +710,7 @@ public class ImportServlet extends DSpaceServlet {
                 b.update();
             }
 
-            if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
-                try{
-                    XmlWorkflowManager.start(context, wsitem);
-                }catch (Exception e){
-                    log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
-                    throw new ServletException(e);
-                }
-            }else{
-                WorkflowManager.start(context, wsitem);
-            }
+
             ti.update();
 
             iss.close();
@@ -729,7 +720,24 @@ public class ImportServlet extends DSpaceServlet {
             log.error("wtferror", e);
         }
 
-
+        if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
+            try{
+                XmlWorkflowManager.start(context, wsitem);
+            }catch (Exception e){
+                log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+                try {
+                    throw new ServletException(e);
+                } catch (ServletException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }else{
+            try {
+                WorkflowManager.start(context, wsitem);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 
         // Group groups = Group.findByName(context, "Anonymous");
