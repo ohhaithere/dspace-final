@@ -1,1 +1,13 @@
 *.agdai
+
+# windows thumbnail cache
+Thumbs.db
+
+# Mac DS_Store Files
+.DS_Store
+
+# Eclipse Files
+.project
+.buildpath
+.classpath
+.settings
