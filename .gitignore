@@ -11,3 +11,7 @@ Thumbs.db
 .buildpath
 .classpath
 .settings
+
+#Maven builds
+target
+bin
