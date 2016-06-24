@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.dspace.modules</groupId>
    <artifactId>solr</artifactId>
-   <version>5.2</version>
+   <version>5.4</version>
    <packaging>war</packaging>
    <name>DSpace SOLR :: Local Customizations</name>
    <description>
@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.dspace</groupId>
       <artifactId>modules</artifactId>
-      <version>5.2</version>
+      <version>5.4</version>
       <relativePath>..</relativePath>
    </parent>
 
@@ -81,6 +81,14 @@
            <artifactId>dspace-solr</artifactId>
            <classifier>skinny</classifier>
            <type>war</type>
+       </dependency>
+       
+       <dependency>
+           <groupId>jdk.tools</groupId>
+	       <artifactId>jdk.tools</artifactId>
+	       <version>${java.version}</version>
+	       <scope>system</scope>
+	       <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
        </dependency>
 
        <dependency>
