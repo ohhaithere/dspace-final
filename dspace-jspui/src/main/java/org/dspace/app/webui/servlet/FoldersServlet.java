@@ -1,22 +1,19 @@
 package org.dspace.app.webui.servlet;
 
-import org.apache.log4j.Logger;
-import org.dspace.app.webui.util.JSPManager;
-import org.dspace.authorize.AuthorizeException;
-import org.dspace.core.Context;
-import org.dspace.storage.rdbms.DatabaseManager;
-import org.dspace.storage.rdbms.TableRow;
-import org.dspace.storage.rdbms.TableRowIterator;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+
+import org.apache.log4j.Logger;
+import org.dspace.app.webui.util.JSPManager;
+import org.dspace.authorize.AuthorizeException;
+import org.dspace.core.Context;
+import org.dspace.folder.ImportFolder;
+
+import com.google.gson.JsonObject;
 
 /**
  * Created by lalka on 12/23/2015.
@@ -32,49 +29,46 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
-
-
-        PrintWriter out = response.getWriter();
-        //   out.write(tri.next().getStringColumn("name"));
-        //     out.close();
-        String ifAdd = request.getParameter("action");
-        if(ifAdd == null) {
-            TableRowIterator tri = DatabaseManager.queryTable(context, "systems", "SELECT * FROM folders");
-            request.setAttribute("systems", tri);
-            request.getRequestDispatcher("/folders/folder-home.jsp").forward(request, response);
-            request.getRequestDispatcher("/folders/folder-home.jsp").forward(request, response);
-        }
-        if(ifAdd.equals("add")){
-            request.getRequestDispatcher("/folders/folder-add.jsp").forward(request, response);
-        }
-        if(ifAdd.equals("delete")){
-            String id = request.getParameter("id");
-            PreparedStatement statement = null;
-            //      ResultSet rs = null;
-            statement = context.getDBConnection().prepareStatement("DELETE FROM folders WHERE id="+id);
-            int i = statement.executeUpdate();
-            context.getDBConnection().commit();
-            statement.close();
-            TableRowIterator tri = DatabaseManager.queryTable(context, "systems", "SELECT * FROM folders");
-            request.setAttribute("systems", tri);
-            request.getRequestDispatcher("/folders/folder-home.jsp").forward(request, response);
-        }
-        if(ifAdd.equals("edit")){
-            String id = request.getParameter("id");
-            TableRowIterator tri = DatabaseManager.queryTable(context, "folders", "SELECT * FROM folders");
-            while(tri.hasNext()) {
-
-                TableRow row = tri.next();
-                Integer i = row.getIntColumn("id");
-                if(i.toString().equals(id)) {
-                    request.setAttribute("system_name", row.getStringColumn("system_name"));
-                    request.setAttribute("folder_path", row.getStringColumn("folder_path"));
-                    request.setAttribute("id", row.getIntColumn("id"));
-                    break;
-                }
-            }
-
-            request.getRequestDispatcher("/folders/folder-add.jsp").forward(request, response);
+        
+        String action = request.getParameter("action");
+        if (action == null) {
+        	JSPManager.showJSP(request, response, "/folders/folder-home.jsp");
+        } else if (action.equals("list")) {
+        	ImportFolder[] folders = ImportFolder.findAll(context);
+	        JsonObject result = new JsonObject();
+	        for (ImportFolder folder: folders) {
+	        	JsonObject item = new JsonObject();
+	        	item.addProperty("hour", folder.getHour());
+	        	item.addProperty("minute", folder.getMinute());
+	        	item.addProperty("date", folder.getDate());
+	        	item.addProperty("month", folder.getMonth());
+	        	item.addProperty("year", folder.getYear());
+	        	item.addProperty("weekday", folder.getWeekday());
+	        	item.addProperty("path", folder.getPath());
+	        	result.add(Integer.valueOf(folder.getID()).toString(), item);
+	        }
+	        response.setContentType("application/json");
+	        response.getWriter().write(result.toString());
+        } else if (action.equals("delete")) {
+        	boolean success = false;
+        	try {
+        		Integer id = Integer.valueOf(request.getParameter("id"));
+        		ImportFolder folder = ImportFolder.find(context, id);
+        		if (folder != null) {
+        			folder.delete();
+        			context.complete();
+        			success = true;
+        		} else {
+        			throw new Exception("Folder not exist");
+        		}
+        	} catch (Exception e) {
+        		log.error("Unable to delete folder", e);
+        	}
+        	
+        	JsonObject json = new JsonObject();
+    		json.addProperty("success", success);
+    		response.setContentType("application/json");
+	        response.getWriter().write(json.toString());
         }
     }
 
@@ -84,75 +78,67 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
-
-        String ee = "";
- /*     try {
-          DatabaseManager.queryTable(context, "systems", "INSERT INTO public.systems (name, path) VALUES ('" + request.getParameter("system_name") + "','" + request.getParameter("system_path") + "')");
-      } catch(Exception e){
-          ee = e.getMessage();
-          response.getWriter().write(ee);
-      }
-
+        
+        boolean success = false;
         try {
-            DatabaseManager.query(context, "INSERT INTO public.systems (name, path) VALUES ('" + request.getParameter("system_name") + "','" + request.getParameter("system_path") + "')");
-            final ArrayList<String> epersonColumns = new ArrayList<String>();
-            epersonColumns.add("name");
-            epersonColumns.add("path");
-            epersonColumns.add("id");
+        	String id = request.getParameter("id");
+        	ImportFolder folder;
+        	if (id == null || id.isEmpty()) {
+        		folder = ImportFolder.create(context);
+        	} else {
+        		folder = ImportFolder.find(context, Integer.valueOf(id));
+        		if (folder == null)
+        			throw new Exception("Folder not found");
+        	}
+        	String hour = request.getParameter("hour");
+        	String minute = request.getParameter("minute");
+        	String date = request.getParameter("date");
+        	String month = request.getParameter("month");
+        	String year = request.getParameter("year");
+        	String weekday = request.getParameter("day");
+        	String path = request.getParameter("path");
 
-
-
-            TableRow system = new TableRow("systems", epersonColumns);
-            system.setColumn("name", request.getParameter("system_name"));
-            system.setColumn("path", request.getParameter("system_path"));
-
-
-            DatabaseManager.insert(context, system);
-        }catch(Exception e){
-            ee = e.getMessage();
-            response.getWriter().write(ee);
-        }*/
-        try {
-            if (request.getParameter("submit").equals("Создать")) {
-                PreparedStatement statement = null;
-                //      ResultSet rs = null;
-                statement = context.getDBConnection().prepareStatement("INSERT INTO folders (system_name, folder_path) VALUES (?,?)");
-                statement.setString(1, request.getParameter("system_name"));
-                statement.setString(2, request.getParameter("system_path"));
-                int i = statement.executeUpdate();
-                context.getDBConnection().commit();
-                statement.close();
-            } else {
-                PreparedStatement statement = null;
-                //      ResultSet rs = null;
-                Integer di = Integer.parseInt(request.getParameter("id"));
-                statement = context.getDBConnection().prepareStatement("UPDATE folders SET system_name=?, folder_path=? WHERE id=?");
-                statement.setString(1, request.getParameter("system_name"));
-                statement.setString(2, request.getParameter("system_path"));
-                statement.setInt(3, di);
-                int i = statement.executeUpdate();
-                context.getDBConnection().commit();
-                statement.close();
-
-            }
-        } catch(Exception e){
-            response.getWriter().write(e.getMessage());
+        	if (hour != null && !hour.isEmpty()) {
+        		folder.setHour(Integer.valueOf(hour));
+        	} else {
+        		folder.setHour(null);
+        	}
+        	if (minute != null && !minute.isEmpty()) {
+        		folder.setMinute(Integer.valueOf(minute));
+        	} else {
+        		folder.setMinute(null);
+        	}
+        	if (date != null && !date.isEmpty()) {
+        		folder.setDate(Integer.valueOf(date));
+        	} else {
+        		folder.setDate(null);
+        	}
+        	if (month != null && !month.isEmpty()) {
+        		folder.setMonth(Integer.valueOf(month));
+        	} else {
+        		folder.setMonth(null);
+        	}
+        	if (year != null && !year.isEmpty()) {
+        		folder.setYear(Integer.valueOf(year));
+        	} else {
+        		folder.setYear(null);
+        	}
+        	if (weekday != null && !weekday.isEmpty()) {
+        		folder.setWeekday(Integer.valueOf(weekday));
+        	} else {
+        		folder.setWeekday(null);
+        	}
+        	folder.setPath(path);
+        	folder.update();
+        	context.complete();
+        	success = true;
+        } catch (Exception e) {
+        	log.error("Folder save failed", e);
         }
-        //  rs = statement.executeQuery();
-        //rs.close();
-
-
-        // response.getWriter().write(ee);
-
-
-
-        //TableRowIterator tri = DatabaseManager.queryTable(context, "systems", "SELECT * FROM systems");
-        // request.setAttribute("systems", tri);
-        //request.getRequestDispatcher("/system/system-home.jsp").forward(request, response);
-        // response.getWriter().write(ee);
-        TableRowIterator tri = DatabaseManager.queryTable(context, "folders", "SELECT * FROM folders");
-        request.setAttribute("systems", tri);
-
-        request.getRequestDispatcher("/folders/folder-home.jsp").forward(request, response);
+        
+        JsonObject json = new JsonObject();
+        json.addProperty("success", success);
+        response.setContentType("application/json");
+        response.getWriter().write(json.toString());
     }
 }
