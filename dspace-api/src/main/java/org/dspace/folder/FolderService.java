@@ -1,10 +1,25 @@
 package org.dspace.folder;
 
+import java.sql.SQLException;
+
 public interface FolderService {
 	
 	/**
-	 * Reloads schedules
+	 * Init service
+	 * @throws SQLException
 	 */
-	public void reloadSchedules();
+	public void init() throws SQLException;
+	
+	/**
+	 * Reloads schedules
+	 * @throws SQLException 
+	 */
+	public void reloadSchedules() throws SQLException;
+	
+	/**
+	 * Starts task execution
+	 * @param id ID
+	 */
+	public void execute(int id);
 	
 }

@@ -3,6 +3,7 @@ package org.dspace.app.webui.servlet;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,10 @@ import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
+import org.dspace.folder.FolderService;
 import org.dspace.folder.ImportFolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.JsonObject;
 
@@ -19,10 +23,19 @@ import com.google.gson.JsonObject;
  * Created by lalka on 12/23/2015.
  */
 public class FoldersServlet extends DSpaceServlet{
-
+	
+	@Autowired(required = true)
+	private FolderService folderService;
+	
     /** Logger */
     private static Logger log = Logger.getLogger(EditProfileServlet.class);
-
+    
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+    	super.init(config);
+    	SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
+    
     protected void doDSGet(Context context, HttpServletRequest request,
                            HttpServletResponse response) throws ServletException, IOException,
             SQLException, AuthorizeException{
@@ -58,6 +71,26 @@ public class FoldersServlet extends DSpaceServlet{
         			folder.delete();
         			context.complete();
         			success = true;
+        			folderService.reloadSchedules();
+        		} else {
+        			throw new Exception("Folder not exist");
+        		}
+        	} catch (Exception e) {
+        		log.error("Unable to delete folder", e);
+        	}
+        	
+        	JsonObject json = new JsonObject();
+    		json.addProperty("success", success);
+    		response.setContentType("application/json");
+	        response.getWriter().write(json.toString());
+        } else if (action.equals("run")) {
+        	boolean success = false;
+        	try {
+        		Integer id = Integer.valueOf(request.getParameter("id"));
+        		ImportFolder folder = ImportFolder.find(context, id);
+        		if (folder != null) {
+        			success = true;
+        			folderService.execute(id);
         		} else {
         			throw new Exception("Folder not exist");
         		}
@@ -132,6 +165,7 @@ public class FoldersServlet extends DSpaceServlet{
         	folder.update();
         	context.complete();
         	success = true;
+        	folderService.reloadSchedules();
         } catch (Exception e) {
         	log.error("Folder save failed", e);
         }

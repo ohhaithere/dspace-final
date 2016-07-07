@@ -6,6 +6,7 @@ $(function() {
 		resetFolderForm();
 	});
 	$('#deletebtn').click(deleteFolder);
+	$('#runbtn').click(runFolder);
 	$(document).on('click', '#folder_list a', onFolderSelect);
 	loadImportFolders();
 });
@@ -14,7 +15,8 @@ function loadImportFolders() {
 	$.ajax({
 		url: contextPath + '/fold?action=list',
 		type: 'GET',
-		dataType: 'json'
+		dataType: 'json',
+		cache: false
 	}).done(function(response) {
 		window.folders = response;
 		var container = $('#folder_list');
@@ -102,9 +104,27 @@ function deleteFolder(e) {
 		url: contextPath + '/fold?action=delete',
 		type: 'GET',
 		data: {id: $('#folder_form').find('input[name=id]').val()},
-		dataType: 'json'
+		dataType: 'json',
+		cache: false
 	}).done(function(response) {
 		resetFolderForm(true);
+		loadImportFolders();
+	});
+}
+
+function runFolder(e) {
+	e.preventDefault();
+	if (!window.confirm('Вы действительно хотите запустить импорт?'))
+		return;
+	
+	$.ajax({
+		url: contextPath + '/fold?action=run',
+		type: 'GET',
+		data: {id: $('#folder_form').find('input[name=id]').val()},
+		dataType: 'json',
+		cache: false
+	}).done(function(response) {
+		alert('Импорт запущен');
 		loadImportFolders();
 	});
 }
