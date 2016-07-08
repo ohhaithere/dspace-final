@@ -75,6 +75,7 @@
                <li><a href="<%= request.getContextPath() %>/dspace-admin/batchimport"><fmt:message key="jsp.layout.navbar-admin.batchimport"/></a></li>
                <li><a href="<%= request.getContextPath() %>/systems">Системы для экспорта</a></li>
 			   <li><a href="<%= request.getContextPath() %>/fold">Папки для импорта</a></li>
+			   <li><a href="<%= request.getContextPath() %>/import-log">Журнал импорта ресурсов</a></li>
 			   <li><a href="<%= request.getContextPath() %>/import-mass">Импорт из папки</a></li>
             </ul>
           </li>
