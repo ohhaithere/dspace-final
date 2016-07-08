@@ -138,7 +138,13 @@ public class FolderServiceImpl implements FolderService {
 						f.setValidating(false);
 						DocumentBuilder builder = f.newDocumentBuilder();
 						Document doc = builder.parse(item);
-						parser.createItems(doc, context, Collection.find(context, 1));
+						Collection collection = Collection.find(context, 1);
+						if (collection != null) {
+							logger.info("Collection found", collection);
+						} else {
+							throw new Exception("Collection not found");
+						}
+						parser.createItems(doc, context, collection);
 					} catch (Exception e) {
 						logger.warn("Can't parse XML", e);
 					}
