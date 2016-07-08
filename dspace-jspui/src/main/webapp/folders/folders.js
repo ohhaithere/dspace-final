@@ -7,9 +7,15 @@ $(function() {
 	});
 	$('#deletebtn').click(deleteFolder);
 	$('#runbtn').click(runFolder);
+	$('#folder_form input').keyup(setFormModified);
+	$('#folder_form select').change(setFormModified);
 	$(document).on('click', '#folder_list a', onFolderSelect);
 	loadImportFolders();
 });
+
+function setFormModified() {
+	$('#folder_form').addClass('modified');
+}
 
 function loadImportFolders() {
 	$.ajax({
@@ -32,14 +38,15 @@ function loadImportFolders() {
 }
 
 function resetFolderForm(force) {
+	var form = $('#folder_form');
 	if (force !== true) {
 		var filledFields = getFilledFields();
-		if (filledFields.length > 0) {
+		if (filledFields.length > 0 && form.hasClass('modified')) {
 			if (!window.confirm("У Вас есть несохраненное расписание.\nПерейти к созданию?"))
 				return;
 		}
 	}
-	var form = $('#folder_form');
+	form.removeClass('modified');
 	form.get(0).reset();
 	form.find('input[name=id]').val('');
 	$('#savebtn').text('Создать');
@@ -72,14 +79,15 @@ function getFilledFields() {
 
 function onFolderSelect(e) {
 	e.preventDefault();
+	var form = $('#folder_form');
 	var filledFields = getFilledFields();
-	if (filledFields.length > 0) {
-		if (!window.confirm("У Вас есть несохраненное расписание.\nПерейти к редактирование?"))
+	if (filledFields.length > 0 && form.hasClass('modified')) {
+		if (!window.confirm("У Вас есть несохраненное расписание.\nПерейти к редактированию?"))
 			return;
 	}
+	form.removeClass('modified');
 	$('#folder_list a').removeClass('selected');
 	$(this).addClass('selected');
-	var form = $('#folder_form');
 	var id = $(this).data('id');
 	var folder = window.folders[id];
 	form.find('input[name=id]').val(id);
