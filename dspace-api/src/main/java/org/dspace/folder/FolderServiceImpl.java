@@ -141,12 +141,6 @@ public class FolderServiceImpl implements FolderService {
 						parser.createItems(doc, context, Collection.find(context, 1));
 					} catch (Exception e) {
 						logger.warn("Can't parse XML", e);
-					} finally {
-						try {
-							context.getDBConnection().commit();
-						} catch (Exception e) {
-							logger.warn("Can't import XML", e);
-						}
 					}
 				}
 			}
