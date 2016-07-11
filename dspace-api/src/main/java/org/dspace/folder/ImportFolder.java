@@ -53,6 +53,10 @@ public class ImportFolder extends DSpaceObject {
 
 	@Override
 	public void update() throws SQLException, AuthorizeException {
+		if (!AuthorizeManager.isAdmin(ourContext)) {
+		    throw new AuthorizeException("Вы должны быть администратором чтобы сохранить папку");
+		}
+		
 		DatabaseManager.update(ourContext, myRow);
 		log.info(LogManager.getHeader(ourContext, "update_folder", "folder_id=" + getID()));
 	}
@@ -116,7 +120,7 @@ public class ImportFolder extends DSpaceObject {
 	 */
 	public static ImportFolder create(Context context) throws SQLException, AuthorizeException {
 		if (!AuthorizeManager.isAdmin(context)) {
-		    throw new AuthorizeException("You must be an admin to create a folder");
+		    throw new AuthorizeException("Вы должны быть администратором чтобы создать папку");
 		}
 
 		// Create a table row

@@ -58,14 +58,19 @@ function resetFolderForm(force) {
 function saveImportFolder(e) {
 	e.preventDefault();
 	$('#savebtn').prop('disabled', true);
+	$('#error').empty();
 	$.ajax({
 		url: contextPath + '/fold',
 		type: 'POST',
 		dataType: 'json',
 		data: $('#folder_form').serialize()
 	}).done(function(response) {
-		resetFolderForm(true);
-		loadImportFolders();
+		if (response.success) {
+			resetFolderForm(true);
+			loadImportFolders();
+		} else {
+			$('#error').text(response.error);
+		}
 	}).always(function() {
 		$('#savebtn').prop('disabled', false);
 	});
@@ -132,7 +137,8 @@ function runFolder(e) {
 		dataType: 'json',
 		cache: false
 	}).done(function(response) {
-		alert('Импорт запущен');
+		alert('Импорт завершен');
+		resetFolderForm(true);
 		loadImportFolders();
 	});
 }

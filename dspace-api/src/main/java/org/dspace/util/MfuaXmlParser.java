@@ -1,15 +1,28 @@
 package org.dspace.util;
 
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+
+import org.apache.log4j.Logger;
 import org.dspace.app.util.StatisticsWriter;
-import org.dspace.content.*;
+import org.dspace.content.Collection;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataSchema;
+import org.dspace.content.Metadatum;
+import org.dspace.content.WorkspaceItem;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
 import org.dspace.handle.HandleManager;
+import org.dspace.importlog.ImportErrorLog;
+import org.dspace.importlog.ImportLog;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
@@ -20,19 +33,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.servlet.ServletException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.sql.PreparedStatement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 public  class MfuaXmlParser {
+	
+	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
 
-    public static void createItems(Document doc, Context context, Collection col){
+	public static void createItems(Document doc, Context context, Collection col) {
+		createItems(doc, context, col, null, null);
+	}
+	
+    public static void createItems(Document doc, Context context, Collection col, String importId, File file){
         NodeList records = doc.getElementsByTagName("Records");
         for (int i = 0; i < records.getLength(); i++) {
             Element record = (Element) records.item(i);
@@ -297,12 +306,16 @@ public  class MfuaXmlParser {
             }
         }
 
-        
         itemItem.update();
+        try {
+    		writeImportLog(context, importId, itemItem);
+    	} catch (Exception e2) {}
         context.commit();
         }
         catch(Exception e){
-
+        	try {
+        		writeErrorLog(context, importId, file);
+        	} catch (Exception e2) {}
         }
 
         }
@@ -371,6 +384,35 @@ public  class MfuaXmlParser {
             item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
 
         }
+    }
+    
+    private static void writeErrorLog(Context context, String importId, File file) throws SQLException {
+    	ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
+		errorLog.setFile(file.getAbsolutePath());
+		errorLog.update();
+    }
+    
+    private static void writeImportLog(Context context, String importId, Item item) throws SQLException {
+    	ImportLog importLog = ImportLog.create(context, importId);
+    	Metadatum[] date = item.getMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru");
+    	if (date.length > 0) {
+    		log.info("Date: " + date[0].value);
+    		importLog.setYear(2016);	//TODO Get date from metadata
+    	}
+    	List<Metadatum> title = item.getMetadata(MetadataSchema.DC_SCHEMA, "title");
+    	if (!title.isEmpty()) {
+    		importLog.setName(title.get(0).value);
+    	}
+    	Metadatum[] authors = item.getMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru");
+    	if (authors.length > 0) {
+    		importLog.setAuthors(authors[0].value);
+    	}
+    	Metadatum[] uri = item.getMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", "ru");
+    	if (uri.length > 0) {
+    		importLog.setLink(uri[0].value);
+    	}
+    	importLog.setDuplicate(false);	//FIXME Update after implement update mechanism
+    	importLog.update();
     }
 
 }

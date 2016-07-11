@@ -114,6 +114,7 @@ request.setAttribute("dspace.layout.head", extraHeadData);
 				</td>
 				<td>
 					<input type="text" name="path" placeholder="укажите подкаталог" required="required">
+					<div id="error" class="error"></div>
 				</td>
 			</tr>
 		</table>

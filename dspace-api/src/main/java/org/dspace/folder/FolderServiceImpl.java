@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,6 +12,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.dspace.content.Collection;
 import org.dspace.core.Context;
+import org.dspace.importlog.ImportErrorLog;
+import org.dspace.importlog.ImportLog;
 import org.dspace.util.MfuaXmlParser;
 import org.mortbay.log.Log;
 import org.slf4j.Logger;
@@ -104,6 +107,7 @@ public class FolderServiceImpl implements FolderService {
 		
 		private String path;
 		private Integer year;
+		private String importId;
 		
 		public ImportTask(String path, Integer year) {
 			this.path = path;
@@ -123,6 +127,8 @@ public class FolderServiceImpl implements FolderService {
 				if (cal.get(Calendar.YEAR) != year)
 					return;
 			}
+			
+			importId = UUID.randomUUID().toString();
 			
 			parseDir(new File(path));
 		}
@@ -144,11 +150,24 @@ public class FolderServiceImpl implements FolderService {
 						} else {
 							throw new Exception("Collection not found");
 						}
-						parser.createItems(doc, context, collection);
+						parser.createItems(doc, context, collection, importId);
 					} catch (Exception e) {
+						try {
+							ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
+							errorLog.setFile(item.getAbsolutePath());
+							errorLog.update();
+						} catch (Exception e2) {
+							logger.error("Unable to log import error", e2);
+						}
 						logger.warn("Can't parse XML", e);
 					}
 				}
+			}
+			
+			try {
+				context.commit();
+			} catch (SQLException e) {
+				logger.warn("Unknown error", e);
 			}
 		}
 		

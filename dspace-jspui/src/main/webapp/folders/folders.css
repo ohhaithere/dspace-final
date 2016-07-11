@@ -4,6 +4,7 @@
 
 #folder_form table td {
 	padding: 2px 20px 2px 2px;
+	vertical-align: top;
 }
 
 #folder_form input[type=text],
@@ -77,4 +78,9 @@
 .folder-actions a {
 	display: block;
 	margin-bottom: 10px;
+}
+
+#folder_form #error {
+	font-size: 10px;
+	color: red;
 }

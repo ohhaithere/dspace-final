@@ -1,5 +1,6 @@
 package org.dspace.app.webui.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -113,8 +114,23 @@ public class FoldersServlet extends DSpaceServlet{
         request.setCharacterEncoding("UTF-8");
         
         boolean success = false;
+        String error = null;
         try {
         	String id = request.getParameter("id");
+        	String hour = request.getParameter("hour");
+        	String minute = request.getParameter("minute");
+        	String date = request.getParameter("date");
+        	String month = request.getParameter("month");
+        	String year = request.getParameter("year");
+        	String weekday = request.getParameter("day");
+        	String path = request.getParameter("path");
+        	
+        	//Checking folder exists
+        	File pathFile = new File(path);
+        	if (!pathFile.exists() || !pathFile.isDirectory() || !pathFile.canRead()) {
+        		throw new Exception("Указанный путь не существует или не читается");
+        	}
+        	
         	ImportFolder folder;
         	if (id == null || id.isEmpty()) {
         		folder = ImportFolder.create(context);
@@ -123,13 +139,6 @@ public class FoldersServlet extends DSpaceServlet{
         		if (folder == null)
         			throw new Exception("Folder not found");
         	}
-        	String hour = request.getParameter("hour");
-        	String minute = request.getParameter("minute");
-        	String date = request.getParameter("date");
-        	String month = request.getParameter("month");
-        	String year = request.getParameter("year");
-        	String weekday = request.getParameter("day");
-        	String path = request.getParameter("path");
 
         	if (hour != null && !hour.isEmpty()) {
         		folder.setHour(Integer.valueOf(hour));
@@ -168,10 +177,14 @@ public class FoldersServlet extends DSpaceServlet{
         	folderService.reloadSchedules();
         } catch (Exception e) {
         	log.error("Folder save failed", e);
+        	error = e.getMessage();
         }
         
         JsonObject json = new JsonObject();
         json.addProperty("success", success);
+        if (!success) {
+        	json.addProperty("error", error);
+        }
         response.setContentType("application/json");
         response.getWriter().write(json.toString());
     }
