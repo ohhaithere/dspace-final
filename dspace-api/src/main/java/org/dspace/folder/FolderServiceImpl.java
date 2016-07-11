@@ -13,7 +13,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.dspace.content.Collection;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
-import org.dspace.importlog.ImportLog;
 import org.dspace.util.MfuaXmlParser;
 import org.mortbay.log.Log;
 import org.slf4j.Logger;
@@ -32,7 +31,6 @@ public class FolderServiceImpl implements FolderService {
 	private Context context;
 	private Scheduler scheduler = new Scheduler();
 	private Map<Integer, String> schedules = new HashMap<Integer,String>();
-	private MfuaXmlParser parser = new MfuaXmlParser();
 
 	@Override
 	public void init() throws SQLException {
@@ -150,7 +148,7 @@ public class FolderServiceImpl implements FolderService {
 						} else {
 							throw new Exception("Collection not found");
 						}
-						parser.createItems(doc, context, collection, importId);
+						MfuaXmlParser.createItems(doc, context, collection, importId, item);
 					} catch (Exception e) {
 						try {
 							ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
