@@ -1019,6 +1019,10 @@ public class Item extends DSpaceObject
         }
     }
 
+    public void update() throws SQLException, AuthorizeException {
+    	update(true);
+    }
+    
     /**
      * Update the item "in archive" flag and Dublin Core metadata in the
      * database
@@ -1026,11 +1030,11 @@ public class Item extends DSpaceObject
      * @throws SQLException
      * @throws AuthorizeException
      */
-    public void update() throws SQLException, AuthorizeException
+    public void update(Boolean checkAuth) throws SQLException, AuthorizeException
     {
         // Check authorisation
         // only do write authorization if user is not an editor
-        if (!canEdit())
+        if (checkAuth && !canEdit())
         {
             AuthorizeManager.authorizeAction(ourContext, this, Constants.WRITE);
         }
