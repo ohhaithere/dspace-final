@@ -1,0 +1,43 @@
+#results {
+	width: 100%;
+	margin-bottom: 20px;
+	border-collapse: collapse;
+}
+
+#results th,
+#results td {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	padding: 10px;
+}
+
+#result-container, #empty-container {
+	display: none;
+}
+
+.result-controls {
+	width: 100%;
+}
+
+.result-controls tr td:last-child {
+	text-align: right;
+}
+
+.result-controls tr td:nth-child(2) {
+	text-align: center;
+}
+
+#result-container .title {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	padding: 20px;
+}
+
+#ui-datepicker-div {
+	z-index: 1000 !important;
+}
+
+#files {
+	margin-top: 20px;
+	list-style: none;
+}
