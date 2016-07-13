@@ -29,6 +29,9 @@ public class ImportLogServlet extends DSpaceServlet {
 	protected void doDSGet(Context context, HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException, SQLException, AuthorizeException {
 		
+		response.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
+		
 		String dateStr = request.getParameter("date");
 		Date date;
 		try {
@@ -93,7 +96,6 @@ public class ImportLogServlet extends DSpaceServlet {
 				json.add("items", items);
 				json.addProperty("id", id);
 				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(json.toString());
 			}
 		} else {
@@ -150,7 +152,6 @@ public class ImportLogServlet extends DSpaceServlet {
 				json.add("items", items);
 				json.addProperty("id", id);
 				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
 		        response.getWriter().write(json.toString());
 			}
 		}
