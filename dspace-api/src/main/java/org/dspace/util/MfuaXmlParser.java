@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.StatisticsWriter;
 import org.dspace.content.Collection;
@@ -304,7 +305,9 @@ public class MfuaXmlParser {
 				itemItem.update(false);
 				try {
 					writeImportLog(context, importId, itemItem);
-				} catch (Exception e2) {}
+				} catch (Exception e2) {
+					log.warn("Unable to write into import log", e2);
+				}
 				context.commit();
 			} catch (Exception e) {
 				log.error("Something happened", e);
@@ -316,6 +319,7 @@ public class MfuaXmlParser {
 				try {
 					writeErrorLog(context, importId, file);
 				} catch (Exception e2) {
+					log.warn("Unable to write into import error log", e2);
 				}
 			}
 
@@ -400,25 +404,24 @@ public class MfuaXmlParser {
 
 	private static void writeImportLog(Context context, String importId, Item item) throws SQLException {
 		ImportLog importLog = ImportLog.create(context, importId);
+		importLog.setResourceId(item.getID());
 		Metadatum[] date = item.getMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru");
 		if (date.length > 0) {
-			log.info("Date: " + date[0].value);
-			importLog.setYear(2016); // TODO Get date from metadata
+			importLog.setYear(Integer.valueOf(date[0].value));
 		}
-		List<Metadatum> title = item.getMetadata(MetadataSchema.DC_SCHEMA, "title");
-		if (!title.isEmpty()) {
-			importLog.setName(title.get(0).value);
+		Metadatum[] title = item.getMetadata(MetadataSchema.DC_SCHEMA, "title", null, "ru");
+		if (title.length > 0) {
+			importLog.setName(title[0].value);
 		}
 		Metadatum[] authors = item.getMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru");
 		if (authors.length > 0) {
-			importLog.setAuthors(authors[0].value);
+			String[] itemAuthors = new String[authors.length];
+			for (int i = 0; i < authors.length; i++) {
+				itemAuthors[i] = authors[i].value;
+			}
+			importLog.setAuthors(StringUtils.join(itemAuthors, ", "));
 		}
-		Metadatum[] uri = item.getMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", "ru");
-		if (uri.length > 0) {
-			importLog.setLink(uri[0].value);
-		}
-		importLog.setDuplicate(false); // FIXME Update after implement update
-										// mechanism
+		importLog.setDuplicate(false); // FIXME Update after implement update mechanism
 		importLog.update();
 	}
 

@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 import org.dspace.storage.rdbms.DatabaseManager;
@@ -103,12 +104,12 @@ public class ImportLog extends DSpaceObject {
 		myRow.setColumn("authors", authors);
 	}
 	
-	public String getLink() {
-		return myRow.getStringColumn("link");
+	public Integer getResourceId() {
+		return myRow.getIntColumn("resource_id");
 	}
 	
-	public void setLink(String link) {
-		myRow.setColumn("link", link);
+	public void setResourceId(Integer resourceId) {
+		myRow.setColumn("resource_id", resourceId);
 	}
 	
 	public Boolean getDuplicate() {
@@ -186,6 +187,10 @@ public class ImportLog extends DSpaceObject {
                 rows.close();
             }
         }
+	}
+	
+	public Item getItem(Context context) throws SQLException {
+		return Item.find(context, getResourceId());
 	}
 
 }

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.importlog.ImportLog;
@@ -23,9 +24,6 @@ import com.google.gson.JsonPrimitive;
 import com.ibm.icu.util.Calendar;
 
 public class ImportLogServlet extends DSpaceServlet {
-	
-	/** Logger */
-    private static Logger log = Logger.getLogger(EditProfileServlet.class);
 
 	@Override
 	protected void doDSGet(Context context, HttpServletRequest request, HttpServletResponse response)
@@ -95,6 +93,7 @@ public class ImportLogServlet extends DSpaceServlet {
 				json.add("items", items);
 				json.addProperty("id", id);
 				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(json.toString());
 			}
 		} else {
@@ -128,11 +127,12 @@ public class ImportLogServlet extends DSpaceServlet {
 					int offset = (page - 1) * limit;
 					ImportLog[] report = ImportLog.getReport(context, id, offset, limit);
 					for (ImportLog record: report) {
+						Item item = record.getItem(context);
 						JsonObject recordJson = new JsonObject();
 						recordJson.addProperty("year", record.getYear());
 						recordJson.addProperty("name", record.getName());
 						recordJson.addProperty("authors", record.getAuthors());
-						recordJson.addProperty("link", record.getLink());
+						recordJson.addProperty("link", request.getContextPath() + "/handle/" + item.getHandle());
 						recordJson.addProperty("duplicate", record.getDuplicate());
 						items.add(recordJson);
 					}
@@ -150,6 +150,7 @@ public class ImportLogServlet extends DSpaceServlet {
 				json.add("items", items);
 				json.addProperty("id", id);
 				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
 		        response.getWriter().write(json.toString());
 			}
 		}
