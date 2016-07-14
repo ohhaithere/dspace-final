@@ -65,7 +65,8 @@ cal.setTime((Date) request.getAttribute("date"));
 		</table>
 	</form>
 	<br>
-	<div id="empty-container">Нет отчетов за выбранную дату<br></div>
+	<div id="empty-container">Нет отчетов за выбранную дату</div>
+	<br>
 	<div id="result-container">
 		<p>
 			<b>Всего не загружено ресурсов: <span id="total"></span></b>
@@ -83,5 +84,7 @@ cal.setTime((Date) request.getAttribute("date"));
 				<td><a href="#" id="nextLink">Следующий отчет</a></td>
 			</tr>
 		</table>
+		<br>
 	</div>
+	<a href="#" id="logLink">Журнал импорта</a>
 </dspace:layout>

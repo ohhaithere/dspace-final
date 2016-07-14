@@ -65,7 +65,8 @@ cal.setTime((Date) request.getAttribute("date"));
 		</table>
 	</form>
 	<br>
-	<div id="empty-container">Нет отчетов за выбранную дату<br></div>
+	<div id="empty-container">Нет отчетов за выбранную дату</div>
+	<br>
 	<div id="result-container">
 		<p>
 			<b>Всего загружено ресурсов: <span id="total"></span></b>

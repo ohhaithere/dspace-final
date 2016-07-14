@@ -6,6 +6,7 @@ $(function() {
 	
 	$('#import_date').change(function() {
 		$('#errorLogLink').attr('href', contextPath + '/import-log?date=' + $('#import_date').val() + '&area=errors');
+		$('#logLink').attr('href', contextPath + '/import-log?date=' + $('#import_date').val());
 	});
 	
 	$('#import_date').trigger('change');
