@@ -88,9 +88,8 @@ public class ImportLogServlet extends DSpaceServlet {
 						int count = ImportErrorLog.getReportLength(context, id);
 						json.addProperty("count", count);
 						json.addProperty("pages", Math.ceil(Integer.valueOf(count).doubleValue() / Integer.valueOf(limit).doubleValue()));
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(report[0].getDate());
-						json.addProperty("firstDate", cal.get(Calendar.DATE) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.YEAR) + " " + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+						DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+						json.addProperty("firstDate", df.format(report[0].getDate()));
 					}
 				}
 				json.add("items", items);
@@ -144,9 +143,8 @@ public class ImportLogServlet extends DSpaceServlet {
 						int count = ImportLog.getReportLength(context, id);
 						json.addProperty("count", count);
 						json.addProperty("pages", Math.ceil(Integer.valueOf(count).doubleValue() / Integer.valueOf(limit).doubleValue()));
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(report[0].getDate());
-						json.addProperty("firstDate", cal.get(Calendar.DATE) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.YEAR) + " " + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+						DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+						json.addProperty("firstDate", df.format(report[0].getDate()));
 					}
 				}
 				json.add("items", items);

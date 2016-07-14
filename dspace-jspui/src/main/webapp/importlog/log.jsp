@@ -18,6 +18,8 @@
   -   password.problem - if a Boolean true, there's a problem with password
   --%>
 
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.util.Calendar"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -41,8 +43,8 @@ if (extraHeadData == null) {
 }
 extraHeadData += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/importlog/importlog.css\" type=\"text/css\" />";
 request.setAttribute("dspace.layout.head", extraHeadData);
-Calendar cal = Calendar.getInstance();
-cal.setTime((Date) request.getAttribute("date"));
+Date date = (Date) request.getAttribute("date");
+DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 %>
 
 <dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
@@ -55,7 +57,7 @@ cal.setTime((Date) request.getAttribute("date"));
 		<table>
 			<tr>
 				<td>Перейти к дате:</td>
-				<td><input id="import_date" type="text" name="date" value="<%= cal.get(Calendar.DATE) %>.<%= (cal.get(Calendar.MONTH) + 1) %>.<%= cal.get(Calendar.YEAR) %>"></td>
+				<td><input id="import_date" type="text" name="date" value="<%= df.format(date) %>"></td>
 			</tr>
 			<tr>
 				<td colspan="2">
