@@ -309,6 +309,9 @@ public class MfuaXmlParser {
 					log.warn("Unable to write into import log", e2);
 				}
 				context.commit();
+				if (file != null) {
+					file.delete();
+				}
 			} catch (Exception e) {
 				log.error("Something happened", e);
 				try {
