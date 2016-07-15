@@ -1856,4 +1856,14 @@ public class Collection extends DSpaceObject
         }
         return collections.toArray(new Collection[0]);
     }
+    
+    public static Collection findByName(Context context, String name) throws SQLException {
+    	TableRowIterator tri = DatabaseManager.query(context, "SELECT resource_id FROM metadatavalue WHERE text_value = ?", name);
+    	if (tri.hasNext()) {
+    		TableRow row = tri.next();
+    		return Collection.find(context, row.getIntColumn("resource_id"));
+    	}
+    	
+    	return null;
+    }
 }

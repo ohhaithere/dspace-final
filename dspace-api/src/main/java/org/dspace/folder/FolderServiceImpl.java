@@ -142,7 +142,7 @@ public class FolderServiceImpl implements FolderService {
 						f.setValidating(false);
 						DocumentBuilder builder = f.newDocumentBuilder();
 						Document doc = builder.parse(item);
-						Collection collection = Collection.find(context, 1);
+						Collection collection = Collection.findByName(context, "Тестовая коллекция");
 						if (collection != null) {
 							logger.info("Collection found", collection);
 						} else {

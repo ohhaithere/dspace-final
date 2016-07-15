@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
@@ -128,12 +127,11 @@ public class ImportLogServlet extends DSpaceServlet {
 					int offset = (page - 1) * limit;
 					ImportLog[] report = ImportLog.getReport(context, id, offset, limit);
 					for (ImportLog record: report) {
-						Item item = record.getItem(context);
 						JsonObject recordJson = new JsonObject();
 						recordJson.addProperty("year", record.getYear());
 						recordJson.addProperty("name", record.getName());
 						recordJson.addProperty("authors", record.getAuthors());
-						recordJson.addProperty("link", request.getContextPath() + "/handle/" + item.getHandle());
+						recordJson.addProperty("link", request.getContextPath() + "/handle/" + record.getLink());
 						recordJson.addProperty("duplicate", record.getDuplicate());
 						items.add(recordJson);
 					}
