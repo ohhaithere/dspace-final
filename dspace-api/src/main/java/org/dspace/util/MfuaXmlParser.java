@@ -113,31 +113,11 @@ public class MfuaXmlParser {
 					// response.getWriter().write(e.getMessage());
 				}
 
-				try {
-					Node author = record.getElementsByTagName("Creator").item(0);
-					String authorName = author.getTextContent();
-					if (!authorName.equals("|||") && (authorName != null) && (!authorName.equals(""))) {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru",
-								author.getTextContent());
-					}
-					author = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
+				NodeList author = record.getElementsByTagName("Creator");
+				writeMetaDataToItemLowerCaseAuthor(itemItem, author);
 
-				try {
-					Node contrib = record.getElementsByTagName("Contributor").item(0);
-					String authorName = contrib.getTextContent();
-					if (!authorName.equals("|||") && (authorName != null) && (!authorName.equals(""))) {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", authorName);
-						// itemItem.addMetadata(MetadataSchema.DC_SCHEMA,
-						// "creator",
-						// null, "ru", author.getTextContent());
-					}
-					contrib = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
+				NodeList contrib = record.getElementsByTagName("Contributor");
+				writeMetaDataToItemLowerCaseAuthor(itemItem, contrib);
 
 				try {
 					NodeList descrs = record.getElementsByTagName("Description");
@@ -400,6 +380,17 @@ public class MfuaXmlParser {
 
 		}
 	}
+	
+	public void writeMetaDataToItemLowerCaseAuthor(Item item, NodeList nodes){
+        for(int j = 0; j < nodes.getLength(); j++){
+            Node textSubject = nodes.item(j);
+           // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+
+            //request.setAttribute("wtf_lang", textSubject.getTextContent());
+            item.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", textSubject.getTextContent());
+            //item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcsh", "ru", textSubject.getTextContent());
+        }
+    }
 
 	private static void writeErrorLog(Context context, String importId, File file) throws SQLException {
 		ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
