@@ -400,7 +400,7 @@ public class MfuaXmlParser {
 
 	private static void writeImportLog(Context context, String importId, Item item) throws SQLException {
 		ImportLog importLog = ImportLog.create(context, importId);
-		importLog.setLink(item.getHandle());
+		importLog.setResourceId(item.getID());
 		Metadatum[] date = item.getMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru");
 		if (date.length > 0) {
 			importLog.setYear(Integer.valueOf(date[0].value));

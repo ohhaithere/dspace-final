@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.AuthorizeManager;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.importlog.ImportLog;
@@ -135,7 +136,9 @@ public class ImportLogServlet extends DSpaceServlet {
 						recordJson.addProperty("year", record.getYear());
 						recordJson.addProperty("name", record.getName());
 						recordJson.addProperty("authors", record.getAuthors());
-						recordJson.addProperty("link", request.getContextPath() + "/handle/" + record.getLink());
+						Item item = record.getItem(context);
+						String link = (item != null ? request.getContextPath() + "/handle/" + item.getHandle() : null);
+						recordJson.addProperty("link", link);
 						recordJson.addProperty("duplicate", record.getDuplicate());
 						items.add(recordJson);
 					}
