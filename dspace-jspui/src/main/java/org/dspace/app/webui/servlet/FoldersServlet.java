@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.AuthorizeManager;
 import org.dspace.core.Context;
 import org.dspace.folder.FolderService;
 import org.dspace.folder.ImportFolder;
@@ -43,6 +44,10 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
+        
+        if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		}
         
         String action = request.getParameter("action");
         if (action == null) {
@@ -112,6 +117,10 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
+        
+        if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		}
         
         boolean success = false;
         String error = null;
