@@ -381,7 +381,7 @@ public class MfuaXmlParser {
 		}
 	}
 	
-	public void writeMetaDataToItemLowerCaseAuthor(Item item, NodeList nodes){
+	public static void writeMetaDataToItemLowerCaseAuthor(Item item, NodeList nodes){
         for(int j = 0; j < nodes.getLength(); j++){
             Node textSubject = nodes.item(j);
            // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
