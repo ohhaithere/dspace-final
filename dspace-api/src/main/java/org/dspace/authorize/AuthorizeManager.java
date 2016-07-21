@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.net.util.SubnetUtils;
+import org.apache.log4j.Logger;
 import org.dspace.content.*;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
@@ -36,8 +40,9 @@ import org.dspace.storage.rdbms.TableRowIterator;
  * are automatically given permission for all requests another special group is
  * group 0, which is anonymous - all EPeople are members of group 0.
  */
-public class AuthorizeManager
-{
+public class AuthorizeManager{
+	private static final Logger log = Logger.getLogger(AuthorizeManager.class);
+	
     /**
      * Utility method, checks that the current user of the given context can
      * perform all of the specified actions on the given object. An
@@ -1222,6 +1227,103 @@ public class AuthorizeManager
         policy.setRpName(name);
         policy.setRpDescription(reason);
         return policy;
+    }
+    
+    public static boolean hasIpAccess(Context context, HttpServletRequest request) throws SQLException {
+    	return hasIpAccess(context, request, null);
+    }
+    
+    public static boolean hasIpAccess(Context context, HttpServletRequest request, Integer resourceId) throws SQLException {
+    	//Getting user IP
+    	String userIp = request.getHeader("X-FORWARDED-FOR");
+    	if (userIp == null) {
+    		userIp = request.getRemoteAddr();
+    	}
+    	
+    	try {
+    		//Checking access directly
+    		IpAccess[] rules = IpAccess.findByResourceId(context, resourceId);
+    		Boolean hasAccess = checkIpAccess(rules, userIp);
+    		if (hasAccess != null) {
+    			return hasAccess;
+    		}
+    		
+    		//Is it global access check
+    		if (resourceId == null) {
+    			return true;
+    		}
+    		
+    		//Getting resource
+        	Object resource = null;
+        	if (resourceId != null) {
+        		resource = MetadataValue.findResource(context, resourceId);
+        	}
+        	
+        	//Checking access to collection
+        	if (resource instanceof Item) {
+        		Collection[] collections = ((Item) resource).getCollections();
+        		for (Collection collection: collections) {
+        			rules = IpAccess.findByResourceId(context, collection.getID());
+        			hasAccess = checkIpAccess(rules, userIp);
+        			if (hasAccess != null) {
+            			return hasAccess;
+            		}
+        		}
+        	}
+        	
+        	//Checking global access
+        	return hasIpAccess(context, request);
+    	} catch (SQLException e) {
+    		log.error("Can't check IP access", e);
+    	}
+    	
+    	return false;
+    }
+    
+    private static Boolean checkIpAccess(IpAccess[] rules, String ip) {
+    	//No rules
+    	if (rules.length == 0)
+    		return null;
+    	
+    	//Spliting rules by white & black lists
+    	List<IpAccess> whiteRules = new ArrayList<IpAccess>();
+		List<IpAccess> blackRules = new ArrayList<IpAccess>();
+		for (IpAccess rule: rules) {
+			if (rule.getType() == IpAccess.BLACK) {
+				blackRules.add(rule);
+			} else {
+				whiteRules.add(rule);
+			}
+		}
+		
+		//Checking black list rules
+		for (IpAccess rule: blackRules) {
+			if (rule.getIp().contains("/")) {
+				SubnetUtils utils = new SubnetUtils(rule.getIp());
+				if (utils.getInfo().isInRange(ip))
+					return false;
+			} else {
+				if (rule.getIp().equals(ip))
+					return false;
+			}
+		}
+		
+		//Checking white list rules
+		if (whiteRules.size() > 0) {
+			for (IpAccess rule: whiteRules) {
+				if (rule.getIp().contains("/")) {
+					SubnetUtils utils = new SubnetUtils(rule.getIp());
+					if (utils.getInfo().isInRange(ip))
+						return true;
+				} else {
+					if (rule.getIp().equals(ip))
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		return null;
     }
 
 }
