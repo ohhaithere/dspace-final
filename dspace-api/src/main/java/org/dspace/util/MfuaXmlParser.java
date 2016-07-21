@@ -287,10 +287,30 @@ public class MfuaXmlParser {
 					}
 
 					itemItem.update(false);
+					
+					try {
+						if (file != null) {
+							//Removing file
+							file.delete();
+							
+							File dir = file.getParentFile();
+							if (dir != null) {
+								//Cecking directory is empty
+								File[] list = dir.listFiles();
+								//Removing directory if no files there anymore
+								if (list.length == 0) {
+									dir.delete();
+								}
+							}
+						}
+					} catch (Exception e) {
+						log.error("Unable to delete import file", e);
+					}
+					
 					try {
 						writeImportLog(context, importId, itemItem);
-					} catch (Exception e2) {
-						log.warn("Unable to write into import log", e2);
+					} catch (Exception e) {
+						log.warn("Unable to write into import log", e);
 					}
 					context.commit();
 				} catch (Exception e) {
