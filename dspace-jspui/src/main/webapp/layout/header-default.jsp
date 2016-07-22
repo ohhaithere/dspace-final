@@ -215,7 +215,7 @@
         <div class="row">
         <div class="col-md-9 brand">
                   </div>
-            <div class="col-md-3"><img class="pull-right" src="<%= request.getContextPath() %>/image/logo.svg" alt="DSpace logo" />
+            <div class="col-md-3"><img class="pull-right" src="<%= request.getContextPath() %>/image/logo.jpg" alt="DSpace logo" />
             </div>
         </div>
     </div>

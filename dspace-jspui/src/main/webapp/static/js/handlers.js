@@ -78,7 +78,7 @@ $( document ).ready(function() {
  $("#metadata_import_name_omg").click(function( event ) {
 
 	var value1 = $("#author_name").val();
-	var value2 = $("#import_name").val();
+	var value2 = $("#title").val();
             if((value1.length == 0)&&(value2.length == 0)){
                 alert('Поля пустые');
 		        return false;
@@ -89,7 +89,7 @@ $( document ).ready(function() {
         $("#metadata_import_name_wtf").click(function( event ) {
 
         	var value1 = $("#author_name").val();
-        	var value2 = $("#import_name").val();
+        	var value2 = $("#title").val();
                     if((value1.length == 0)||(value2.length == 0)){
                         alert('Поля пустые');
         		        return false;

@@ -48,7 +48,7 @@ public class ReimportServlet extends DSpaceServlet {
         SoapHelper sh = new SoapHelper();
 
         Document docMeta = null;
-        docMeta = sh.getRecordById(iden);
+        docMeta = sh.getRecordById(iden, request);
 
         XPathFactory xpathFactory = XPathFactory.newInstance();
 

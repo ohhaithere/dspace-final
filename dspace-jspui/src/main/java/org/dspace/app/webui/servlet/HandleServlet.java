@@ -477,74 +477,7 @@ public class HandleServlet extends DSpaceServlet
             				context,
             				item));
 
-        String titleTag = "";
-        Metadatum[] dcorevalues2 = item.getMetadata("dc", "title", Item.ANY,
-                Item.ANY);
-
-        Metadatum tit = dcorevalues2[0];
-
-        titleTag = titleTag + tit.value + " ";
-
-        Metadatum[] authors = item.getMetadata("dc", "contributor", "author", Item.ANY);
-
-
-        for (Metadatum meta:
-             authors) {
-            titleTag = titleTag + meta.value + ", ";
-        }
-
-
-        String h1 = tit.value;
-
-        Metadatum[] subj = item.getMetadata("dc", "subject", null, Item.ANY);
-        String metaTag = "";
-
-        for (Metadatum meta:
-                subj) {
-            metaTag = metaTag + meta.value + ", ";
-        }
-
-        subj = item.getMetadata("dc", "coverage", "spatial", Item.ANY);
-
-        for (Metadatum meta:
-                subj) {
-            metaTag = metaTag + meta.value + ", ";
-        }
-
-        metaTag = metaTag.trim();
-        if (metaTag.length() > 0 ) {
-            metaTag = metaTag.substring(0, metaTag.length()-1);
-        }
-
-        String descrTag = "";
-
-        try{
-            Metadatum[] dcorevalues3 = item.getMetadata("dc", "description", "abstract",
-                    Item.ANY);
-
-            Metadatum tit2 = dcorevalues3[0];
-            int max = 0;
-            for(int i = 0; i < dcorevalues3.length; i++){
-                if(max < dcorevalues3[i].value.length()){
-                    max = dcorevalues3[i].value.length();
-                    descrTag = dcorevalues3[i].value;
-                }
-            }
-           // descrTag = tit2.value;
-        }catch(Exception e){
-
-        }
-
-        String textTag = "";
-        try{
-            Metadatum[] dcorevalues3 = item.getMetadata("dc", "textpart", null,
-                    Item.ANY);
-
-            Metadatum tit2 = dcorevalues3[0];
-            textTag = tit2.value;
-        }catch(Exception ex){
-
-        }
+       
 
 
         PreparedStatement statement = null;
@@ -565,11 +498,6 @@ public class HandleServlet extends DSpaceServlet
         request.setAttribute("dspace.layout.head", headMetadata);
         TableRowIterator tri = DatabaseManager.queryTable(context, "systems", "SELECT * FROM systems");
         request.setAttribute("systems", tri);
-        request.setAttribute("titleTag", titleTag);
-        request.setAttribute("metaTag", metaTag);
-        request.setAttribute("h1", h1);
-        request.setAttribute("descrTag", descrTag + "...");
-        request.setAttribute("textToPass", textTag);
         JSPManager.showJSP(request, response, "/display-item.jsp");
     }
     
