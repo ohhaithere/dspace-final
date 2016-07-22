@@ -18,6 +18,7 @@
   -   password.problem - if a Boolean true, there's a problem with password
   --%>
 
+<%@page import="java.util.Calendar"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"
@@ -32,21 +33,106 @@
 <%@ page import="org.dspace.core.Utils" %>
 <%@ page import="org.dspace.storage.rdbms.TableRowIterator" %>
 <%@ page import="org.dspace.storage.rdbms.TableRow" %>
+<%
+String extraHeadData = (String)request.getAttribute("dspace.layout.head");
+if (extraHeadData == null) {
+	extraHeadData = "";
+}
+extraHeadData += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/folders/folders.css\" type=\"text/css\" />";
+request.setAttribute("dspace.layout.head", extraHeadData);
+%>
 
 <dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
-    <table>
-    <tr>
-        <th id="t1" class="oddRowEvenCol">Наименование</th><th id="t3" class="oddRowEvenCol">Путь</th><th id="t4" class="oddRowEvenCol"></th><th id="t5" class="oddRowEvenCol"></th></tr>
-    <%
-        TableRowIterator name = (TableRowIterator) request.getAttribute("systems");
-        while(name.hasNext()){
-        TableRow row = name.next();
-        Integer i = row.getIntColumn("id");%>
-    <tr>
-    <th class="oddRowEvenCol"><%=row.getStringColumn("system_name") %></th><th class="oddRowEvenCol"><%=row.getStringColumn("folder_path") %></th><th class="oddRowEvenCol"><a href="fold?action=edit&id=<%=i%>">Редактировать</a></th><th class="oddRowEvenCol"><a class="deleteText" href="fold?action=delete&id=<%=i%>">Удалить</a></th></tr>
-    <% } %>
-    </table>
-<a href="/fold?action=add"> <input class="btn btn-primary pull-left col-md-3" type="submit" name="submit" value="Добавить"></a>
-
-
+	<script type="text/javascript" src="<%= request.getContextPath() %>/folders/folders.js"></script>
+	<script type="text/javascript">
+		var contextPath = '<%= request.getContextPath() %>';
+	</script>
+	<!-- Форма добавления/редактирования -->
+	<form id="folder_form" method="post" action="">
+		<input type="hidden" name="id">
+		<table>
+			<tr>
+				<td>Время импорта</td>
+				<td>Число</td>
+				<td>День</td>
+				<td>Месяц</td>
+				<td>Год</td>
+				<td>Путь импорта</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" name="hour" pattern="[0-9]{2}" placeholder="чч" max="23" min="00"> :
+					<input type="text" name="minute" pattern="[0-9]{2}" placeholder="мм" max="59" min="00">
+				</td>
+				<td>
+					<select name="date">
+						<option value="" selected="selected">Все</option>
+						<% for (int i = 1; i <= 31; i++) { %>
+						<option value="<%=i%>"><% if (i < 10) { %>0<% } %><%=i%></option>
+						<% } %>
+					</select>
+				</td>
+				<td>
+					<select name="day">
+						<option value="" selected="selected">Все</option>
+						<option value="1">Понедельник</option>
+						<option value="2">Вторник</option>
+						<option value="3">Среда</option>
+						<option value="4">Четверг</option>
+						<option value="5">Пятница</option>
+						<option value="6">Суббота</option>
+						<option value="0">Воскресенье</option>
+					</select>
+				</td>
+				<td>
+					<select name="month">
+						<option value="" selected="selected">Все</option>
+						<option value="1">Январь</option>
+						<option value="2">Февраль</option>
+						<option value="3">Март</option>
+						<option value="4">Апрель</option>
+						<option value="5">Май</option>
+						<option value="6">Июнь</option>
+						<option value="7">Июль</option>
+						<option value="8">Август</option>
+						<option value="9">Сентябрь</option>
+						<option value="10">Октябрь</option>
+						<option value="11">Ноябрь</option>
+						<option value="12">Декабрь</option>
+					</select>
+				</td>
+				<td>
+					<select name="year">
+						<option value="" selected="selected">Все</option>
+						<%
+							Calendar cal = Calendar.getInstance();
+							for (int i = cal.get(Calendar.YEAR); i <= (cal.get(Calendar.YEAR) + 10); i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<% } %>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="path" placeholder="укажите подкаталог" required="required">
+					<div id="error" class="error"></div>
+				</td>
+			</tr>
+		</table>
+		<br>
+		<button id="savebtn" type="submit">Создать</button>
+		<button id="backbtn" type="button">Назад</button>
+	</form>
+	<br><br>
+	
+	<!-- Список каталогов -->
+	Список папок для импорта<br>
+	<table class="folders-table">
+		<tr>
+			<td id="folder_list"></td>
+			<td class="folder-actions">
+				<a id="deletebtn" href="#"><i class="glyphicon glyphicon-remove-sign"></i> Удалить импорт</a>
+				<a id="runbtn" href="#"><i class="glyphicon glyphicon-play-circle"></i> Запустить импорт</a>
+			</td>
+		</tr>
+	</table>
 </dspace:layout>

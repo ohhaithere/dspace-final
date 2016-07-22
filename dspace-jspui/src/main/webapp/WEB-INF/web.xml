@@ -207,6 +207,11 @@
         <servlet-name>folders</servlet-name>
         <servlet-class>org.dspace.app.webui.servlet.FoldersServlet</servlet-class>
     </servlet>
+    
+    <servlet>
+        <servlet-name>importlog</servlet-name>
+        <servlet-class>org.dspace.app.webui.servlet.ImportLogServlet</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>import-item</servlet-name>
@@ -550,6 +555,11 @@
     <servlet-mapping>
         <servlet-name>folders</servlet-name>
         <url-pattern>/fold/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>importlog</servlet-name>
+        <url-pattern>/import-log/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

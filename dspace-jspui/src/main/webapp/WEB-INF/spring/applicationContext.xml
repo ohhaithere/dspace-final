@@ -59,4 +59,7 @@
     	</property>
     </bean>
      -->
+     
+    <!-- Folder service -->
+    <bean id="org.dspace.folder.FolderService" class="org.dspace.folder.FolderServiceImpl" scope="singleton" init-method="init"/>
 </beans>
