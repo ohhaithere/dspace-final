@@ -44,27 +44,46 @@
 
   String collection_id = (String) request.getAttribute("collection_id");
   String community_id = (String) request.getAttribute("community_id");
+  String titleStr = (String) request.getAttribute("title");
   Document doc = (Document) request.getAttribute("document");
+  String url = (String) request.getAttribute("url");
 
-  NodeList nodes = doc.getElementsByTagName("m:BiblRecords");
+  NodeList nodes = doc.getElementsByTagName("Records");
   //evaluate expression result on XML document
 
 %>
 
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
- <% for(int i = 1; i < nodes.getLength(); i++){
+ <% for(int i = 0; i < nodes.getLength(); i++){
       Element node = (Element) nodes.item(i);
-      String author = node.getElementsByTagName("m:Author").item(0).getTextContent();
-      String title = node.getElementsByTagName("m:Title").item(0).getTextContent();
-      String item_id = node.getElementsByTagName("m:Id").item(0).getTextContent();%>
+      NodeList titleNode = node.getElementsByTagName("Title");
+      Element titleList = (Element) titleNode.item(0);
+      Node titleValue = titleList.getElementsByTagName("Value").item(0);
+      NodeList creatorNode = node.getElementsByTagName("Creator");
+      String author = "";
+      if(creatorNode != null){
+        if(creatorNode.getLength() > 0){
+        for(int о = 0; о < creatorNode.getLength(); о++){
+            Node authorList =  creatorNode.item(о);
+            author = author + authorList.getTextContent();
+            if(о < (creatorNode.getLength() - 1)){
+              author = author + ", ";
+            }
+          }
+        }
+      }
+      String title = titleValue.getTextContent();
+      String item_id = "test";%>
  <br>
-  <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+  <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
 
     <%="<b>Автор:</b> " + author + "<br> <b>Наименование:</b>  " + title + "<br>"%>
-    <input type="hidden" name="import_item" value="<%=item_id %>" />
+    <input type="hidden" name="import_item" value="<%=i %>" />
+    <input type="hidden" name="item_name" value="<%=titleStr %>" />
     <input type="hidden" name="action" value="write_name"/>
     <input type="hidden" name="collection_id" value="<%=collection_id %>" />
     <input type="hidden" name="community_id" value="<%=community_id %>" />
+    <input type="hidden" name="item_url" value="<%=url %>" />
     <input class="btn btn-primary pull-left col-md-3" id="button_spin" type="submit" name="submit" value="Импортировать">
   </form>
   <br>
