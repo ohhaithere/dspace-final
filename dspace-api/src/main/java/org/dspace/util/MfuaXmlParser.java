@@ -47,6 +47,7 @@ public class MfuaXmlParser {
 			Element record = (Element) records.item(i);
 			Boolean exists = false;
 			Integer itemId = 0;
+			try{
 			try {
 
 				NodeList identifier = record.getElementsByTagName("Identifier");
@@ -91,9 +92,12 @@ public class MfuaXmlParser {
 
 				}
 			} else{
-				itemItem = Item.find(context,itemId);
-                itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
-                itemItem.update();
+				try {
+					itemItem = Item.find(context, itemId);
+					itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+					itemItem.update();
+				} catch(Exception e) {
+				}
 			}
 
 				try {
@@ -242,66 +246,69 @@ public class MfuaXmlParser {
 				}
 
 
-				if(exists == false){
-				itemItem.setDiscoverable(true);
+				if(exists == false) {
+					itemItem.setDiscoverable(true);
 
-				// itemItem.update();
+					// itemItem.update();
 
 
-				try {
-					HandleManager.createHandle(context, itemItem);
-					Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
+					try {
+						HandleManager.createHandle(context, itemItem);
+						Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
 
-					// Metadatum tit = dcorevalues2[0];
+						// Metadatum tit = dcorevalues2[0];
 
-					// Group groups = Group.findByName(context, "Anonymous");
-					TableRow row = DatabaseManager.row("collection2item");
+						// Group groups = Group.findByName(context, "Anonymous");
+						TableRow row = DatabaseManager.row("collection2item");
 
-					PreparedStatement statement = null;
-					// ResultSet rs = null;
-					statement = context.getDBConnection()
-							.prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
-					int ij = statement.executeUpdate();
-					row.setColumn("collection_id", col.getID());
-					row.setColumn("item_id", itemItem.getID());
-					DatabaseManager.insert(context, row);
+						PreparedStatement statement = null;
+						// ResultSet rs = null;
+						statement = context.getDBConnection()
+								.prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
+						int ij = statement.executeUpdate();
+						row.setColumn("collection_id", col.getID());
+						row.setColumn("item_id", itemItem.getID());
+						DatabaseManager.insert(context, row);
 
-					itemItem.inheritCollectionDefaultPolicies(col);
+						itemItem.inheritCollectionDefaultPolicies(col);
 
-					itemItem.setArchived(true);
+						itemItem.setArchived(true);
 
-					StatisticsWriter sw = new StatisticsWriter();
-					sw.writeStatistics(context, "item_added", null);
+						StatisticsWriter sw = new StatisticsWriter();
+						sw.writeStatistics(context, "item_added", null);
 
-					if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
-						try {
-							XmlWorkflowManager.start(context, wsitem);
-						} catch (Exception e) {
-							// log.error(LogManager.getHeader(context, "Error
-							// while
-							// starting xml workflow", "Item id: "), e);
+						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
 							try {
-								throw new ServletException(e);
-							} catch (ServletException e1) {
-								e1.printStackTrace();
+								XmlWorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								// log.error(LogManager.getHeader(context, "Error
+								// while
+								// starting xml workflow", "Item id: "), e);
+								try {
+									throw new ServletException(e);
+								} catch (ServletException e1) {
+									e1.printStackTrace();
+								}
+							}
+						} else {
+							try {
+								WorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
-					} else {
-						try {
-							WorkflowManager.start(context, wsitem);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					} catch(Exception e) {
 					}
 				}
 
-					itemItem.update(false);
-					
+
+				itemItem.update(false);
+				context.commit();
 					try {
 						if (file != null) {
 							//Removing file
 							file.delete();
-							
+
 							File dir = file.getParentFile();
 							if (dir != null) {
 								//Cecking directory is empty
@@ -315,15 +322,16 @@ public class MfuaXmlParser {
 					} catch (Exception e) {
 						log.error("Unable to delete import file", e);
 					}
-					
+
 					try {
 						writeImportLog(context, importId, itemItem);
 					} catch (Exception e) {
 						log.warn("Unable to write into import log", e);
 					}
-					context.commit();
-				} catch (Exception e) {
-					log.error("Something happened", e);
+				itemItem.update(false);
+				context.commit();
+				} catch (Exception ex) {
+					log.error("Something happened", ex);
 					try {
 						context.getDBConnection().rollback();
 					} catch (SQLException e1) {
