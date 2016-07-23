@@ -96,8 +96,16 @@ function onFolderSelect(e) {
 	var id = $(this).data('id');
 	var folder = window.folders[id];
 	form.find('input[name=id]').val(id);
-	form.find('input[name=hour]').val(pad(folder.hour, 2));
-	form.find('input[name=minute]').val(pad(folder.minute, 2));
+	if (folder.hour != null) {
+		form.find('input[name=hour]').val(pad(folder.hour, 2));
+	} else {
+		form.find('input[name=hour]').val('');
+	}
+	if (folder.minute != null) {
+		form.find('input[name=minute]').val(pad(folder.minute, 2));
+	} else {
+		form.find('input[name=minute]').val('');
+	}
 	form.find('select[name=date]').val(folder.date);
 	form.find('select[name=month]').val(folder.month);
 	form.find('select[name=year]').val(folder.year);

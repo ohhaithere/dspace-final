@@ -64,7 +64,7 @@ public class MfuaXmlParser {
 
 							TableRow row = tri.next();
 							exists = true;
-
+							itemId = row.getIntColumn("resource_id");
 						}
 						// item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier,
 						// null, "ru", textSubject.getTextContent());
@@ -90,6 +90,11 @@ public class MfuaXmlParser {
 				} catch (Exception e) {
 
 				}
+			} else{
+				itemItem = Item.find(context,itemId);
+                itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+                itemItem.update();
+			}
 
 				try {
 					NodeList titleNode = record.getElementsByTagName("Title");
@@ -236,9 +241,12 @@ public class MfuaXmlParser {
 
 				}
 
+
+				if(exists == false){
 				itemItem.setDiscoverable(true);
 
 				// itemItem.update();
+
 
 				try {
 					HandleManager.createHandle(context, itemItem);
@@ -285,6 +293,7 @@ public class MfuaXmlParser {
 							e.printStackTrace();
 						}
 					}
+				}
 
 					itemItem.update(false);
 					
@@ -327,7 +336,7 @@ public class MfuaXmlParser {
 					}
 				}
 
-			}
+			
 		}
 	}
 
