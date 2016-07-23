@@ -48,53 +48,59 @@ public class MfuaXmlParser {
 			Boolean exists = false;
 			Integer itemId = 0;
 			try {
-
-				NodeList identifier = record.getElementsByTagName("Identifier");
-				// itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title", null,
-				// "ru", tex.getTextContent());
-				for (int k = 0; k < identifier.getLength(); k++) {
-					Element subjectNode = (Element) identifier.item(k);
-					Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
-					Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
-					if (qulSubject.getTextContent().toLowerCase().equals("identifier")) {
-						TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue",
-								"SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"
-										+ textSubject.getTextContent() + "'");
-						if (tri.hasNext()) {
-
-							TableRow row = tri.next();
-							exists = true;
-							itemId = row.getIntColumn("resource_id");
-						}
-						// item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier,
-						// null, "ru", textSubject.getTextContent());
-						// SoapHelper sh = new SoapHelper();
-						// sh.writeLink(qualifier,
-						// "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
-					}
-				}
-				identifier = null;
-			} catch (Exception e) {
-
-			}
-
-			WorkspaceItem wsitem = null;
-			Item itemItem = null;
-			if (exists == false) {
 				try {
-					wsitem = WorkspaceItem.createMass(context, col, false);
-					itemItem = wsitem.getItem();
-					// response.getWriter().write("test");
 
-					itemItem.setOwningCollection(col);
+					NodeList identifier = record.getElementsByTagName("Identifier");
+					// itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title",
+					// null,
+					// "ru", tex.getTextContent());
+					for (int k = 0; k < identifier.getLength(); k++) {
+						Element subjectNode = (Element) identifier.item(k);
+						Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
+						Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+						if (qulSubject.getTextContent().toLowerCase().equals("identifier")) {
+							TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue",
+									"SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"
+											+ textSubject.getTextContent() + "'");
+							if (tri.hasNext()) {
+
+								TableRow row = tri.next();
+								exists = true;
+								itemId = row.getIntColumn("resource_id");
+							}
+							// item.addMetadata(MetadataSchema.DC_SCHEMA,
+							// qualifier,
+							// null, "ru", textSubject.getTextContent());
+							// SoapHelper sh = new SoapHelper();
+							// sh.writeLink(qualifier,
+							// "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
+						}
+					}
+					identifier = null;
 				} catch (Exception e) {
 
 				}
-			} else{
-				itemItem = Item.find(context,itemId);
-                itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
-                itemItem.update();
-			}
+
+				WorkspaceItem wsitem = null;
+				Item itemItem = null;
+				if (exists == false) {
+					try {
+						wsitem = WorkspaceItem.createMass(context, col, false);
+						itemItem = wsitem.getItem();
+						// response.getWriter().write("test");
+
+						itemItem.setOwningCollection(col);
+					} catch (Exception e) {
+
+					}
+				} else {
+					try {
+						itemItem = Item.find(context, itemId);
+						itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+						itemItem.update();
+					} catch (Exception e) {
+					}
+				}
 
 				try {
 					NodeList titleNode = record.getElementsByTagName("Title");
@@ -241,102 +247,104 @@ public class MfuaXmlParser {
 
 				}
 
+				if (exists == false) {
+					itemItem.setDiscoverable(true);
 
-				if(exists == false){
-				itemItem.setDiscoverable(true);
+					// itemItem.update();
 
-				// itemItem.update();
-
-
-				try {
-					HandleManager.createHandle(context, itemItem);
-					Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
-
-					// Metadatum tit = dcorevalues2[0];
-
-					// Group groups = Group.findByName(context, "Anonymous");
-					TableRow row = DatabaseManager.row("collection2item");
-
-					PreparedStatement statement = null;
-					// ResultSet rs = null;
-					statement = context.getDBConnection()
-							.prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
-					int ij = statement.executeUpdate();
-					row.setColumn("collection_id", col.getID());
-					row.setColumn("item_id", itemItem.getID());
-					DatabaseManager.insert(context, row);
-
-					itemItem.inheritCollectionDefaultPolicies(col);
-
-					itemItem.setArchived(true);
-
-					StatisticsWriter sw = new StatisticsWriter();
-					sw.writeStatistics(context, "item_added", null);
-
-					if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
-						try {
-							XmlWorkflowManager.start(context, wsitem);
-						} catch (Exception e) {
-							// log.error(LogManager.getHeader(context, "Error
-							// while
-							// starting xml workflow", "Item id: "), e);
-							try {
-								throw new ServletException(e);
-							} catch (ServletException e1) {
-								e1.printStackTrace();
-							}
-						}
-					} else {
-						try {
-							WorkflowManager.start(context, wsitem);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-
-					itemItem.update(false);
-					
 					try {
-						if (file != null) {
-							//Removing file
-							file.delete();
-							
-							File dir = file.getParentFile();
-							if (dir != null) {
-								//Cecking directory is empty
-								File[] list = dir.listFiles();
-								//Removing directory if no files there anymore
-								if (list.length == 0) {
-									dir.delete();
+						HandleManager.createHandle(context, itemItem);
+						Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
+
+						// Metadatum tit = dcorevalues2[0];
+
+						// Group groups = Group.findByName(context,
+						// "Anonymous");
+						TableRow row = DatabaseManager.row("collection2item");
+
+						PreparedStatement statement = null;
+						// ResultSet rs = null;
+						statement = context.getDBConnection().prepareStatement(
+								"DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
+						int ij = statement.executeUpdate();
+						row.setColumn("collection_id", col.getID());
+						row.setColumn("item_id", itemItem.getID());
+						DatabaseManager.insert(context, row);
+
+						itemItem.inheritCollectionDefaultPolicies(col);
+
+						itemItem.setArchived(true);
+
+						StatisticsWriter sw = new StatisticsWriter();
+						sw.writeStatistics(context, "item_added", null);
+
+						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
+							try {
+								XmlWorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								// log.error(LogManager.getHeader(context,
+								// "Error
+								// while
+								// starting xml workflow", "Item id: "), e);
+								try {
+									throw new ServletException(e);
+								} catch (ServletException e1) {
+									e1.printStackTrace();
 								}
 							}
+						} else {
+							try {
+								WorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					} catch (Exception e) {
-						log.error("Unable to delete import file", e);
-					}
-					
-					try {
-						writeImportLog(context, importId, itemItem);
-					} catch (Exception e) {
-						log.warn("Unable to write into import log", e);
-					}
-					context.commit();
-				} catch (Exception e) {
-					log.error("Something happened", e);
-					try {
-						context.getDBConnection().rollback();
-					} catch (SQLException e1) {
-						log.error("Rollback failed", e1);
-					}
-					try {
-						writeErrorLog(context, importId, file);
-					} catch (Exception e2) {
-						log.warn("Unable to write into import error log", e2);
 					}
 				}
 
-			
+				itemItem.update(false);
+				context.commit();
+				try {
+					if (file != null) {
+						// Removing file
+						file.delete();
+
+						File dir = file.getParentFile();
+						if (dir != null) {
+							// Cecking directory is empty
+							File[] list = dir.listFiles();
+							// Removing directory if no files there anymore
+							if (list.length == 0) {
+								dir.delete();
+							}
+						}
+					}
+				} catch (Exception e) {
+					log.error("Unable to delete import file", e);
+				}
+
+				try {
+					writeImportLog(context, importId, itemItem, exists);
+				} catch (Exception e) {
+					log.warn("Unable to write into import log", e);
+				}
+				itemItem.update(false);
+				context.commit();
+			} catch (Exception ex) {
+				log.error("Something happened", ex);
+				try {
+					context.getDBConnection().rollback();
+				} catch (SQLException e1) {
+					log.error("Rollback failed", e1);
+				}
+				try {
+					writeErrorLog(context, importId, file);
+				} catch (Exception e2) {
+					log.warn("Unable to write into import error log", e2);
+				}
+			}
+
 		}
 	}
 
@@ -409,17 +417,19 @@ public class MfuaXmlParser {
 
 		}
 	}
-	
-	public static void writeMetaDataToItemLowerCaseAuthor(Item item, NodeList nodes){
-        for(int j = 0; j < nodes.getLength(); j++){
-            Node textSubject = nodes.item(j);
-           // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
 
-            //request.setAttribute("wtf_lang", textSubject.getTextContent());
-            item.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", textSubject.getTextContent());
-            //item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcsh", "ru", textSubject.getTextContent());
-        }
-    }
+	public static void writeMetaDataToItemLowerCaseAuthor(Item item, NodeList nodes) {
+		for (int j = 0; j < nodes.getLength(); j++) {
+			Node textSubject = nodes.item(j);
+			// Node qulSubject =
+			// subjectNode.getElementsByTagName("Qualifier").item(0);
+
+			// request.setAttribute("wtf_lang", textSubject.getTextContent());
+			item.addMetadata(MetadataSchema.DC_SCHEMA, "contributor", "author", "ru", textSubject.getTextContent());
+			// item.addMetadata(MetadataSchema.DC_SCHEMA, "subject", "lcsh",
+			// "ru", textSubject.getTextContent());
+		}
+	}
 
 	private static void writeErrorLog(Context context, String importId, File file) throws SQLException {
 		ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
@@ -427,7 +437,8 @@ public class MfuaXmlParser {
 		errorLog.update();
 	}
 
-	private static void writeImportLog(Context context, String importId, Item item) throws SQLException {
+	private static void writeImportLog(Context context, String importId, Item item, boolean isUpdate)
+			throws SQLException {
 		ImportLog importLog = ImportLog.create(context, importId);
 		importLog.setResourceId(item.getID());
 		Metadatum[] date = item.getMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru");
@@ -446,8 +457,7 @@ public class MfuaXmlParser {
 			}
 			importLog.setAuthors(StringUtils.join(itemAuthors, ", "));
 		}
-		importLog.setDuplicate(false); // FIXME Update after implement update
-										// mechanism
+		importLog.setDuplicate(isUpdate);
 		importLog.update();
 	}
 
