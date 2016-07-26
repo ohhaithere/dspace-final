@@ -899,25 +899,26 @@ public class ImportServlet extends DSpaceServlet {
 
     public void createItem2(Element record, Context context, Collection col, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, AuthorizeException {
         Boolean exists = false;
-             Integer itemId = 0;
+        Integer itemId = 0;
         Item itemItem = null;
+        WorkspaceItem wsitem = null;
         try {
             NodeList identifier = record.getElementsByTagName("Identifier");
-            
+
             //  itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title", null, "ru", tex.getTextContent());
-            for(int k = 0; k < identifier.getLength(); k++){
+            for (int k = 0; k < identifier.getLength(); k++) {
                 Element subjectNode = (Element) identifier.item(k);
                 Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
                 Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
-                if(qulSubject.getTextContent().toLowerCase().equals("identifier")){
-                    TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue", "SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"+textSubject.getTextContent()+"'");
-                    if(tri.hasNext()){
+                if (qulSubject.getTextContent().toLowerCase().equals("identifier")) {
+                    TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue", "SELECT resource_id, text_value FROM metadatavalue WHERE text_value='" + textSubject.getTextContent() + "'");
+                    if (tri.hasNext()) {
 
                         exists = true;
                         TableRow row = tri.next();
                         log.info(row);
                         itemId = row.getIntColumn("resource_id");
-                        log.info("OKIGOTIT: "+itemId.toString());
+                        log.info("OKIGOTIT: " + itemId.toString());
                     }
                     //item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
                     //SoapHelper sh = new SoapHelper();
@@ -929,12 +930,12 @@ public class ImportServlet extends DSpaceServlet {
 
         }
 
-        if(exists != true){
-            
-        
 
-        WorkspaceItem wsitem = null;
-        
+        if (exists != true) {
+
+
+
+
 
             wsitem = WorkspaceItem.createMass(context, col, false);
             itemItem = wsitem.getItem();
@@ -942,18 +943,22 @@ public class ImportServlet extends DSpaceServlet {
 
             itemItem.setOwningCollection(col);
 
+        } else {
+            itemItem = Item.find(context, itemId);
+            itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+
+        }
 
 
-
-        try{
+        try {
             NodeList titleNode = record.getElementsByTagName("Title");
             //  itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title", null, "ru", tex.getTextContent());
             writeMetaDataToItemLowerCaseTitle(itemItem, "title", titleNode);
             titleNode = null;
-        } catch(Exception e){
+        } catch (Exception e) {
 
         }
-        
+
 
         try {
             NodeList identifier = record.getElementsByTagName("Identifier");
@@ -965,14 +970,13 @@ public class ImportServlet extends DSpaceServlet {
         }
 
 
-        
-            NodeList author = record.getElementsByTagName("Creator");
-            writeMetaDataToItemLowerCaseAuthor(itemItem, author);
-            author = null;
+        NodeList author = record.getElementsByTagName("Creator");
+        writeMetaDataToItemLowerCaseAuthor(itemItem, author);
+        author = null;
 
-            NodeList contrib = record.getElementsByTagName("Contributor");
-            writeMetaDataToItemLowerCaseAuthor(itemItem, contrib);
-            contrib = null;
+        NodeList contrib = record.getElementsByTagName("Contributor");
+        writeMetaDataToItemLowerCaseAuthor(itemItem, contrib);
+        contrib = null;
 
 
         try {
@@ -1060,14 +1064,14 @@ public class ImportServlet extends DSpaceServlet {
             //response.getWriter().write(e.getMessage());
         }
 
-      try{
+        try {
             NodeList coverages = record.getElementsByTagName("Coverage");
             writeMetaDataToItemLowerCase(itemItem, "subject", coverages);
             coverages = null;
         } catch (Exception e) {
             //response.getWriter().write(e.getMessage());
         }
-        
+
 
         try {
 
@@ -1082,34 +1086,29 @@ public class ImportServlet extends DSpaceServlet {
         Date today = Calendar.getInstance().getTime();
         String dateNow = df.format(today);
 
+        if (exists == false) {
+            itemItem.setDiscoverable(true);
 
-        itemItem.setDiscoverable(true);
-
-        //itemItem.update();
-
-
-        
-
-
+            //itemItem.update();
 
 
             HandleManager.createHandle(context, itemItem);
             Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null,
                     Item.ANY);
 
-           // Metadatum tit = dcorevalues2[0];
+            // Metadatum tit = dcorevalues2[0];
 
 
             // Group groups = Group.findByName(context, "Anonymous");
             TableRow row = DatabaseManager.row("collection2item");
 
             PreparedStatement statement = null;
-       //         ResultSet rs = null;
+            //         ResultSet rs = null;
             statement = context.getDBConnection().prepareStatement("DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
             int ij = statement.executeUpdate();
-             row.setColumn("collection_id", col.getID());
-             row.setColumn("item_id", itemItem.getID());
-             DatabaseManager.insert(context, row);
+            row.setColumn("collection_id", col.getID());
+            row.setColumn("item_id", itemItem.getID());
+            DatabaseManager.insert(context, row);
 
 
             itemItem.inheritCollectionDefaultPolicies(col);
@@ -1120,49 +1119,52 @@ public class ImportServlet extends DSpaceServlet {
             sw.writeStatistics(context, "item_added", null);
 
 
-
-        if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
-            try{
-                XmlWorkflowManager.start(context, wsitem);
-            }catch (Exception e){
-                log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+            if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
                 try {
-                    throw new ServletException(e);
-                } catch (ServletException e1) {
-                    e1.printStackTrace();
+                    XmlWorkflowManager.start(context, wsitem);
+                } catch (Exception e) {
+                    log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+                    try {
+                        throw new ServletException(e);
+                    } catch (ServletException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-            }
-        }else{
-            try {
-                WorkflowManager.start(context, wsitem);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                try {
+                    WorkflowManager.start(context, wsitem);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        
+
         itemItem.update();
         context.commit();
 
         try {
             String link = itemItem.getHandle();
             request.setAttribute("link", HandleManager.getCanonicalForm(link));
-        } catch(Exception e){
+        } catch (Exception e) {
 
         }
-    } else {
-        itemItem = Item.find(context,itemId);
-        String link = itemItem.getHandle();
-        request.setAttribute("link", HandleManager.getCanonicalForm(link));
-        //break;
-        try{
-        request.getRequestDispatcher("/import/reimport-item.jsp").forward(request, response);
-    }
-        catch(Exception e){
+        if (exists == true) {
+
+            {
+                itemItem = Item.find(context, itemId);
+                String link = itemItem.getHandle();
+                request.setAttribute("link", HandleManager.getCanonicalForm(link));
+                //break;
+                try {
+                    request.getRequestDispatcher("/import/reimport-item.jsp").forward(request, response);
+                } catch (Exception e) {
+
+                }
+            }
+
 
         }
-    }
-    
     }
 
 }
