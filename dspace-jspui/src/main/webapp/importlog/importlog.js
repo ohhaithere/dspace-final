@@ -50,6 +50,13 @@ $(function() {
 			loadImportLog(params);
 		}
 	});
+	
+	//Submit form on load
+	var form = $('#importlog_form');
+	if (form.length == 0) {
+		form = $('#importerrorlog_form');
+	}
+	form.submit();
 });
 
 function loadImportLog(params) {
