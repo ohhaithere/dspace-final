@@ -175,7 +175,7 @@ public class ImportLog extends DSpaceObject {
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
 		Timestamp till = new Timestamp(cal.getTimeInMillis());
-		TableRowIterator rows = DatabaseManager.query(context, "SELECT import_id FROM (SELECT DISTINCT ON (import_id) import_id, date FROM " + tableName + " WHERE date >= ? AND date <= ?) l ORDER BY date ASC", from, till);
+		TableRowIterator rows = DatabaseManager.query(context, "SELECT import_id FROM (SELECT DISTINCT ON (import_id) import_id, date FROM " + tableName + " WHERE date >= ? AND date <= ?) l ORDER BY date DESC", from, till);
 		try {
             List<TableRow> gRows = rows.toList();
             String[] result = new String[gRows.size()];
