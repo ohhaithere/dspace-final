@@ -46,6 +46,6 @@ String link = (String) request.getAttribute("link");
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>Данные успешно обновлены!</b><br>
     <br>
-    <a href="<%=link%>">Перейти на обновленный ресурс</a><br>
-
+    <b><a href="<%=link%>">Перейти на обновленный ресурс</a></b><br>
+    <b><a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
 </dspace:layout>
