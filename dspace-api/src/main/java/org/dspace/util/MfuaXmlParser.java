@@ -37,11 +37,13 @@ public class MfuaXmlParser {
 
 	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
 
-	public static void createItems(Document doc, Context context, Collection col) {
-		createItems(doc, context, col, null, null);
+	public static Document createItems(Document doc, Context context, Collection col) {
+		return createItems(doc, context, col, null, null);
 	}
 
-	public static void createItems(Document doc, Context context, Collection col, String importId, File file) {
+	public static Document createItems(Document doc, Context context, Collection col, String importId, File file) {
+		boolean hasErrors = false;
+		
 		NodeList records = doc.getElementsByTagName("Records");
 		for (int i = 0; i < records.getLength(); i++) {
 			Element record = (Element) records.item(i);
@@ -305,24 +307,6 @@ public class MfuaXmlParser {
 
 				itemItem.update(false);
 				context.commit();
-				try {
-					if (file != null) {
-						// Removing file
-						file.delete();
-
-						File dir = file.getParentFile();
-						if (dir != null) {
-							// Cecking directory is empty
-							File[] list = dir.listFiles();
-							// Removing directory if no files there anymore
-							if (list.length == 0) {
-								dir.delete();
-							}
-						}
-					}
-				} catch (Exception e) {
-					log.error("Unable to delete import file", e);
-				}
 
 				try {
 					writeImportLog(context, importId, itemItem, exists);
@@ -332,20 +316,22 @@ public class MfuaXmlParser {
 				itemItem.update(false);
 				context.commit();
 			} catch (Exception ex) {
-				log.error("Something happened", ex);
+				hasErrors = true;
+				log.error("Something happened with xml import", ex);
 				try {
 					context.getDBConnection().rollback();
 				} catch (SQLException e1) {
 					log.error("Rollback failed", e1);
 				}
-				try {
-					writeErrorLog(context, importId, file);
-				} catch (Exception e2) {
-					log.warn("Unable to write into import error log", e2);
-				}
 			}
 
 		}
+		
+		if (!hasErrors) {
+			return doc;
+		}
+		
+		return null;
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {
