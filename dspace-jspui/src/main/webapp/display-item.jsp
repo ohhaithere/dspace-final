@@ -175,17 +175,7 @@
                 <form method="post" action="<%= request.getContextPath() %>/mydspace">
                     <input type="hidden" name="item_id" value="<%= item.getID() %>" />
                     <input type="hidden" name="step" value="<%= MyDSpaceServlet.REQUEST_EXPORT_ARCHIVE %>" />
-                    <%
-                        TableRowIterator name = (TableRowIterator) request.getAttribute("systems"); %>
-
-                    <input class="btn btn-default col-md-12" type="submit" name="submit" value="<fmt:message key="jsp.mydspace.request.export.item"/>" />
-                    <select style="width:100%" name="path" test="<%=imported%>">
-                        <% while(name.hasNext()) {
-                            TableRow row = name.next();%>
-                        <option value="<%=row.getStringColumn("folder_path")%>"><%=row.getStringColumn("system_name")%></option>
-                        <% } %>
-                    </select>
-                </form>
+                    
          <!--       <form method="post" action="<%= request.getContextPath() %>/mydspace">
                     <input type="hidden" name="item_id" value="<%= item.getID() %>" />
                     <input type="hidden" name="step" value="<%= MyDSpaceServlet.REQUEST_MIGRATE_ARCHIVE %>" />
@@ -226,8 +216,6 @@
 
 <br>
     <dspace:item-preview item="<%= item %>" />
-<% String textToPass = (String) request.getAttribute("textToPass"); %>
-<b>Отрывок: </b><%= textToPass %> <br>
     <dspace:item item="<%= item %>" collections="<%= collections %>" style="<%= displayStyle %>" />
 
 <div class="container row">

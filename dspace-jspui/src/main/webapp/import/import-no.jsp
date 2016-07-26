@@ -45,7 +45,7 @@ String colId = (String) request.getAttribute("collection_id");
 <dspace:layout style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>Ничего не найдено!<br>
     <br>
-    <a href="/import-item?collection_id=<%=colId%>">Повторить поиск</a> </b><br>
+    <a href="/jspui/import-item?collection_id=<%=colId%>">Повторить поиск</a> </b><br>
 
 
 </dspace:layout>
