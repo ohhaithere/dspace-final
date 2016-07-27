@@ -43,11 +43,13 @@ public class MfuaXmlParser {
 
 	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
 
-	public static void createItems(Document doc, Context context, Collection col) {
-		createItems(doc, context, col, null, null);
+	public static Document createItems(Document doc, Context context, Collection col) {
+		return createItems(doc, context, col, null, null);
 	}
 
-	public static void createItems(Document doc, Context context, Collection col, String importId, File file) {
+	public static Document createItems(Document doc, Context context, Collection col, String importId, File file) {
+		boolean hasErrors = false;
+
 		NodeList records = doc.getElementsByTagName("Records");
 		for (int i = 0; i < records.getLength(); i++) {
 			Element record = (Element) records.item(i);
@@ -253,8 +255,6 @@ public class MfuaXmlParser {
 
 				}
 
-
-
 				if (exists == false) {
 					itemItem.setDiscoverable(true);
 
@@ -311,78 +311,59 @@ public class MfuaXmlParser {
 					}
 					try {
 
-        	String name = "dspace";
-			String password = "dspace";
+						String name = "dspace";
+						String password = "dspace";
 
-			String authString = name + ":" + password;
-			System.out.println("auth string: " + authString);
-			byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-			String authStringEnc = new String(authEncBytes);
-			System.out.println("Base64 encoded auth string: " + authStringEnc);
-                                    Node link = record.getElementsByTagName("Link").item(0);
+						String authString = name + ":" + password;
+						System.out.println("auth string: " + authString);
+						byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+						String authStringEnc = new String(authEncBytes);
+						System.out.println("Base64 encoded auth string: " + authStringEnc);
+						Node link = record.getElementsByTagName("Link").item(0);
 
-                                    String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+						String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
 
-                                    String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
-                                    linkEncode = linkEncode.replace("+", "%20");
+						String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+						linkEncode = linkEncode.replace("+", "%20");
 
-                                    String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('\\') + 1);
+						String filenamelel = link.getTextContent()
+								.substring(link.getTextContent().lastIndexOf('\\') + 1);
 
-                                    URL linkToDownload = new URL(firstUrl + linkEncode);
-                                    URLConnection urlConnection = linkToDownload.openConnection();
-                                    urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+						URL linkToDownload = new URL(firstUrl + linkEncode);
+						URLConnection urlConnection = linkToDownload.openConnection();
+						urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
-                                    InputStream iss = urlConnection.getInputStream();
+						InputStream iss = urlConnection.getInputStream();
 
-                                    //InputStream issforPdf = linkToDownload.openStream();
+						// InputStream issforPdf = linkToDownload.openStream();
 
-                                    log.info("wowlol: " + firstUrl + linkEncode);
-                                    if(exists == false) {
-                                        itemItem.createBundle("ORIGINAL");
-                                        Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
-                                        b.setName(link.getTextContent());
-                                        b.setDescription("from 1C");
-                                        b.setSource("1C");
+						log.info("wowlol: " + firstUrl + linkEncode);
+						if (exists == false) {
+							itemItem.createBundle("ORIGINAL");
+							Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
+							b.setName(link.getTextContent());
+							b.setDescription("from 1C");
+							b.setSource("1C");
 
-                                        itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+							itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
 
+							BitstreamFormat bf = null;
 
-                                        BitstreamFormat bf = null;
+							bf = FormatIdentifier.guessFormat(context, b);
+							b.setFormat(bf);
 
-                                        bf = FormatIdentifier.guessFormat(context, b);
-                                        b.setFormat(bf);
+							b.update();
+						}
+						itemItem.update();
 
-                                        b.update();
-                                    }
-                                    itemItem.update();
-
-
-                                    iss.close();
-                                } catch (Exception e) {
-                                    log.error("wtferror", e);
-                                }
+						iss.close();
+					} catch (Exception e) {
+						log.error("wtferror", e);
+					}
 				}
 
 				itemItem.update(false);
 				context.commit();
-				try {
-					if (file != null) {
-						// Removing file
-						file.delete();
-
-						File dir = file.getParentFile();
-						if (dir != null) {
-							// Cecking directory is empty
-							File[] list = dir.listFiles();
-							// Removing directory if no files there anymore
-							if (list.length == 0) {
-								dir.delete();
-							}
-						}
-					}
-				} catch (Exception e) {
-					log.error("Unable to delete import file", e);
-				}
 
 				try {
 					writeImportLog(context, importId, itemItem, exists);
@@ -392,20 +373,22 @@ public class MfuaXmlParser {
 				itemItem.update(false);
 				context.commit();
 			} catch (Exception ex) {
-				log.error("Something happened", ex);
+				hasErrors = true;
+				log.error("Something happened with xml import", ex);
 				try {
 					context.getDBConnection().rollback();
 				} catch (SQLException e1) {
 					log.error("Rollback failed", e1);
 				}
-				try {
-					writeErrorLog(context, importId, file);
-				} catch (Exception e2) {
-					log.warn("Unable to write into import error log", e2);
-				}
 			}
 
 		}
+
+		if (!hasErrors) {
+			return doc;
+		}
+
+		return null;
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {
