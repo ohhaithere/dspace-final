@@ -8,6 +8,10 @@ import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FilenameUtils;
 import org.dspace.content.Collection;
@@ -148,17 +152,41 @@ public class FolderServiceImpl implements FolderService {
 						} else {
 							throw new Exception("Collection not found");
 						}
-						MfuaXmlParser.createItems(doc, context, collection, importId, item);
+						Document parsedDocument = MfuaXmlParser.createItems(doc, context, collection, importId, item);
+						if (parsedDocument != null) {
+							File outFile = convertPath(item, "out");
+							logger.debug("Moving xml into out direcoty: " + outFile.getAbsolutePath());
+							outFile.getParentFile().mkdirs();
+							TransformerFactory transformerFactory = TransformerFactory.newInstance();
+							Transformer transformer = transformerFactory.newTransformer();
+							DOMSource source = new DOMSource(parsedDocument);
+							StreamResult streamResult =  new StreamResult(outFile);
+							transformer.transform(source, streamResult);
+						} else {
+							throw new Exception("Unable to import XML");
+						}
 					} catch (Exception e) {
+						logger.warn("Can't parse XML", e);
+						
+						//Moving file to error directory
+						File errorFile = convertPath(item, "error");
+						logger.debug("Moving xml into error direcoty: " + errorFile.getAbsolutePath());
+						errorFile.getParentFile().mkdirs();
+						item.renameTo(errorFile);
+						
 						try {
 							ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
-							errorLog.setFile(item.getAbsolutePath());
+							errorLog.setFile(errorFile.getAbsolutePath());
 							errorLog.update();
 						} catch (Exception e2) {
 							logger.error("Unable to log import error", e2);
 						}
-						logger.warn("Can't parse XML", e);
 					}
+					
+					//Removing original file parent directory with all files inside
+					File itemDir = item.getParentFile();
+					logger.debug("Removing parent directory: " + itemDir.getAbsolutePath());
+					itemDir.delete();
 				}
 			}
 			
@@ -167,6 +195,20 @@ public class FolderServiceImpl implements FolderService {
 			} catch (SQLException e) {
 				logger.warn("Unknown error", e);
 			}
+		}
+		
+		private File convertPath(File file, String dir) {
+			String filePath = file.getAbsolutePath();
+			String[] pathParts = path.split("/");
+			StringBuilder newPath = new StringBuilder();
+			for (int i = 0; i < (pathParts.length - 1); i++) {
+				if (i > 0) {
+					newPath.append("/");
+				}
+				newPath.append(pathParts[i]);
+			}
+			newPath.append("/" + dir);
+			return new File(filePath.replaceFirst("^" + path, newPath.toString()));
 		}
 		
 	}

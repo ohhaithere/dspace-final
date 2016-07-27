@@ -42,7 +42,7 @@ extraHeadData += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() +
 request.setAttribute("dspace.layout.head", extraHeadData);
 %>
 
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+<dspace:layout navbar="admin" style="submission" title="Папки для импорта" nocache="true">
 	<script type="text/javascript" src="<%= request.getContextPath() %>/folders/folders.js"></script>
 	<script type="text/javascript">
 		var contextPath = '<%= request.getContextPath() %>';

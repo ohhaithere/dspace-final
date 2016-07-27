@@ -42,6 +42,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.net.URLConnection;
+
+import org.apache.commons.codec.binary.Base64;
+
 
 /**
  * Created by root on 1/1/16.
@@ -1089,6 +1093,58 @@ public class ImportServlet extends DSpaceServlet {
 
 
         
+        try {
+
+        	String name = "dspace";
+			String password = "dspace";
+
+			String authString = name + ":" + password;
+			System.out.println("auth string: " + authString);
+			byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+			String authStringEnc = new String(authEncBytes);
+			System.out.println("Base64 encoded auth string: " + authStringEnc);
+                                    Node link = record.getElementsByTagName("Link").item(0);
+
+                                    String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+
+                                    String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+                                    linkEncode = linkEncode.replace("+", "%20");
+
+                                    String filenamelel = link.getTextContent().substring(link.getTextContent().lastIndexOf('\\') + 1);
+
+                                    URL linkToDownload = new URL(firstUrl + linkEncode);
+                                    URLConnection urlConnection = linkToDownload.openConnection();
+                                    urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+                                    InputStream iss = urlConnection.getInputStream();
+
+                                    //InputStream issforPdf = linkToDownload.openStream();
+
+                                    log.info("wowlol: " + firstUrl + linkEncode);
+                                    if(exists == false) {
+                                        itemItem.createBundle("ORIGINAL");
+                                        Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
+                                        b.setName(linkEncode);
+                                        b.setDescription("from 1C");
+                                        b.setSource("1C");
+
+                                        itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+
+
+                                        BitstreamFormat bf = null;
+
+                                        bf = FormatIdentifier.guessFormat(context, b);
+                                        b.setFormat(bf);
+
+                                        b.update();
+                                    }
+                                    itemItem.update();
+
+
+                                    iss.close();
+                                } catch (Exception e) {
+                                    log.error("wtferror", e);
+                                }
 
 
 
