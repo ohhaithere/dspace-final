@@ -68,10 +68,11 @@ public class MfuaXmlParser {
 					//Looking for community
 					Community community = Community.findByName(context, collectionInfo[0]);
 					if (community == null) {
-						community = Community.create(null, context);
+						community = Community.create(null, context, null, false);
 						community.setMetadata("name", collectionInfo[0]);
 						HandleManager.createHandle(context, community);
-						community.update();
+						community.update(false);
+						context.commit();
 					}
 					
 					//Looking for collection
@@ -80,7 +81,9 @@ public class MfuaXmlParser {
 						col = Collection.create(context);
 						col.setMetadata("name", collectionInfo[1]);
 						HandleManager.createHandle(context, col);
-						col.update();
+						col.update(false);
+						community.addCollection(col, false);
+						context.commit();
 					}
 				}
 			}
@@ -400,6 +403,7 @@ public class MfuaXmlParser {
 				itemItem.setOwningCollection(col);
 				
 				itemItem.update(false);
+				context.commit();
 
 				try {
 					writeImportLog(context, importId, itemItem, exists);
