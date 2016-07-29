@@ -5,14 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.StatisticsWriter;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataSchema;
@@ -43,16 +46,49 @@ public class MfuaXmlParser {
 
 	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
 
-	public static Document createItems(Document doc, Context context, Collection col) {
+	public static Document createItems(Document doc, Context context, Collection col) throws Exception {
 		return createItems(doc, context, col, null, null);
 	}
 
-	public static Document createItems(Document doc, Context context, Collection col, String importId, File file) {
+	public static Document createItems(Document doc, Context context, Collection col, String importId, File file) throws Exception {
 		boolean hasErrors = false;
 
 		NodeList records = doc.getElementsByTagName("Records");
 		for (int i = 0; i < records.getLength(); i++) {
 			Element record = (Element) records.item(i);
+			
+			//Discovering collection
+			if (col == null) { 
+				NodeList collectionNodes = record.getElementsByTagName("Collections");
+				for (int j = 0; j < collectionNodes.getLength(); j++) {
+					String[] collectionInfo = collectionNodes.item(j).getTextContent().split("/");
+					if (collectionInfo.length != 2 || collectionInfo[0].isEmpty() || collectionInfo[1].isEmpty())
+						return null;
+					
+					//Looking for community
+					Community community = Community.findByName(context, collectionInfo[0]);
+					if (community == null) {
+						community = Community.create(null, context);
+						community.setMetadata("name", collectionInfo[0]);
+						HandleManager.createHandle(context, community);
+						community.update();
+					}
+					
+					//Looking for collection
+					col = community.getCollectionByName(collectionInfo[1]);
+					if (col == null) {
+						col = Collection.create(context);
+						col.setMetadata("name", collectionInfo[1]);
+						HandleManager.createHandle(context, col);
+						col.update();
+					}
+				}
+			}
+			
+			//Checking collection found
+			if (col == null)
+				throw new Exception("No collection to import");
+			
 			Boolean exists = false;
 			Integer itemId = 0;
 			try {
@@ -96,8 +132,6 @@ public class MfuaXmlParser {
 						wsitem = WorkspaceItem.createMass(context, col, false);
 						itemItem = wsitem.getItem();
 						// response.getWriter().write("test");
-
-						itemItem.setOwningCollection(col);
 					} catch (Exception e) {
 
 					}
@@ -362,15 +396,16 @@ public class MfuaXmlParser {
 					}
 				}
 
+				//Updating collection owning
+				itemItem.setOwningCollection(col);
+				
 				itemItem.update(false);
-				context.commit();
 
 				try {
 					writeImportLog(context, importId, itemItem, exists);
 				} catch (Exception e) {
 					log.warn("Unable to write into import log", e);
 				}
-				itemItem.update(false);
 				context.commit();
 			} catch (Exception ex) {
 				hasErrors = true;
