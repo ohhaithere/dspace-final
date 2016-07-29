@@ -146,13 +146,7 @@ public class FolderServiceImpl implements FolderService {
 						f.setValidating(false);
 						DocumentBuilder builder = f.newDocumentBuilder();
 						Document doc = builder.parse(item);
-						Collection collection = Collection.findByName(context, "Тестовая коллекция");
-						if (collection != null) {
-							logger.info("Collection found", collection);
-						} else {
-							throw new Exception("Collection not found");
-						}
-						Document parsedDocument = MfuaXmlParser.createItems(doc, context, collection, importId, item);
+						Document parsedDocument = MfuaXmlParser.createItems(doc, context, null, importId, item);
 						if (parsedDocument != null) {
 							File outFile = convertPath(item, "out");
 							logger.debug("Moving xml into out direcoty: " + outFile.getAbsolutePath());
@@ -166,7 +160,7 @@ public class FolderServiceImpl implements FolderService {
 							throw new Exception("Unable to import XML");
 						}
 					} catch (Exception e) {
-						logger.warn("Can't parse XML", e);
+						logger.warn("Import error", e);
 						
 						//Moving file to error directory
 						File errorFile = convertPath(item, "error");
