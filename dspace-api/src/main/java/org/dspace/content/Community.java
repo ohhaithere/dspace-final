@@ -380,6 +380,16 @@ public class Community extends DSpaceObject
 
         return communityArray;
     }
+    
+    public static Community findByName(Context context, String name) throws SQLException {
+    	TableRowIterator tri = DatabaseManager.query(context, "SELECT resource_id FROM metadatavalue WHERE resource_type_id = 4 AND text_value = ?", name);
+    	if (tri.hasNext()) {
+    		TableRow row = tri.next();
+    		return Community.find(context, row.getIntColumn("resource_id"));
+    	}
+    	
+    	return null;
+    }
 
     /**
      * Get the internal ID of this collection
@@ -643,6 +653,22 @@ public class Community extends DSpaceObject
     public Group getAdministrators()
     {
         return admins;
+    }
+    
+    /**
+     * Returns collection by name
+     * @param name
+     * @return
+     * @throws SQLException
+     */
+    public Collection getCollectionByName(String name) throws SQLException {
+    	Collection[] collections = getCollections();
+    	for (Collection collection: collections) {
+    		if (collection.equals(name))
+    			return collection;
+    	}
+    	
+    	return null;
     }
 
     /**
