@@ -1142,8 +1142,15 @@ public class Collection extends DSpaceObject
     @Override
     public void update() throws SQLException, AuthorizeException
     {
+    	update(true);
+    }
+    
+    public void update(Boolean checkAuth) throws SQLException, AuthorizeException
+    {
         // Check authorisation
-        canEdit(true);
+    	if (checkAuth) {
+    		canEdit(true);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "update_collection",
                 "collection_id=" + getID()));

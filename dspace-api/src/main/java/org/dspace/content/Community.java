@@ -165,7 +165,7 @@ public class Community extends DSpaceObject
     {
         return create(parent, context, null);
     }
-
+    
     /**
      * Create a new top-level community, with a new ID.
      *
@@ -178,8 +178,14 @@ public class Community extends DSpaceObject
     public static Community create(Community parent, Context context, String handle)
             throws SQLException, AuthorizeException
     {
-        if (!(AuthorizeManager.isAdmin(context) ||
-              (parent != null && AuthorizeManager.authorizeActionBoolean(context, parent, Constants.ADD))))
+    	return create(parent, context, handle, true);
+    }
+
+    public static Community create(Community parent, Context context, String handle, Boolean checkAuth)
+            throws SQLException, AuthorizeException
+    {
+        if (checkAuth && (!(AuthorizeManager.isAdmin(context) ||
+              (parent != null && AuthorizeManager.authorizeActionBoolean(context, parent, Constants.ADD)))))
         {
             throw new AuthorizeException(
                     "Only administrators can create communities");
@@ -555,13 +561,20 @@ public class Community extends DSpaceObject
         return logo;
     }
 
+    public void update() throws SQLException, AuthorizeException
+    {
+    	update(true);
+    }
+    
     /**
      * Update the community metadata (including logo) to the database.
      */
-    public void update() throws SQLException, AuthorizeException
+    public void update(Boolean checkAuth) throws SQLException, AuthorizeException
     {
         // Check authorisation
-        canEdit();
+    	if (checkAuth) {
+    		canEdit();
+    	}
 
         log.info(LogManager.getHeader(ourContext, "update_community",
                 "community_id=" + getID()));
@@ -970,10 +983,18 @@ public class Community extends DSpaceObject
      *            collection to add
      */
     public void addCollection(Collection c) throws SQLException,
+    		AuthorizeException
+    {
+    	addCollection(c, true);
+    }
+    
+    public void addCollection(Collection c, Boolean checkAuth) throws SQLException,
             AuthorizeException
     {
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	if (checkAuth) {
+    		AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "add_collection",
                 "community_id=" + getID() + ",collection_id=" + c.getID()));
@@ -1034,7 +1055,7 @@ public class Community extends DSpaceObject
         // Check authorisation
         AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
 
-        Community c = create(this, ourContext, handle);
+        Community c = create(this, ourContext, handle, true);
         addSubcommunity(c);
 
         return c;
