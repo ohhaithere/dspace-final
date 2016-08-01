@@ -29,9 +29,11 @@ import org.dspace.core.Context;
 import org.dspace.handle.HandleManager;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.importlog.ImportLog;
+import org.dspace.services.ConfigurationService;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
+import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowManager;
 import org.dspace.xmlworkflow.XmlWorkflowManager;
 import org.dspace.content.*;
@@ -50,6 +52,7 @@ public class MfuaXmlParser {
 	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
 	private static Map<String, Community> communityCache = new HashMap<String, Community>();
 	private static Map<String, Collection> collectionCache = new HashMap<String, Collection>();
+	private static ConfigurationService configurationService;
 
 	public static Document createItems(Document doc, Context context, Collection col) throws Exception {
 		return createItems(doc, context, col, null, null);
@@ -85,6 +88,7 @@ public class MfuaXmlParser {
 	public static Document createItems(Document doc, Context context, Collection col, String importId, File file)
 			throws Exception {
 		try {
+			configurationService = new DSpace().getConfigurationService();
 			boolean hasErrors = false;
 
 			NodeList records = doc.getElementsByTagName("Records");
@@ -391,75 +395,71 @@ public class MfuaXmlParser {
 							}
 						} catch (Exception e) {
 						}
-						try {
-							Node link = record.getElementsByTagName("Link").item(0);
+						Node link = record.getElementsByTagName("Link").item(0);
 
-							InputStream iss = null;
-							if (file != null) {
-								log.debug("Import linked file from local");
-								File linkedFile = new File(file.getParentFile().getAbsoluteFile() + "/" + link.getTextContent());
-								log.debug("Linked file is " + linkedFile.getAbsolutePath());
-								if (linkedFile.exists() && linkedFile.canRead()) {
-									iss = new FileInputStream(linkedFile);
-								}
-							} else {
-								log.debug("Import linked file from remote");
-								
-								String name = "dspace";
-								String password = "dspace";
-
-								String authString = name + ":" + password;
-								System.out.println("auth string: " + authString);
-								byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-								String authStringEnc = new String(authEncBytes);
-								System.out.println("Base64 encoded auth string: " + authStringEnc);
-								
-								//Getting file from url
-								String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
-
-								String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
-								linkEncode = linkEncode.replace("+", "%20");
-
-								String filenamelel = link.getTextContent()
-										.substring(link.getTextContent().lastIndexOf('\\') + 1);
-
-								URL linkToDownload = new URL(firstUrl + linkEncode);
-								URLConnection urlConnection = linkToDownload.openConnection();
-								urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
-								iss = urlConnection.getInputStream();
-								
-								// InputStream issforPdf =
-								// linkToDownload.openStream();
-
-								log.info("wowlol: " + firstUrl + linkEncode);
+						InputStream iss = null;
+						if (file != null) {
+							log.debug("Import linked file from local");
+							File linkedFile = new File(
+									file.getParentFile().getAbsoluteFile() + "/" + link.getTextContent());
+							log.debug("Linked file is " + linkedFile.getAbsolutePath());
+							if (linkedFile.exists() && linkedFile.canRead()) {
+								iss = new FileInputStream(linkedFile);
 							}
-							
-							if (exists == false && iss != null) {
-								log.debug("Uploading file");
-								itemItem.createBundle("ORIGINAL", false);
-								Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss, false);
-								b.setName(link.getTextContent());
-								b.setDescription("from 1C");
-								b.setSource("1C");
+						} else {
+							log.debug("Import linked file from remote");
 
-								itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+							String name = "dspace";
+							String password = "dspace";
 
-								BitstreamFormat bf = null;
+							String authString = name + ":" + password;
+							System.out.println("auth string: " + authString);
+							byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+							String authStringEnc = new String(authEncBytes);
+							System.out.println("Base64 encoded auth string: " + authStringEnc);
 
-								bf = FormatIdentifier.guessFormat(context, b);
-								b.setFormat(bf);
+							// Getting file from url
+							String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
 
-								b.update(false);
-							}
-							itemItem.update(false);
-							
-							if (iss != null)
-								iss.close();
-						} catch (Exception e) {
-							log.error("wtferror", e);
-							hasErrors = true;
+							String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+							linkEncode = linkEncode.replace("+", "%20");
+
+							String filenamelel = link.getTextContent()
+									.substring(link.getTextContent().lastIndexOf('\\') + 1);
+
+							URL linkToDownload = new URL(firstUrl + linkEncode);
+							URLConnection urlConnection = linkToDownload.openConnection();
+							urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+							iss = urlConnection.getInputStream();
+
+							// InputStream issforPdf =
+							// linkToDownload.openStream();
+
+							log.info("wowlol: " + firstUrl + linkEncode);
 						}
+
+						if (exists == false && iss != null) {
+							log.debug("Uploading file");
+							itemItem.createBundle("ORIGINAL", false);
+							Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss, false);
+							b.setName(link.getTextContent());
+							b.setDescription("from 1C");
+							b.setSource("1C");
+
+							itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+
+							BitstreamFormat bf = null;
+
+							bf = FormatIdentifier.guessFormat(context, b);
+							b.setFormat(bf);
+
+							b.update(false);
+						}
+						itemItem.update(false);
+
+						if (iss != null)
+							iss.close();
 					}
 
 					// Updating collection owning
@@ -467,6 +467,13 @@ public class MfuaXmlParser {
 
 					itemItem.update(false);
 					context.commit();
+					
+					//Writing link into XML file
+					String itemLink = configurationService.getProperty("dspace.url") + "/handle/" + itemItem.getHandle();
+					log.debug("Item link: " + itemLink);
+					Element source = doc.createElement("Source");
+					source.setTextContent(itemLink);
+					record.appendChild(source);
 
 					try {
 						writeImportLog(context, importId, itemItem, exists);
