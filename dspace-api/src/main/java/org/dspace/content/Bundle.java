@@ -378,13 +378,21 @@ public class Bundle extends DSpaceObject
     public Bitstream createBitstream(InputStream is) throws AuthorizeException,
             IOException, SQLException
     {
+    	return createBitstream(is, true);
+    }
+    
+    public Bitstream createBitstream(InputStream is, Boolean checkAuth) throws AuthorizeException,
+    		IOException, SQLException
+    {
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	if (checkAuth) {
+    		AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	}
 
         Bitstream b = Bitstream.create(ourContext, is);
 
         // FIXME: Set permissions for bitstream
-        addBitstream(b);
+        addBitstream(b, checkAuth);
 
         return b;
     }
@@ -420,10 +428,18 @@ public class Bundle extends DSpaceObject
      *            the bitstream to add
      */
     public void addBitstream(Bitstream b) throws SQLException,
+    		AuthorizeException
+    {
+    	addBitstream(b, true);
+    }
+    
+    public void addBitstream(Bitstream b, Boolean checkAuth) throws SQLException,
             AuthorizeException
     {
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	if (checkAuth) {
+    		AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "add_bitstream", "bundle_id="
                 + getID() + ",bitstream_id=" + b.getID()));

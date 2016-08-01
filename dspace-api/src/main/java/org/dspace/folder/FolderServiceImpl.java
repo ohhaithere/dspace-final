@@ -14,7 +14,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FilenameUtils;
-import org.dspace.content.Collection;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.util.MfuaXmlParser;
@@ -28,6 +27,7 @@ import com.ibm.icu.util.Calendar;
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutionContext;
+import it.sauronsoftware.cron4j.TaskExecutor;
 
 public class FolderServiceImpl implements FolderService {
 	
@@ -99,10 +99,10 @@ public class FolderServiceImpl implements FolderService {
 	}
 	
 	@Override
-	public void execute(int id) {
+	public TaskExecutor execute(int id) {
 		ImportTask task = (ImportTask) scheduler.getTask(schedules.get(id));
 		ImportTask manualTask = new ImportTask(task.getPath(), null);
-		scheduler.launch(manualTask);
+		return scheduler.launch(manualTask);
 	}
 	
 	class ImportTask extends Task {
@@ -133,6 +133,8 @@ public class FolderServiceImpl implements FolderService {
 			importId = UUID.randomUUID().toString();
 			
 			parseDir(new File(path));
+			
+			logger.info("Finished import path for path " + path);
 		}
 		
 		private void parseDir(File dir) {
@@ -146,17 +148,12 @@ public class FolderServiceImpl implements FolderService {
 						f.setValidating(false);
 						DocumentBuilder builder = f.newDocumentBuilder();
 						Document doc = builder.parse(item);
-						Collection collection = Collection.findByName(context, "Тестовая коллекция");
-						if (collection != null) {
-							logger.info("Collection found", collection);
-						} else {
-							throw new Exception("Collection not found");
-						}
-						Document parsedDocument = MfuaXmlParser.createItems(doc, context, collection, importId, item);
+						Document parsedDocument = MfuaXmlParser.createItems(doc, context, null, importId, item);
 						if (parsedDocument != null) {
 							File outFile = convertPath(item, "out");
-							logger.debug("Moving xml into out direcoty: " + outFile.getAbsolutePath());
+							logger.debug("Moving xml source directory into out direcoty: " + outFile.getParentFile().getAbsolutePath());
 							outFile.getParentFile().mkdirs();
+							item.getParentFile().renameTo(outFile.getParentFile());
 							TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(parsedDocument);
@@ -166,13 +163,13 @@ public class FolderServiceImpl implements FolderService {
 							throw new Exception("Unable to import XML");
 						}
 					} catch (Exception e) {
-						logger.warn("Can't parse XML", e);
+						logger.warn("Import error", e);
 						
 						//Moving file to error directory
 						File errorFile = convertPath(item, "error");
-						logger.debug("Moving xml into error direcoty: " + errorFile.getAbsolutePath());
+						logger.debug("Moving xml source directory into error direcoty: " + errorFile.getParentFile().getAbsolutePath());
 						errorFile.getParentFile().mkdirs();
-						item.renameTo(errorFile);
+						item.getParentFile().renameTo(errorFile.getParentFile());
 						
 						try {
 							ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
