@@ -2,6 +2,8 @@ package org.dspace.folder;
 
 import java.sql.SQLException;
 
+import it.sauronsoftware.cron4j.TaskExecutor;
+
 public interface FolderService {
 	
 	/**
@@ -19,7 +21,8 @@ public interface FolderService {
 	/**
 	 * Starts task execution
 	 * @param id ID
+	 * @return TaskExecutor
 	 */
-	public void execute(int id);
+	public TaskExecutor execute(int id);
 	
 }

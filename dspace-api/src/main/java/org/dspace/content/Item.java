@@ -738,19 +738,27 @@ public class Item extends DSpaceObject
     public Bundle createBundle(String name) throws SQLException,
             AuthorizeException
     {
+    	return createBundle(name, true);
+    }
+    
+    public Bundle createBundle(String name, Boolean checkAuth) throws SQLException,
+    	AuthorizeException
+    {
         if ((name == null) || "".equals(name))
         {
             throw new SQLException("Bundle must be created with non-null name");
         }
 
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+        if (checkAuth) {
+        	AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+        }
 
         Bundle b = Bundle.create(ourContext);
         b.setName(name);
         b.update();
 
-        addBundle(b);
+        addBundle(b, checkAuth);
 
         return b;
     }
@@ -765,8 +773,15 @@ public class Item extends DSpaceObject
      */
     public void addBundle(Bundle b) throws SQLException, AuthorizeException
     {
+    	addBundle(b, true);
+    }
+    
+    public void addBundle(Bundle b, Boolean checkAuth) throws SQLException, AuthorizeException
+    {
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	if (checkAuth) {
+    		AuthorizeManager.authorizeAction(ourContext, this, Constants.ADD);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "add_bundle", "item_id="
                 + getID() + ",bundle_id=" + b.getID()));
@@ -1073,7 +1088,7 @@ public class Item extends DSpaceObject
                 {
                     streams[k].setSequenceID(sequence);
                     sequence++;
-                    streams[k].update();
+                    streams[k].update(checkAuth);
                     modified = true;
                 }
             }

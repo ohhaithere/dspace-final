@@ -206,7 +206,7 @@ public class Collection extends DSpaceObject
      * @throws SQLException
      * @throws AuthorizeException
      */
-    static Collection create(Context context) throws SQLException,
+    public static Collection create(Context context) throws SQLException,
             AuthorizeException
     {
         return create(context, null);
@@ -1142,8 +1142,15 @@ public class Collection extends DSpaceObject
     @Override
     public void update() throws SQLException, AuthorizeException
     {
+    	update(true);
+    }
+    
+    public void update(Boolean checkAuth) throws SQLException, AuthorizeException
+    {
         // Check authorisation
-        canEdit(true);
+    	if (checkAuth) {
+    		canEdit(true);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "update_collection",
                 "collection_id=" + getID()));
@@ -1858,7 +1865,7 @@ public class Collection extends DSpaceObject
     }
     
     public static Collection findByName(Context context, String name) throws SQLException {
-    	TableRowIterator tri = DatabaseManager.query(context, "SELECT resource_id FROM metadatavalue WHERE text_value = ?", name);
+    	TableRowIterator tri = DatabaseManager.query(context, "SELECT resource_id FROM metadatavalue WHERE resource_type_id = 3 AND text_value = ?", name);
     	if (tri.hasNext()) {
     		TableRow row = tri.next();
     		return Collection.find(context, row.getIntColumn("resource_id"));

@@ -21,6 +21,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.JsonObject;
 
+import it.sauronsoftware.cron4j.TaskExecutor;
+
 /**
  * Created by lalka on 12/23/2015.
  */
@@ -96,7 +98,10 @@ public class FoldersServlet extends DSpaceServlet{
         		ImportFolder folder = ImportFolder.find(context, id);
         		if (folder != null) {
         			success = true;
-        			folderService.execute(id);
+        			TaskExecutor executor = folderService.execute(id);
+        			while (executor.isAlive()) {
+        				Thread.sleep(1000);
+        			}
         		} else {
         			throw new Exception("Folder not exist");
         		}
