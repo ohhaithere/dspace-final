@@ -1,6 +1,7 @@
 package org.dspace.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -8,7 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -45,389 +48,453 @@ import java.io.InputStream;
 public class MfuaXmlParser {
 
 	private static final Logger log = Logger.getLogger(MfuaXmlParser.class);
+	private static Map<String, Community> communityCache = new HashMap<String, Community>();
+	private static Map<String, Collection> collectionCache = new HashMap<String, Collection>();
 
 	public static Document createItems(Document doc, Context context, Collection col) throws Exception {
 		return createItems(doc, context, col, null, null);
 	}
 
-	public static Document createItems(Document doc, Context context, Collection col, String importId, File file) throws Exception {
-		boolean hasErrors = false;
+	private static Community findCommunity(Context context, String name) throws SQLException {
+		if (communityCache.containsKey(name))
+			return communityCache.get(name);
 
-		NodeList records = doc.getElementsByTagName("Records");
-		for (int i = 0; i < records.getLength(); i++) {
-			Element record = (Element) records.item(i);
-			
-			//Discovering collection
-			if (col == null) { 
-				NodeList collectionNodes = record.getElementsByTagName("Collections");
-				for (int j = 0; j < collectionNodes.getLength(); j++) {
-					String[] collectionInfo = collectionNodes.item(j).getTextContent().split("/");
-					if (collectionInfo.length != 2 || collectionInfo[0].isEmpty() || collectionInfo[1].isEmpty())
-						return null;
-					
-					//Looking for community
-					Community community = Community.findByName(context, collectionInfo[0]);
-					if (community == null) {
-						community = Community.create(null, context, null, false);
-						community.setMetadata("name", collectionInfo[0]);
-						HandleManager.createHandle(context, community);
-						community.update(false);
-						context.commit();
-					}
-					
-					//Looking for collection
-					col = community.getCollectionByName(collectionInfo[1]);
-					if (col == null) {
-						col = Collection.create(context);
-						col.setMetadata("name", collectionInfo[1]);
-						HandleManager.createHandle(context, col);
-						col.update(false);
-						community.addCollection(col, false);
-						context.commit();
-					}
-				}
-			}
-			
-			//Checking collection found
-			if (col == null)
-				throw new Exception("No collection to import");
-			
-			Boolean exists = false;
-			Integer itemId = 0;
-			try {
-				try {
-
-					NodeList identifier = record.getElementsByTagName("Identifier");
-					// itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title",
-					// null,
-					// "ru", tex.getTextContent());
-					for (int k = 0; k < identifier.getLength(); k++) {
-						Element subjectNode = (Element) identifier.item(k);
-						Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
-						Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
-						if (qulSubject.getTextContent().toLowerCase().equals("identifier")) {
-							TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue",
-									"SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"
-											+ textSubject.getTextContent() + "'");
-							if (tri.hasNext()) {
-
-								TableRow row = tri.next();
-								exists = true;
-								itemId = row.getIntColumn("resource_id");
-							}
-							// item.addMetadata(MetadataSchema.DC_SCHEMA,
-							// qualifier,
-							// null, "ru", textSubject.getTextContent());
-							// SoapHelper sh = new SoapHelper();
-							// sh.writeLink(qualifier,
-							// "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
-						}
-					}
-					identifier = null;
-				} catch (Exception e) {
-
-				}
-
-				WorkspaceItem wsitem = null;
-				Item itemItem = null;
-				if (exists == false) {
-					try {
-						wsitem = WorkspaceItem.createMass(context, col, false);
-						itemItem = wsitem.getItem();
-						// response.getWriter().write("test");
-					} catch (Exception e) {
-
-					}
-				} else {
-					try {
-						itemItem = Item.find(context, itemId);
-						itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
-						itemItem.update();
-					} catch (Exception e) {
-					}
-				}
-
-				try {
-					NodeList titleNode = record.getElementsByTagName("Title");
-					// itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title",
-					// null,
-					// "ru", tex.getTextContent());
-					writeMetaDataToItemLowerCaseTitle(itemItem, "title", titleNode);
-					titleNode = null;
-				} catch (Exception e) {
-
-				}
-
-				try {
-					NodeList identifier = record.getElementsByTagName("Identifier");
-					// itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "title",
-					// null,
-					// "ru", tex.getTextContent());
-					writeMetaDataToItemLowerCaseIdentifier(itemItem, "identifier", identifier);
-					identifier = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				NodeList author = record.getElementsByTagName("Creator");
-				writeMetaDataToItemLowerCaseAuthor(itemItem, author);
-
-				NodeList contrib = record.getElementsByTagName("Contributor");
-				writeMetaDataToItemLowerCaseAuthor(itemItem, contrib);
-
-				try {
-					NodeList descrs = record.getElementsByTagName("Description");
-					writeMetaDataToItemLowerCase(itemItem, "description", descrs);
-					descrs = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					Node date = record.getElementsByTagName("Date").item(0);
-
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru", date.getTextContent());
-					date = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					Node publisher = record.getElementsByTagName("Publisher").item(0);
-
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "publisher", null, "ru", publisher.getTextContent());
-					publisher = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					Node type = record.getElementsByTagName("Type").item(0);
-
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "type", null, "ru", type.getTextContent());
-					type = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					Node source = record.getElementsByTagName("Source").item(0);
-
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", null, "ru", source.getTextContent());
-					source = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					Node rights = record.getElementsByTagName("Rights").item(0);
-
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "rights", null, "ru", rights.getTextContent());
-					rights = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					NodeList formats = record.getElementsByTagName("Format");
-					writeMetaDataToItemLowerCase(itemItem, "format", formats);
-					formats = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					NodeList languages = record.getElementsByTagName("Language");
-					writeMetaDataToItemLowerCase(itemItem, "language", languages);
-					languages = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					NodeList relations = record.getElementsByTagName("Relation");
-					writeMetaDataToItemLowerCase(itemItem, "relation", relations);
-					relations = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					NodeList relations = record.getElementsByTagName("Subject");
-					writeMetaDataToItemLowerCase(itemItem, "subject", relations);
-					relations = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-					NodeList coverages = record.getElementsByTagName("Coverage");
-					writeMetaDataToItemLowerCase(itemItem, "subject", coverages);
-					coverages = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				try {
-
-					NodeList citation = record.getElementsByTagName("Citation");
-					writeMetaDataToItemLowerCase(itemItem, "citation", citation);
-					citation = null;
-				} catch (Exception e) {
-					// response.getWriter().write(e.getMessage());
-				}
-
-				DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-				Date today = Calendar.getInstance().getTime();
-				String dateNow = df.format(today);
-
-				try {
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
-				} catch (Exception e1) {
-
-				}
-				try {
-					itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
-				} catch (Exception e2) {
-
-				}
-
-				if (exists == false) {
-					itemItem.setDiscoverable(true);
-
-					// itemItem.update();
-
-					try {
-						HandleManager.createHandle(context, itemItem);
-						Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
-
-						// Metadatum tit = dcorevalues2[0];
-
-						// Group groups = Group.findByName(context,
-						// "Anonymous");
-						TableRow row = DatabaseManager.row("collection2item");
-
-						PreparedStatement statement = null;
-						// ResultSet rs = null;
-						statement = context.getDBConnection().prepareStatement(
-								"DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
-						int ij = statement.executeUpdate();
-						row.setColumn("collection_id", col.getID());
-						row.setColumn("item_id", itemItem.getID());
-						DatabaseManager.insert(context, row);
-
-						itemItem.inheritCollectionDefaultPolicies(col);
-
-						itemItem.setArchived(true);
-
-						StatisticsWriter sw = new StatisticsWriter();
-						sw.writeStatistics(context, "item_added", null);
-
-						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
-							try {
-								XmlWorkflowManager.start(context, wsitem);
-							} catch (Exception e) {
-								// log.error(LogManager.getHeader(context,
-								// "Error
-								// while
-								// starting xml workflow", "Item id: "), e);
-								try {
-									throw new ServletException(e);
-								} catch (ServletException e1) {
-									e1.printStackTrace();
-								}
-							}
-						} else {
-							try {
-								WorkflowManager.start(context, wsitem);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					} catch (Exception e) {
-					}
-					try {
-
-						String name = "dspace";
-						String password = "dspace";
-
-						String authString = name + ":" + password;
-						System.out.println("auth string: " + authString);
-						byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-						String authStringEnc = new String(authEncBytes);
-						System.out.println("Base64 encoded auth string: " + authStringEnc);
-						Node link = record.getElementsByTagName("Link").item(0);
-
-						String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
-
-						String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
-						linkEncode = linkEncode.replace("+", "%20");
-
-						String filenamelel = link.getTextContent()
-								.substring(link.getTextContent().lastIndexOf('\\') + 1);
-
-						URL linkToDownload = new URL(firstUrl + linkEncode);
-						URLConnection urlConnection = linkToDownload.openConnection();
-						urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
-						InputStream iss = urlConnection.getInputStream();
-
-						// InputStream issforPdf = linkToDownload.openStream();
-
-						log.info("wowlol: " + firstUrl + linkEncode);
-						if (exists == false) {
-							itemItem.createBundle("ORIGINAL");
-							Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
-							b.setName(link.getTextContent());
-							b.setDescription("from 1C");
-							b.setSource("1C");
-
-							itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
-
-							BitstreamFormat bf = null;
-
-							bf = FormatIdentifier.guessFormat(context, b);
-							b.setFormat(bf);
-
-							b.update();
-						}
-						itemItem.update();
-
-						iss.close();
-					} catch (Exception e) {
-						log.error("wtferror", e);
-					}
-				}
-
-				//Updating collection owning
-				itemItem.setOwningCollection(col);
-				
-				itemItem.update(false);
-				context.commit();
-
-				try {
-					writeImportLog(context, importId, itemItem, exists);
-				} catch (Exception e) {
-					log.warn("Unable to write into import log", e);
-				}
-				context.commit();
-			} catch (Exception ex) {
-				hasErrors = true;
-				log.error("Something happened with xml import", ex);
-				try {
-					context.getDBConnection().rollback();
-				} catch (SQLException e1) {
-					log.error("Rollback failed", e1);
-				}
-			}
-
-		}
-
-		if (!hasErrors) {
-			return doc;
+		Community community = Community.findByName(context, name);
+		if (community != null) {
+			communityCache.put(name, community);
+			return community;
 		}
 
 		return null;
+	}
+
+	private static Collection findCollection(Context context, Community community, String name) throws SQLException {
+		String key = community.getID() + "_" + name;
+		if (collectionCache.containsKey(key))
+			return collectionCache.get(key);
+
+		Collection collection = community.getCollectionByName(name);
+		if (collection != null) {
+			collectionCache.put(key, collection);
+			return collection;
+		}
+
+		return null;
+	}
+
+	public static Document createItems(Document doc, Context context, Collection col, String importId, File file)
+			throws Exception {
+		try {
+			boolean hasErrors = false;
+
+			NodeList records = doc.getElementsByTagName("Records");
+			for (int i = 0; i < records.getLength(); i++) {
+				Element record = (Element) records.item(i);
+
+				// Discovering collection
+				if (col == null) {
+					NodeList collectionNodes = record.getElementsByTagName("Collections");
+					for (int j = 0; j < collectionNodes.getLength(); j++) {
+						String[] collectionInfo = collectionNodes.item(j).getTextContent().split("/");
+						if (collectionInfo.length != 2 || collectionInfo[0].isEmpty() || collectionInfo[1].isEmpty())
+							return null;
+
+						// Looking for community
+						Community community = findCommunity(context, collectionInfo[0]);
+						if (community == null) {
+							log.debug("Creating community: " + collectionInfo[0]);
+							community = Community.create(null, context, null, false);
+							community.setMetadata("name", collectionInfo[0]);
+							HandleManager.createHandle(context, community);
+							community.update(false);
+							communityCache.put(collectionInfo[0], community);
+							context.commit();
+						}
+
+						// Looking for collection
+						col = findCollection(context, community, collectionInfo[1]);
+						if (col == null) {
+							log.debug("Creating collection: " + collectionInfo[1]);
+							col = Collection.create(context);
+							col.setMetadata("name", collectionInfo[1]);
+							HandleManager.createHandle(context, col);
+							col.update(false);
+							String key = community.getID() + "_" + collectionInfo[1];
+							collectionCache.put(key, col);
+							context.commit();
+							community.addCollection(col, false);
+							context.commit();
+						}
+					}
+				}
+
+				// Checking collection found
+				if (col == null)
+					throw new Exception("No collection to import");
+
+				Boolean exists = false;
+				Integer itemId = 0;
+				try {
+					try {
+
+						NodeList identifier = record.getElementsByTagName("Identifier");
+						// itemItem.addMetadata(MetadataSchema.DC_SCHEMA,
+						// "title",
+						// null,
+						// "ru", tex.getTextContent());
+						for (int k = 0; k < identifier.getLength(); k++) {
+							Element subjectNode = (Element) identifier.item(k);
+							Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
+							Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+							if (qulSubject.getTextContent().toLowerCase().equals("identifier")) {
+								TableRowIterator tri = DatabaseManager.queryTable(context, "metadatavalue",
+										"SELECT resource_id, text_value FROM metadatavalue WHERE text_value='"
+												+ textSubject.getTextContent() + "'");
+								if (tri.hasNext()) {
+
+									TableRow row = tri.next();
+									exists = true;
+									itemId = row.getIntColumn("resource_id");
+								}
+								// item.addMetadata(MetadataSchema.DC_SCHEMA,
+								// qualifier,
+								// null, "ru", textSubject.getTextContent());
+								// SoapHelper sh = new SoapHelper();
+								// sh.writeLink(qualifier,
+								// "http://dspace.ssau.ru/jspui/handle/"+item.getHandle());
+							}
+						}
+						identifier = null;
+					} catch (Exception e) {
+
+					}
+
+					WorkspaceItem wsitem = null;
+					Item itemItem = null;
+					if (exists == false) {
+						try {
+							wsitem = WorkspaceItem.createMass(context, col, false);
+							itemItem = wsitem.getItem();
+							// response.getWriter().write("test");
+						} catch (Exception e) {
+
+						}
+					} else {
+						try {
+							itemItem = Item.find(context, itemId);
+							itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+							itemItem.update();
+						} catch (Exception e) {
+						}
+					}
+
+					try {
+						NodeList titleNode = record.getElementsByTagName("Title");
+						// itemItem.addMetadata(MetadataSchema.DC_SCHEMA,
+						// "title",
+						// null,
+						// "ru", tex.getTextContent());
+						writeMetaDataToItemLowerCaseTitle(itemItem, "title", titleNode);
+						titleNode = null;
+					} catch (Exception e) {
+
+					}
+
+					try {
+						NodeList identifier = record.getElementsByTagName("Identifier");
+						// itemItem.addMetadata(MetadataSchema.DC_SCHEMA,
+						// "title",
+						// null,
+						// "ru", tex.getTextContent());
+						writeMetaDataToItemLowerCaseIdentifier(itemItem, "identifier", identifier);
+						identifier = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					NodeList author = record.getElementsByTagName("Creator");
+					writeMetaDataToItemLowerCaseAuthor(itemItem, author);
+
+					NodeList contrib = record.getElementsByTagName("Contributor");
+					writeMetaDataToItemLowerCaseAuthor(itemItem, contrib);
+
+					try {
+						NodeList descrs = record.getElementsByTagName("Description");
+						writeMetaDataToItemLowerCase(itemItem, "description", descrs);
+						descrs = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						Node date = record.getElementsByTagName("Date").item(0);
+
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "issued", "ru", date.getTextContent());
+						date = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						Node publisher = record.getElementsByTagName("Publisher").item(0);
+
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "publisher", null, "ru",
+								publisher.getTextContent());
+						publisher = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						Node type = record.getElementsByTagName("Type").item(0);
+
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "type", null, "ru", type.getTextContent());
+						type = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						Node source = record.getElementsByTagName("Source").item(0);
+
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", null, "ru", source.getTextContent());
+						source = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						Node rights = record.getElementsByTagName("Rights").item(0);
+
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "rights", null, "ru", rights.getTextContent());
+						rights = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						NodeList formats = record.getElementsByTagName("Format");
+						writeMetaDataToItemLowerCase(itemItem, "format", formats);
+						formats = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						NodeList languages = record.getElementsByTagName("Language");
+						writeMetaDataToItemLowerCase(itemItem, "language", languages);
+						languages = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						NodeList relations = record.getElementsByTagName("Relation");
+						writeMetaDataToItemLowerCase(itemItem, "relation", relations);
+						relations = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						NodeList relations = record.getElementsByTagName("Subject");
+						writeMetaDataToItemLowerCase(itemItem, "subject", relations);
+						relations = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+						NodeList coverages = record.getElementsByTagName("Coverage");
+						writeMetaDataToItemLowerCase(itemItem, "subject", coverages);
+						coverages = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					try {
+
+						NodeList citation = record.getElementsByTagName("Citation");
+						writeMetaDataToItemLowerCase(itemItem, "citation", citation);
+						citation = null;
+					} catch (Exception e) {
+						// response.getWriter().write(e.getMessage());
+					}
+
+					DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+					Date today = Calendar.getInstance().getTime();
+					String dateNow = df.format(today);
+
+					try {
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
+					} catch (Exception e1) {
+
+					}
+					try {
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
+					} catch (Exception e2) {
+
+					}
+
+					if (exists == false) {
+						itemItem.setDiscoverable(true);
+
+						// itemItem.update();
+
+						try {
+							HandleManager.createHandle(context, itemItem);
+							Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null, Item.ANY);
+
+							// Metadatum tit = dcorevalues2[0];
+
+							// Group groups = Group.findByName(context,
+							// "Anonymous");
+							TableRow row = DatabaseManager.row("collection2item");
+
+							PreparedStatement statement = null;
+							// ResultSet rs = null;
+							statement = context.getDBConnection().prepareStatement(
+									"DELETE FROM workspaceitem WHERE workspace_item_id=" + wsitem.getID());
+							int ij = statement.executeUpdate();
+							row.setColumn("collection_id", col.getID());
+							row.setColumn("item_id", itemItem.getID());
+							DatabaseManager.insert(context, row);
+
+							itemItem.inheritCollectionDefaultPolicies(col);
+
+							itemItem.setArchived(true);
+
+							StatisticsWriter sw = new StatisticsWriter();
+							sw.writeStatistics(context, "item_added", null);
+
+							if (ConfigurationManager.getProperty("workflow", "workflow.framework")
+									.equals("xmlworkflow")) {
+								try {
+									XmlWorkflowManager.start(context, wsitem);
+								} catch (Exception e) {
+									// log.error(LogManager.getHeader(context,
+									// "Error
+									// while
+									// starting xml workflow", "Item id: "), e);
+									try {
+										throw new ServletException(e);
+									} catch (ServletException e1) {
+										e1.printStackTrace();
+									}
+								}
+							} else {
+								try {
+									WorkflowManager.start(context, wsitem);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						} catch (Exception e) {
+						}
+						try {
+							Node link = record.getElementsByTagName("Link").item(0);
+
+							InputStream iss = null;
+							if (file != null) {
+								log.debug("Import linked file from local");
+								File linkedFile = new File(file.getParentFile().getAbsoluteFile() + "/" + link.getTextContent());
+								log.debug("Linked file is " + linkedFile.getAbsolutePath());
+								if (linkedFile.exists() && linkedFile.canRead()) {
+									iss = new FileInputStream(linkedFile);
+								}
+							} else {
+								log.debug("Import linked file from remote");
+								
+								String name = "dspace";
+								String password = "dspace";
+
+								String authString = name + ":" + password;
+								System.out.println("auth string: " + authString);
+								byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+								String authStringEnc = new String(authEncBytes);
+								System.out.println("Base64 encoded auth string: " + authStringEnc);
+								
+								//Getting file from url
+								String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+
+								String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+								linkEncode = linkEncode.replace("+", "%20");
+
+								String filenamelel = link.getTextContent()
+										.substring(link.getTextContent().lastIndexOf('\\') + 1);
+
+								URL linkToDownload = new URL(firstUrl + linkEncode);
+								URLConnection urlConnection = linkToDownload.openConnection();
+								urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+								iss = urlConnection.getInputStream();
+								
+								// InputStream issforPdf =
+								// linkToDownload.openStream();
+
+								log.info("wowlol: " + firstUrl + linkEncode);
+							}
+							
+							if (exists == false && iss != null) {
+								log.debug("Uploading file");
+								itemItem.createBundle("ORIGINAL", false);
+								Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss, false);
+								b.setName(link.getTextContent());
+								b.setDescription("from 1C");
+								b.setSource("1C");
+
+								itemItem.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
+
+								BitstreamFormat bf = null;
+
+								bf = FormatIdentifier.guessFormat(context, b);
+								b.setFormat(bf);
+
+								b.update(false);
+							}
+							itemItem.update(false);
+							
+							if (iss != null)
+								iss.close();
+						} catch (Exception e) {
+							log.error("wtferror", e);
+							hasErrors = true;
+						}
+					}
+
+					// Updating collection owning
+					itemItem.setOwningCollection(col);
+
+					itemItem.update(false);
+					context.commit();
+
+					try {
+						writeImportLog(context, importId, itemItem, exists);
+					} catch (Exception e) {
+						log.warn("Unable to write into import log", e);
+					}
+					context.commit();
+				} catch (Exception ex) {
+					hasErrors = true;
+					log.error("Something happened with xml import", ex);
+					try {
+						context.getDBConnection().rollback();
+					} catch (SQLException e1) {
+						log.error("Rollback failed", e1);
+					}
+				}
+
+			}
+
+			if (!hasErrors) {
+				return doc;
+			}
+
+			return null;
+		} finally {
+			communityCache.clear();
+			collectionCache.clear();
+		}
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {

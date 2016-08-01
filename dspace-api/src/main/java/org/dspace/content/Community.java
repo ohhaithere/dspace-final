@@ -677,7 +677,7 @@ public class Community extends DSpaceObject
     public Collection getCollectionByName(String name) throws SQLException {
     	Collection[] collections = getCollections();
     	for (Collection collection: collections) {
-    		if (collection.equals(name))
+    		if (collection.getMetadata("name").equals(name))
     			return collection;
     	}
     	

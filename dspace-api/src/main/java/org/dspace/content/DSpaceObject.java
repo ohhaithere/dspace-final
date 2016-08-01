@@ -76,7 +76,6 @@ public abstract class DSpaceObject
         modifiedMetadata = false;
     }
 
-
     public void updateMetadata() throws SQLException, AuthorizeException {
         // Map counting number of values for each element/qualifier.
         // Keys are Strings: "element" or "element.qualifier"
@@ -1193,7 +1192,8 @@ public abstract class DSpaceObject
     }
 
     protected transient MetadataField[] allMetadataFields = null;
-    protected MetadataField getMetadataField(Metadatum dcv) throws SQLException, AuthorizeException
+    
+    protected MetadataField getMetadataField(Metadatum dcv) throws SQLException
     {
         if (allMetadataFields == null)
         {
