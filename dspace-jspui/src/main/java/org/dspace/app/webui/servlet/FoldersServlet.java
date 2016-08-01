@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.AuthorizeManager;
 import org.dspace.core.Context;
 import org.dspace.folder.FolderService;
 import org.dspace.folder.ImportFolder;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.JsonObject;
+
+import it.sauronsoftware.cron4j.TaskExecutor;
 
 /**
  * Created by lalka on 12/23/2015.
@@ -43,6 +46,10 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
+        
+        if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		}
         
         String action = request.getParameter("action");
         if (action == null) {
@@ -91,7 +98,10 @@ public class FoldersServlet extends DSpaceServlet{
         		ImportFolder folder = ImportFolder.find(context, id);
         		if (folder != null) {
         			success = true;
-        			folderService.execute(id);
+        			TaskExecutor executor = folderService.execute(id);
+        			while (executor.isAlive()) {
+        				Thread.sleep(1000);
+        			}
         		} else {
         			throw new Exception("Folder not exist");
         		}
@@ -112,6 +122,10 @@ public class FoldersServlet extends DSpaceServlet{
 
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
+        
+        if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		}
         
         boolean success = false;
         String error = null;

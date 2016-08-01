@@ -484,8 +484,15 @@ public class Bitstream extends DSpaceObject
      */
     public void update() throws SQLException, AuthorizeException
     {
+    	update(true);
+    }
+    
+    public void update(Boolean checkAuth) throws SQLException, AuthorizeException
+    {
         // Check authorisation
-        AuthorizeManager.authorizeAction(ourContext, this, Constants.WRITE);
+    	if (checkAuth) {
+    		AuthorizeManager.authorizeAction(ourContext, this, Constants.WRITE);
+    	}
 
         log.info(LogManager.getHeader(ourContext, "update_bitstream",
                 "bitstream_id=" + getID()));

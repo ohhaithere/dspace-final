@@ -47,7 +47,7 @@ Date date = (Date) request.getAttribute("date");
 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 %>
 
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+<dspace:layout navbar="admin" style="submission" title="Журнал импорта ресурсов" nocache="true">
 	<script type="text/javascript" src="<%= request.getContextPath() %>/importlog/importlog.js"></script>
 	<script type="text/javascript">
 		var contextPath = '<%= request.getContextPath() %>';

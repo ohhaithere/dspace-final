@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.AuthorizeManager;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
@@ -20,7 +22,6 @@ import org.dspace.importlog.ImportLog;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.ibm.icu.util.Calendar;
 
 public class ImportLogServlet extends DSpaceServlet {
 
@@ -30,6 +31,10 @@ public class ImportLogServlet extends DSpaceServlet {
 		
 		response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
+        
+        if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором просматривать журнал импорта");
+		}
 		
 		String dateStr = request.getParameter("date");
 		Date date;
@@ -131,7 +136,9 @@ public class ImportLogServlet extends DSpaceServlet {
 						recordJson.addProperty("year", record.getYear());
 						recordJson.addProperty("name", record.getName());
 						recordJson.addProperty("authors", record.getAuthors());
-						recordJson.addProperty("link", request.getContextPath() + "/handle/" + record.getLink());
+						Item item = record.getItem(context);
+						String link = (item != null ? request.getContextPath() + "/handle/" + item.getHandle() : null);
+						recordJson.addProperty("link", link);
 						recordJson.addProperty("duplicate", record.getDuplicate());
 						items.add(recordJson);
 					}

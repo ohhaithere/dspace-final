@@ -47,12 +47,12 @@ Date date = (Date) request.getAttribute("date");
 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 %>
 
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+<dspace:layout navbar="admin" style="submission" title="Журнал ошибок импорта" nocache="true">
 	<script type="text/javascript" src="<%= request.getContextPath() %>/importlog/importlog.js"></script>
 	<script type="text/javascript">
 		var contextPath = '<%= request.getContextPath() %>';
 	</script>
-	<h1>Журнал ошибок</h1>
+	<h1>Журнал ошибок импорта</h1>
 	<form id="importerrorlog_form" method="get">
 		<table>
 			<tr>
@@ -88,5 +88,5 @@ DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 		</table>
 		<br>
 	</div>
-	<a href="#" id="logLink">Журнал импорта</a>
+	<a href="#" id="logLink">Журнал импорта ресурсов</a>
 </dspace:layout>

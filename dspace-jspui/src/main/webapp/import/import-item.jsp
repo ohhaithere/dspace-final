@@ -167,7 +167,7 @@
   <b>Дата: </b><%=date%> <br>
   <b>Языки: </b><%=languages%><br>
 
-  <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+  <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
     <input type="hidden" name="collection_id" value="<%=collection_id %>" />
     <input type="hidden" name="community_id" value="<%=community_id %>" />
     <input type="hidden" name="titles" value="<%=titles %>" />

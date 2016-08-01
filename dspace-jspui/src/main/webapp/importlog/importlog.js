@@ -50,6 +50,13 @@ $(function() {
 			loadImportLog(params);
 		}
 	});
+	
+	//Submit form on load
+	var form = $('#importlog_form');
+	if (form.length == 0) {
+		form = $('#importerrorlog_form');
+	}
+	form.submit();
 });
 
 function loadImportLog(params) {
@@ -72,12 +79,18 @@ function loadImportLog(params) {
 				$('#results tbody').empty();
 			}
 			for (var i = 0; i < response.items.length; i++) {
-				var item = $('<tr><td class="year"></td><td class="name"></td><td class="authors"></td><td><a href="#" class="link"></a></td><td class="duplicate"></td></tr>');
+				var item = $('<tr><td class="year"></td><td class="name"></td><td class="authors"></td><td class="link"></td><td class="duplicate"></td></tr>');
 				item.find('.year').text(response.items[i].year);
 				item.find('.name').text(response.items[i].name);
 				item.find('.authors').text(response.items[i].authors);
-				item.find('.link').text(response.items[i].link);
-				item.find('.link').attr('href', response.items[i].link);
+				if (response.items[i].link != null) {
+					var a = $('<a href=""></a>');
+					a.text(response.items[i].link);
+					a.attr('href', response.items[i].link);
+					item.find('.link').append(a);
+				} else {
+					item.find('.link').text('Ресурс удален');
+				}
 				item.find('.duplicate').text(response.items[i].duplicate ? '+' : '-');
 				
 				$('#results tbody').append(item);

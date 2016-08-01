@@ -1,0 +1,17 @@
+# Workflow task email message
+#
+# {0}  Title of submission
+# {1}  Name of collection
+# {2}  submitter's name
+# {3}  Description of task
+# {4}  link to 'my DSpace' page 
+#
+Subject: DSpace: у Вас новая задача
+
+Новый ресурс был размещен:
+
+Заголовок::        {0}
+Коллекция::   {1}
+Размещено: by: {2}
+
+

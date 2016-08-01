@@ -1,0 +1,11 @@
+# E-mail sent to DSpace users when they register for an account
+#
+# Parameters: {0} is expanded to a special registration URL
+#
+# See org.dspace.core.Email for information on the format of this file.
+#
+Subject: Регистрация учетной записи Dspace
+Для завершения регистрации, пожалуйста, проследуйте по ссылке ниже:
+
+  {0}
+

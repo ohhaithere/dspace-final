@@ -8,9 +8,12 @@ import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FilenameUtils;
-import org.dspace.content.Collection;
 import org.dspace.core.Context;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.util.MfuaXmlParser;
@@ -24,6 +27,7 @@ import com.ibm.icu.util.Calendar;
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutionContext;
+import it.sauronsoftware.cron4j.TaskExecutor;
 
 public class FolderServiceImpl implements FolderService {
 	
@@ -95,10 +99,10 @@ public class FolderServiceImpl implements FolderService {
 	}
 	
 	@Override
-	public void execute(int id) {
+	public TaskExecutor execute(int id) {
 		ImportTask task = (ImportTask) scheduler.getTask(schedules.get(id));
 		ImportTask manualTask = new ImportTask(task.getPath(), null);
-		scheduler.launch(manualTask);
+		return scheduler.launch(manualTask);
 	}
 	
 	class ImportTask extends Task {
@@ -129,6 +133,8 @@ public class FolderServiceImpl implements FolderService {
 			importId = UUID.randomUUID().toString();
 			
 			parseDir(new File(path));
+			
+			logger.info("Finished import path for path " + path);
 		}
 		
 		private void parseDir(File dir) {
@@ -142,23 +148,42 @@ public class FolderServiceImpl implements FolderService {
 						f.setValidating(false);
 						DocumentBuilder builder = f.newDocumentBuilder();
 						Document doc = builder.parse(item);
-						Collection collection = Collection.findByName(context, "Тестовая коллекция");
-						if (collection != null) {
-							logger.info("Collection found", collection);
+						Document parsedDocument = MfuaXmlParser.createItems(doc, context, null, importId, item);
+						if (parsedDocument != null) {
+							File outFile = convertPath(item, "out");
+							logger.debug("Moving xml source directory into out direcoty: " + outFile.getParentFile().getAbsolutePath());
+							outFile.getParentFile().mkdirs();
+							item.getParentFile().renameTo(outFile.getParentFile());
+							TransformerFactory transformerFactory = TransformerFactory.newInstance();
+							Transformer transformer = transformerFactory.newTransformer();
+							DOMSource source = new DOMSource(parsedDocument);
+							StreamResult streamResult =  new StreamResult(outFile);
+							transformer.transform(source, streamResult);
 						} else {
-							throw new Exception("Collection not found");
+							throw new Exception("Unable to import XML");
 						}
-						MfuaXmlParser.createItems(doc, context, collection, importId, item);
 					} catch (Exception e) {
+						logger.warn("Import error", e);
+						
+						//Moving file to error directory
+						File errorFile = convertPath(item, "error");
+						logger.debug("Moving xml source directory into error direcoty: " + errorFile.getParentFile().getAbsolutePath());
+						errorFile.getParentFile().mkdirs();
+						item.getParentFile().renameTo(errorFile.getParentFile());
+						
 						try {
 							ImportErrorLog errorLog = ImportErrorLog.create(context, importId);
-							errorLog.setFile(item.getAbsolutePath());
+							errorLog.setFile(errorFile.getAbsolutePath());
 							errorLog.update();
 						} catch (Exception e2) {
 							logger.error("Unable to log import error", e2);
 						}
-						logger.warn("Can't parse XML", e);
 					}
+					
+					//Removing original file parent directory with all files inside
+					File itemDir = item.getParentFile();
+					logger.debug("Removing parent directory: " + itemDir.getAbsolutePath());
+					itemDir.delete();
 				}
 			}
 			
@@ -167,6 +192,20 @@ public class FolderServiceImpl implements FolderService {
 			} catch (SQLException e) {
 				logger.warn("Unknown error", e);
 			}
+		}
+		
+		private File convertPath(File file, String dir) {
+			String filePath = file.getAbsolutePath();
+			String[] pathParts = path.split("/");
+			StringBuilder newPath = new StringBuilder();
+			for (int i = 0; i < (pathParts.length - 1); i++) {
+				if (i > 0) {
+					newPath.append("/");
+				}
+				newPath.append(pathParts[i]);
+			}
+			newPath.append("/" + dir);
+			return new File(filePath.replaceFirst("^" + path, newPath.toString()));
 		}
 		
 	}

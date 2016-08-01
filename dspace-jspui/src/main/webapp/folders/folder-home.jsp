@@ -42,7 +42,7 @@ extraHeadData += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() +
 request.setAttribute("dspace.layout.head", extraHeadData);
 %>
 
-<dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
+<dspace:layout navbar="admin" style="submission" title="Папки для импорта" nocache="true">
 	<script type="text/javascript" src="<%= request.getContextPath() %>/folders/folders.js"></script>
 	<script type="text/javascript">
 		var contextPath = '<%= request.getContextPath() %>';
@@ -61,14 +61,14 @@ request.setAttribute("dspace.layout.head", extraHeadData);
 			</tr>
 			<tr>
 				<td>
-					<input type="number" name="hour" placeholder="чч" max="23" min="00"> :
-					<input type="number" name="minute" placeholder="мм" max="59" min="00">
+					<input type="text" name="hour" pattern="[0-9]{2}" placeholder="чч" max="23" min="00"> :
+					<input type="text" name="minute" pattern="[0-9]{2}" placeholder="мм" max="59" min="00">
 				</td>
 				<td>
 					<select name="date">
 						<option value="" selected="selected">Все</option>
 						<% for (int i = 1; i <= 31; i++) { %>
-						<option value="<%=i%>"><%=i%></option>
+						<option value="<%=i%>"><% if (i < 10) { %>0<% } %><%=i%></option>
 						<% } %>
 					</select>
 				</td>
