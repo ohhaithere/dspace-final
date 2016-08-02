@@ -1155,7 +1155,7 @@ public class ImportServlet extends DSpaceServlet {
 
 
 
-
+            if(exists == false){
             HandleManager.createHandle(context, itemItem);
             Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null,
                     Item.ANY);
@@ -1181,6 +1181,7 @@ public class ImportServlet extends DSpaceServlet {
 
             StatisticsWriter sw = new StatisticsWriter();
             sw.writeStatistics(context, "item_added", null);
+        }
 
 
 
