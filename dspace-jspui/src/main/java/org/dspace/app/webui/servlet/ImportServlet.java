@@ -1181,8 +1181,7 @@ public class ImportServlet extends DSpaceServlet {
 
             StatisticsWriter sw = new StatisticsWriter();
             sw.writeStatistics(context, "item_added", null);
-        }
-
+        
 
 
         if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
@@ -1203,6 +1202,7 @@ public class ImportServlet extends DSpaceServlet {
                 e.printStackTrace();
             }
         }
+    }
 
         
         itemItem.update();
