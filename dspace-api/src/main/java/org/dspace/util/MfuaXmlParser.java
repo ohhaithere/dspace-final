@@ -330,12 +330,12 @@ public class MfuaXmlParser {
 					String dateNow = df.format(today);
 
 					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
 					} catch (Exception e1) {
 
 					}
 					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateNow);
 					} catch (Exception e2) {
 
 					}
@@ -395,6 +395,11 @@ public class MfuaXmlParser {
 							}
 						} catch (Exception e) {
 						}
+
+						statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+        				ij = statement.executeUpdate();
+
+        				
 						Node link = record.getElementsByTagName("Link").item(0);
 
 						InputStream iss = null;
