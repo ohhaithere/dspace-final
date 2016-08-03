@@ -933,18 +933,25 @@ public class ImportServlet extends DSpaceServlet {
 
         }
 
-        if(exists != true){
-            
-        
-
         WorkspaceItem wsitem = null;
-        
+                if (exists == false) {
+                    try {
+                        wsitem = WorkspaceItem.createMass(context, col, false);
+                        itemItem = wsitem.getItem();
+                        // response.getWriter().write("test");
 
-            wsitem = WorkspaceItem.createMass(context, col, false);
-            itemItem = wsitem.getItem();
-            //response.getWriter().write("test");
+                        itemItem.setOwningCollection(col);
+                    } catch (Exception e) {
 
-            itemItem.setOwningCollection(col);
+                    }
+                } else {
+                    try {
+                        itemItem = Item.find(context, itemId);
+                        itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+                        itemItem.update();
+                    } catch (Exception e) {
+                    }
+                }
 
 
 
@@ -1124,7 +1131,7 @@ public class ImportServlet extends DSpaceServlet {
                                     if(exists == false) {
                                         itemItem.createBundle("ORIGINAL");
                                         Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss);
-                                        b.setName(linkEncode);
+                                        b.setName(link.getTextContent());
                                         b.setDescription("from 1C");
                                         b.setSource("1C");
 
@@ -1148,7 +1155,7 @@ public class ImportServlet extends DSpaceServlet {
 
 
 
-
+            if(exists == false){
             HandleManager.createHandle(context, itemItem);
             Metadatum[] dcorevalues2 = itemItem.getMetadata("dc", "identifier", null,
                     Item.ANY);
@@ -1174,7 +1181,7 @@ public class ImportServlet extends DSpaceServlet {
 
             StatisticsWriter sw = new StatisticsWriter();
             sw.writeStatistics(context, "item_added", null);
-
+        
 
 
         if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
@@ -1195,7 +1202,15 @@ public class ImportServlet extends DSpaceServlet {
                 e.printStackTrace();
             }
         }
+    }
 
+        try{
+            PreparedStatement statement = null;
+            statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+            int ij = statement.executeUpdate(); 
+        } catch(Exception e){
+                    
+        }
         
         itemItem.update();
         context.commit();
@@ -1206,7 +1221,7 @@ public class ImportServlet extends DSpaceServlet {
         } catch(Exception e){
 
         }
-    } else {
+    if(exists){
         itemItem = Item.find(context,itemId);
         String link = itemItem.getHandle();
         request.setAttribute("link", HandleManager.getCanonicalForm(link));
@@ -1218,6 +1233,7 @@ public class ImportServlet extends DSpaceServlet {
 
         }
     }
+    
     
     }
 

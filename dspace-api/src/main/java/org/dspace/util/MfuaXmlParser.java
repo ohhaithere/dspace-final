@@ -2,24 +2,30 @@ package org.dspace.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.StatisticsWriter;
-import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Bitstream;
+import org.dspace.content.BitstreamFormat;
 import org.dspace.content.Collection;
+import org.dspace.content.Community;
+import org.dspace.content.FormatIdentifier;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataSchema;
 import org.dspace.content.Metadatum;
@@ -36,16 +42,10 @@ import org.dspace.storage.rdbms.TableRowIterator;
 import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowManager;
 import org.dspace.xmlworkflow.XmlWorkflowManager;
-import org.dspace.content.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.apache.commons.codec.binary.Base64;
-import java.net.URLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.io.InputStream;
 
 public class MfuaXmlParser {
 
@@ -330,12 +330,12 @@ public class MfuaXmlParser {
 					String dateNow = df.format(today);
 
 					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
 					} catch (Exception e1) {
 
 					}
 					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
+						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateNow);
 					} catch (Exception e2) {
 
 					}
@@ -395,6 +395,16 @@ public class MfuaXmlParser {
 							}
 						} catch (Exception e) {
 						}
+
+						try{
+						  PreparedStatement statement = null;
+          				  statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+          				  int ij = statement.executeUpdate(); 
+        				} catch(Exception e){
+        					
+        				}
+
+
 						Node link = record.getElementsByTagName("Link").item(0);
 
 						InputStream iss = null;
