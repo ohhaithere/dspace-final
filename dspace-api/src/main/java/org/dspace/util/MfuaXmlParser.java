@@ -396,10 +396,15 @@ public class MfuaXmlParser {
 						} catch (Exception e) {
 						}
 
-						statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
-        				ij = statement.executeUpdate();
+						try{
+						  PreparedStatement statement = null;
+          				  statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+          				  int ij = statement.executeUpdate(); 
+        				} catch(Exception e){
+        					
+        				}
 
-        				
+
 						Node link = record.getElementsByTagName("Link").item(0);
 
 						InputStream iss = null;
