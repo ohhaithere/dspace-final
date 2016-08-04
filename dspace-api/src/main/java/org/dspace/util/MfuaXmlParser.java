@@ -138,6 +138,10 @@ public class MfuaXmlParser {
 
 				Boolean exists = false;
 				Integer itemId = 0;
+				String dateAc = "";
+				String descrProv = "";
+				String dateAv = "";
+				String identUri = "";
 				try {
 					try {
 
@@ -186,7 +190,19 @@ public class MfuaXmlParser {
 					} else {
 						try {
 							itemItem = Item.find(context, itemId);
+							try{
+								dateAc = itemItem.getMetadata("dc","date","accessioned", null)[0].value;
+								dateAv = itemItem.getMetadata("dc","date","available", null)[0].value;
+								descrProv = itemItem.getMetadata("dc","description","provenance", null)[0].value;
+								identUri = itemItem.getMetadata("dc","identifier","uri", null)[0].value;
+
+							}catch (Exception e){
+							}
 							itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateAc);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateAv);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null, descrProv);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
 						} catch (Exception e) {
 						}
@@ -515,12 +531,16 @@ public class MfuaXmlParser {
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {
-		for (int j = 0; j < nodes.getLength(); j++) {
+		for(int j = 0; j < nodes.getLength(); j++){
 			Element subjectNode = (Element) nodes.item(j);
 			Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
 			Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
-			item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier,
-					qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
+			String qualtext = qulSubject.getTextContent().toLowerCase();
+			if(qulSubject.getTextContent().toLowerCase().equals("subject")){
+				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
+			}else {
+				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
+			}
 		}
 	}
 

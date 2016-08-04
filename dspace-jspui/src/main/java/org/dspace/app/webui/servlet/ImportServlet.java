@@ -905,6 +905,12 @@ public class ImportServlet extends DSpaceServlet {
         Boolean exists = false;
              Integer itemId = 0;
         Item itemItem = null;
+
+        String dateAc = "";
+        String descrProv = "";
+        String dateAv = "";
+        String identUri = "";
+
         try {
             NodeList identifier = record.getElementsByTagName("Identifier");
             
@@ -947,10 +953,23 @@ public class ImportServlet extends DSpaceServlet {
                 } else {
                     try {
                         itemItem = Item.find(context, itemId);
+                        try{
+                            dateAc = itemItem.getMetadata("dc","date","accessioned", null)[0].value;
+                            dateAv = itemItem.getMetadata("dc","date","available", null)[0].value;
+                            descrProv = itemItem.getMetadata("dc","description","provenance", null)[0].value;
+                            identUri = itemItem.getMetadata("dc","identifier","uri", null)[0].value;
+
+                        }catch (Exception e){
+                        }
                         itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
+                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateAc);
+                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateAv);
+                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null, descrProv);
+                        itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
                         itemItem.update();
                     } catch (Exception e) {
                     }
+
                 }
 
 
@@ -1002,6 +1021,7 @@ public class ImportServlet extends DSpaceServlet {
         } catch (Exception e) {
             //response.getWriter().write(e.getMessage());
         }
+
 
         try {
             Node publisher = record.getElementsByTagName("Publisher").item(0);
