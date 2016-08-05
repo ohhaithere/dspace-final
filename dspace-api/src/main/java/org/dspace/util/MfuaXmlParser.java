@@ -2,6 +2,7 @@ package org.dspace.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +33,7 @@ import org.dspace.content.Metadatum;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
+import org.dspace.core.LogManager;
 import org.dspace.handle.HandleManager;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.importlog.ImportLog;
@@ -193,7 +195,7 @@ public class MfuaXmlParser {
 							try{
 								dateAc = itemItem.getMetadata("dc","date","accessioned", null)[0].value;
 								dateAv = itemItem.getMetadata("dc","date","available", null)[0].value;
-								descrProv = itemItem.getMetadata("dc","description","provenance", null)[0].value;
+								descrProv = itemItem.getMetadata("dc","description","provenance", "en")[0].value;
 								identUri = itemItem.getMetadata("dc","identifier","uri", null)[0].value;
 
 							}catch (Exception e){
@@ -500,6 +502,25 @@ public class MfuaXmlParser {
 					Element source = doc.createElement("Source");
 					source.setTextContent(itemLink);
 					record.appendChild(source);
+
+					if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
+						try{
+							XmlWorkflowManager.start(context, wsitem);
+						}catch (Exception e){
+							log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+							try {
+								throw new ServletException(e);
+							} catch (ServletException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}else{
+						try {
+							WorkflowManager.start(context, wsitem);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 
 					try {
 						writeImportLog(context, importId, itemItem, exists);
