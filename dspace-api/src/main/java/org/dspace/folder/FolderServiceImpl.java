@@ -45,7 +45,10 @@ public class FolderServiceImpl implements FolderService {
 		logger.info("Initializing folder service");
 		context = new Context();
 		context.setIgnoreAuthorization(true);
-		context.setCurrentUser(EPerson.find(context, 1));
+		EPerson[] users = EPerson.findAll(context, EPerson.ID);
+		if (users.length > 0) {
+			context.setCurrentUser(users[0]);
+		}
 		scheduler.setDaemon(true);
 		scheduler.start();
 		
