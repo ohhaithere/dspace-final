@@ -132,6 +132,7 @@ request.setAttribute("dspace.layout.head", extraHeadData);
 			<td class="folder-actions">
 				<a id="deletebtn" href="#"><i class="glyphicon glyphicon-remove-sign"></i> Удалить импорт</a>
 				<a id="runbtn" href="#"><i class="glyphicon glyphicon-play-circle"></i> Запустить импорт</a>
+				<span id="progress"><i class="glyphicon glyphicon-time"></i> Выполняется импорт...</span>
 			</td>
 		</tr>
 	</table>

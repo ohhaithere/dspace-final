@@ -21,8 +21,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.JsonObject;
 
-import it.sauronsoftware.cron4j.TaskExecutor;
-
 /**
  * Created by lalka on 12/23/2015.
  */
@@ -66,6 +64,7 @@ public class FoldersServlet extends DSpaceServlet{
 	        	item.addProperty("year", folder.getYear());
 	        	item.addProperty("weekday", folder.getWeekday());
 	        	item.addProperty("path", folder.getPath());
+	        	item.addProperty("alive", folderService.isAliveTask(folder.getID()));
 	        	result.add(Integer.valueOf(folder.getID()).toString(), item);
 	        }
 	        response.setContentType("application/json");
@@ -81,7 +80,7 @@ public class FoldersServlet extends DSpaceServlet{
         			success = true;
         			folderService.reloadSchedules();
         		} else {
-        			throw new Exception("Folder not exist");
+        			throw new Exception("Папка не существует");
         		}
         	} catch (Exception e) {
         		log.error("Unable to delete folder", e);
@@ -93,24 +92,26 @@ public class FoldersServlet extends DSpaceServlet{
 	        response.getWriter().write(json.toString());
         } else if (action.equals("run")) {
         	boolean success = false;
+        	String error = null;
         	try {
         		Integer id = Integer.valueOf(request.getParameter("id"));
         		ImportFolder folder = ImportFolder.find(context, id);
         		if (folder != null) {
         			success = true;
-        			TaskExecutor executor = folderService.execute(id);
-        			while (executor.isAlive()) {
-        				Thread.sleep(1000);
-        			}
+        			folderService.execute(id);
         		} else {
-        			throw new Exception("Folder not exist");
+        			throw new Exception("Папка не существует");
         		}
         	} catch (Exception e) {
-        		log.error("Unable to delete folder", e);
+        		success = false;
+        		log.error("Unable to run import", e);
+        		error = e.getMessage();
         	}
         	
         	JsonObject json = new JsonObject();
     		json.addProperty("success", success);
+    		if (!success)
+    			json.addProperty("error", error);
     		response.setContentType("application/json");
 	        response.getWriter().write(json.toString());
         }

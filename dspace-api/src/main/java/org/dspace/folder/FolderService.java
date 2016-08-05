@@ -22,7 +22,14 @@ public interface FolderService {
 	 * Starts task execution
 	 * @param id ID
 	 * @return TaskExecutor
+	 * @throws Exception
 	 */
-	public TaskExecutor execute(int id);
+	public TaskExecutor execute(int id) throws Exception;
 	
+	/**
+	 * Returns task alive status
+	 * @param id Task ID
+	 * @return Alive status
+	 */
+	public boolean isAliveTask(Integer id);
 }

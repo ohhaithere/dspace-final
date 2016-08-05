@@ -1,4 +1,5 @@
 window.folders = {};
+var selectedFolder = null;
 
 $(function() {
 	$('#folder_form').submit(saveImportFolder);
@@ -11,6 +12,7 @@ $(function() {
 	$('#folder_form select').change(setFormModified);
 	$(document).on('click', '#folder_list a', onFolderSelect);
 	loadImportFolders();
+	setInterval(loadImportFolders, 30000);
 });
 
 function setFormModified() {
@@ -34,6 +36,16 @@ function loadImportFolders() {
 			a.find('span').text(folder.path);
 			container.append(a);
 		}
+		
+		if (selectedFolder != null) {
+			if (response[selectedFolder].alive) {
+				$('.folder-actions #runbtn').hide();
+				$('.folder-actions #progress').show();
+			} else {
+				$('.folder-actions #progress').hide();
+				$('.folder-actions #runbtn').show();
+			}
+		}
 	});
 }
 
@@ -53,10 +65,18 @@ function resetFolderForm(force) {
 	$('#backbtn').hide();
 	$('.folder-actions').hide();
 	$('#folder_list a').removeClass('selected');
+	selectedFolder = null;
 }
 
 function saveImportFolder(e) {
 	e.preventDefault();
+	var hour = parseInt($('#folder_form input[name=hour]').val());
+	var minute = parseInt($('#folder_form input[name=minute]').val());
+	if ((hour != NaN && (hour < 0 || hour > 23)) || (minute != NaN && (minute < 0 || minute > 59))) {
+		alert('Время указано некорректно');
+		return;
+	}
+	
 	$('#savebtn').prop('disabled', true);
 	$('#error').empty();
 	$.ajax({
@@ -114,6 +134,14 @@ function onFolderSelect(e) {
 	$('#savebtn').text('Сохранить');
 	$('#backbtn').show();
 	$('.folder-actions').show();
+	if (folder.alive) {
+		$('.folder-actions #runbtn').hide();
+		$('.folder-actions #progress').show();
+	} else {
+		$('.folder-actions #progress').hide();
+		$('.folder-actions #runbtn').show();
+	}
+	selectedFolder = id;
 }
 
 function deleteFolder(e) {
@@ -145,9 +173,13 @@ function runFolder(e) {
 		dataType: 'json',
 		cache: false
 	}).done(function(response) {
-		alert('Импорт завершен');
-		resetFolderForm(true);
-		loadImportFolders();
+		if (response.success) {
+			loadImportFolders();
+			$('.folder-actions #runbtn').hide();
+			$('.folder-actions #progress').show();
+		} else {
+			alert(response.error);
+		}
 	});
 }
 
