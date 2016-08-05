@@ -503,6 +503,7 @@ public class MfuaXmlParser {
 					source.setTextContent(itemLink);
 					record.appendChild(source);
 
+					if(exists){
 					if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
 						try{
 							XmlWorkflowManager.start(context, wsitem);
@@ -521,6 +522,7 @@ public class MfuaXmlParser {
 							e.printStackTrace();
 						}
 					}
+				}
 
 					try {
 						writeImportLog(context, importId, itemItem, exists);
