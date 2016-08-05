@@ -192,18 +192,19 @@ public class MfuaXmlParser {
 					} else {
 						try {
 							itemItem = Item.find(context, itemId);
-							try{
-								dateAc = itemItem.getMetadata("dc","date","accessioned", null)[0].value;
-								dateAv = itemItem.getMetadata("dc","date","available", null)[0].value;
-								descrProv = itemItem.getMetadata("dc","description","provenance", "en")[0].value;
-								identUri = itemItem.getMetadata("dc","identifier","uri", null)[0].value;
+							try {
+								dateAc = itemItem.getMetadata("dc", "date", "accessioned", null)[0].value;
+								dateAv = itemItem.getMetadata("dc", "date", "available", null)[0].value;
+								descrProv = itemItem.getMetadata("dc", "description", "provenance", "en")[0].value;
+								identUri = itemItem.getMetadata("dc", "identifier", "uri", null)[0].value;
 
-							}catch (Exception e){
+							} catch (Exception e) {
 							}
 							itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateAc);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateAv);
-							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null, descrProv);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null,
+									descrProv);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
 						} catch (Exception e) {
@@ -414,14 +415,14 @@ public class MfuaXmlParser {
 						} catch (Exception e) {
 						}
 
-						try{
-						  PreparedStatement statement = null;
-          				  statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
-          				  int ij = statement.executeUpdate(); 
-        				} catch(Exception e){
-        					
-        				}
+						try {
+							PreparedStatement statement = null;
+							statement = context.getDBConnection()
+									.prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+							int ij = statement.executeUpdate();
+						} catch (Exception e) {
 
+						}
 
 						Node link = record.getElementsByTagName("Link").item(0);
 
@@ -495,34 +496,37 @@ public class MfuaXmlParser {
 
 					itemItem.update(false);
 					context.commit();
-					
-					//Writing link into XML file
-					String itemLink = configurationService.getProperty("dspace.url") + "/handle/" + itemItem.getHandle();
+
+					// Writing link into XML file
+					String itemLink = configurationService.getProperty("dspace.url") + "/handle/"
+							+ itemItem.getHandle();
 					log.debug("Item link: " + itemLink);
 					Element source = doc.createElement("Source");
 					source.setTextContent(itemLink);
 					record.appendChild(source);
 
-					if(exists){
-					if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
-						try{
-							XmlWorkflowManager.start(context, wsitem);
-						}catch (Exception e){
-							log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+					if (exists) {
+						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
 							try {
-								throw new ServletException(e);
-							} catch (ServletException e1) {
-								e1.printStackTrace();
+								XmlWorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								log.error(
+										LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "),
+										e);
+								try {
+									throw new ServletException(e);
+								} catch (ServletException e1) {
+									e1.printStackTrace();
+								}
+							}
+						} else {
+							try {
+								WorkflowManager.start(context, wsitem);
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
 						}
-					}else{
-						try {
-							WorkflowManager.start(context, wsitem);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
 					}
-				}
 
 					try {
 						writeImportLog(context, importId, itemItem, exists);
@@ -550,15 +554,15 @@ public class MfuaXmlParser {
 		} finally {
 			communityCache.clear();
 			collectionCache.clear();
-			
-			//Removing empty collection
+
+			// Removing empty collection
 			if (col.countItems() == 0) {
 				log.info("Removing empty collection " + col.getMetadata("name"));
 				Community[] communities = col.getCommunities();
 				col.delete();
 				context.commit();
-				//Removing empty communities
-				for (Community community: communities) {
+				// Removing empty communities
+				for (Community community : communities) {
 					if (community.countItems() == 0) {
 						log.info("Removing empty community " + community.getMetadata("name"));
 						community.delete();
@@ -570,15 +574,16 @@ public class MfuaXmlParser {
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {
-		for(int j = 0; j < nodes.getLength(); j++){
+		for (int j = 0; j < nodes.getLength(); j++) {
 			Element subjectNode = (Element) nodes.item(j);
 			Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
 			Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
 			String qualtext = qulSubject.getTextContent().toLowerCase();
-			if(qulSubject.getTextContent().toLowerCase().equals("subject")){
+			if (qulSubject.getTextContent().toLowerCase().equals("subject")) {
 				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
-			}else {
-				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
+			} else {
+				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier,
+						qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
 			}
 		}
 	}
