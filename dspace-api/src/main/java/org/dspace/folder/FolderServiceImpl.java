@@ -2,7 +2,9 @@ package org.dspace.folder;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,6 +37,7 @@ public class FolderServiceImpl implements FolderService {
 	private Context context;
 	private Scheduler scheduler = new Scheduler();
 	private Map<Integer, String> schedules = new HashMap<Integer,String>();
+	private List<Integer> aliveTask = new ArrayList<Integer>();
 
 	@Override
 	public void init() throws SQLException {
@@ -91,7 +94,7 @@ public class FolderServiceImpl implements FolderService {
 			}
 			pattern.append(" ");
 			
-			ImportTask task = new ImportTask(folder.getPath(), folder.getYear());
+			ImportTask task = new ImportTask(folder.getID(), folder.getPath(), folder.getYear());
 			String scheduleId = scheduler.schedule(pattern.toString(), task);
 			schedules.put(folder.getID(), scheduleId);
 			Log.info("New import task " + scheduleId);
@@ -99,19 +102,46 @@ public class FolderServiceImpl implements FolderService {
 	}
 	
 	@Override
-	public TaskExecutor execute(int id) {
+	public TaskExecutor execute(int id) throws Exception {
 		ImportTask task = (ImportTask) scheduler.getTask(schedules.get(id));
-		ImportTask manualTask = new ImportTask(task.getPath(), null);
-		return scheduler.launch(manualTask);
+		if (checkImportXml(new File(task.getPath()))) {
+			ImportTask manualTask = new ImportTask(id, task.getPath(), null);
+			return scheduler.launch(manualTask);
+		} else {
+			throw new Exception("В папке отсутствуют XML для импорта");
+		}
+	}
+	
+	@Override
+	public boolean isAliveTask(Integer id) {
+		return aliveTask.contains(id);
+	}
+	
+	private boolean checkImportXml(File path) {
+		if (!path.isDirectory())
+			return false;
+		
+		File[] files = path.listFiles();
+		for (File file: files) {
+			if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xml"))
+				return true;
+			
+			if (file.isDirectory())
+				return checkImportXml(file);
+		}
+		
+		return false;
 	}
 	
 	class ImportTask extends Task {
 		
+		private Integer id;
 		private String path;
 		private Integer year;
 		private String importId;
 		
-		public ImportTask(String path, Integer year) {
+		public ImportTask(Integer id, String path, Integer year) {
+			this.id = id;
 			this.path = path;
 			this.year = year;
 		}
@@ -122,6 +152,11 @@ public class FolderServiceImpl implements FolderService {
 
 		@Override
 		public void execute(TaskExecutionContext context) throws RuntimeException {
+			//Prevent multiple execution
+			if (aliveTask.contains(id))
+				return;
+			
+			aliveTask.add(id);
 			logger.info("Executing import task for path " + path);
 			//Checking year
 			if (year != null) {
@@ -135,6 +170,7 @@ public class FolderServiceImpl implements FolderService {
 			parseDir(new File(path));
 			
 			logger.info("Finished import path for path " + path);
+			aliveTask.remove(id);
 		}
 		
 		private void parseDir(File dir) {
@@ -151,6 +187,8 @@ public class FolderServiceImpl implements FolderService {
 						Document parsedDocument = MfuaXmlParser.createItems(doc, context, null, importId, item);
 						if (parsedDocument != null) {
 							File outFile = convertPath(item, "out");
+							//Removing existing folder from out
+							deleteRecursive(outFile.getParentFile());
 							logger.debug("Moving xml source directory into out direcoty: " + outFile.getParentFile().getAbsolutePath());
 							outFile.getParentFile().mkdirs();
 							item.getParentFile().renameTo(outFile.getParentFile());
@@ -167,6 +205,8 @@ public class FolderServiceImpl implements FolderService {
 						
 						//Moving file to error directory
 						File errorFile = convertPath(item, "error");
+						//Removing existing folder from error
+						deleteRecursive(errorFile.getParentFile());
 						logger.debug("Moving xml source directory into error direcoty: " + errorFile.getParentFile().getAbsolutePath());
 						errorFile.getParentFile().mkdirs();
 						item.getParentFile().renameTo(errorFile.getParentFile());
@@ -206,6 +246,21 @@ public class FolderServiceImpl implements FolderService {
 			}
 			newPath.append("/" + dir);
 			return new File(filePath.replaceFirst("^" + path, newPath.toString()));
+		}
+		
+		private void deleteRecursive(File path) {
+			if (path.isDirectory()) {
+				File[] files = path.listFiles();
+				for (File file: files) {
+					if (file.isDirectory()) {
+						deleteRecursive(file);
+					} else {
+						file.delete();
+					}
+				}
+			}
+			
+			path.delete();
 		}
 		
 	}

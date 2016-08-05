@@ -343,6 +343,35 @@ public class MetadataValue
             return new MetadataValue(row);
         }
     }
+    
+    public static Object findResource(Context context, int resourceId) throws SQLException {
+    	Object resource = null;
+    	
+    	TableRowIterator tri = DatabaseManager.queryTable(context, "MetadataValue",
+                "SELECT resource_type_id FROM MetadataValue where resource_id= ? LIMIT 1",
+                resourceId);
+    	TableRow row = null;
+        try {
+            if (tri.hasNext()) {
+                row = tri.next();
+                switch (row.getIntColumn("resource_type_id")) {
+                	case 2:
+                		resource = Item.find(context, resourceId);
+                		break;
+                		
+                	case 3:
+                		resource = Collection.find(context, resourceId);
+                		break;
+                }
+            }
+        } finally {
+        	if (tri != null) {
+                tri.close();
+            }
+        }
+        
+        return resource;
+    }
 
     /**
      * Retrieves the metadata values for a given field from the database.

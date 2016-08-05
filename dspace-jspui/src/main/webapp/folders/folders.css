@@ -75,9 +75,14 @@
 	border-left: 2px solid #000000;
 }
 
-.folder-actions a {
+.folder-actions a,
+.folder-actions span {
 	display: block;
 	margin-bottom: 10px;
+}
+
+.folder-actions #progress {
+	display: none;
 }
 
 #folder_form #error {
