@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FilenameUtils;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.util.MfuaXmlParser;
 import org.mortbay.log.Log;
@@ -43,6 +44,8 @@ public class FolderServiceImpl implements FolderService {
 	public void init() throws SQLException {
 		logger.info("Initializing folder service");
 		context = new Context();
+		context.setIgnoreAuthorization(true);
+		context.setCurrentUser(EPerson.find(context, 1));
 		scheduler.setDaemon(true);
 		scheduler.start();
 		

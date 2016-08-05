@@ -467,7 +467,7 @@ public class MfuaXmlParser {
 							log.info("wowlol: " + firstUrl + linkEncode);
 						}
 
-						if (exists == false && iss != null) {
+						if (iss != null) {
 							log.debug("Uploading file");
 							itemItem.createBundle("ORIGINAL", false);
 							Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss, false);
@@ -548,6 +548,20 @@ public class MfuaXmlParser {
 		} finally {
 			communityCache.clear();
 			collectionCache.clear();
+			
+			//Removing empty collection
+			if (col.countItems() == 0) {
+				Community[] communities = col.getCommunities();
+				col.delete();
+				context.commit();
+				//Removing empty communities
+				for (Community community: communities) {
+					if (community.countItems() == 0) {
+						community.delete();
+						context.commit();
+					}
+				}
+			}
 		}
 	}
 
