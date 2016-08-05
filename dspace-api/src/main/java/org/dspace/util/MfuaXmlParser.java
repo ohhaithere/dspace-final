@@ -556,13 +556,13 @@ public class MfuaXmlParser {
 			collectionCache.clear();
 
 			// Removing empty collection
-			if (col.countItems() == 0) {
+			if (col != null && col.countItems() == 0) {
 				log.info("Removing empty collection " + col.getMetadata("name"));
 				Community[] communities = col.getCommunities();
-				col.delete();
-				context.commit();
-				// Removing empty communities
 				for (Community community : communities) {
+					community.removeCollection(col);
+					context.commit();
+					// Removing empty communities
 					if (community.countItems() == 0) {
 						log.info("Removing empty community " + community.getMetadata("name"));
 						community.delete();
