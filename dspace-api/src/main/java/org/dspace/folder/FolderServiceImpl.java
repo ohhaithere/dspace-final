@@ -192,11 +192,11 @@ public class FolderServiceImpl implements FolderService {
 							logger.debug("Moving xml source directory into out direcoty: " + outFile.getParentFile().getAbsolutePath());
 							outFile.getParentFile().mkdirs();
 							item.getParentFile().renameTo(outFile.getParentFile());
-							TransformerFactory transformerFactory = TransformerFactory.newInstance();
+							/*TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(parsedDocument);
 							StreamResult streamResult =  new StreamResult(outFile);
-							transformer.transform(source, streamResult);
+							transformer.transform(source, streamResult);*/
 						} else {
 							throw new Exception("Unable to import XML");
 						}
@@ -221,9 +221,7 @@ public class FolderServiceImpl implements FolderService {
 					}
 					
 					//Removing original file parent directory with all files inside
-					File itemDir = item.getParentFile();
-					logger.debug("Removing parent directory: " + itemDir.getAbsolutePath());
-					itemDir.delete();
+					//deleteRecursive(item.getParentFile());
 				}
 			}
 			
@@ -249,6 +247,9 @@ public class FolderServiceImpl implements FolderService {
 		}
 		
 		private void deleteRecursive(File path) {
+			if (!path.exists())
+				return;
+			
 			if (path.isDirectory()) {
 				File[] files = path.listFiles();
 				for (File file: files) {

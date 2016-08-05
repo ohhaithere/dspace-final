@@ -1,6 +1,12 @@
 window.folders = {};
 var selectedFolder = null;
 
+$.fn.filterByData = function(prop, val) {
+    return this.filter(
+        function() { return $(this).data(prop)==val; }
+    );
+};
+
 $(function() {
 	$('#folder_form').submit(saveImportFolder);
 	$('#backbtn').click(function(e) {
@@ -38,6 +44,7 @@ function loadImportFolders() {
 		}
 		
 		if (selectedFolder != null) {
+			$('#folder_list a').filterByData('id', selectedFolder).addClass('selected');
 			if (response[selectedFolder].alive) {
 				$('.folder-actions #runbtn').hide();
 				$('.folder-actions #progress').show();
