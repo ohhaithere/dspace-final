@@ -505,7 +505,7 @@ public class MfuaXmlParser {
 					source.setTextContent(itemLink);
 					record.appendChild(source);
 
-					if (exists) {
+					if (exists == false) {
 						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
 							try {
 								XmlWorkflowManager.start(context, wsitem);
