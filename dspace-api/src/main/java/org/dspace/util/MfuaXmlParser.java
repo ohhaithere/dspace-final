@@ -100,12 +100,12 @@ public class MfuaXmlParser {
 				Element record = (Element) records.item(i);
 
 				// Discovering collection
-				if (col == null) {
+				if (file != null) {
 					NodeList collectionNodes = record.getElementsByTagName("Collections");
 					for (int j = 0; j < collectionNodes.getLength(); j++) {
 						String[] collectionInfo = collectionNodes.item(j).getTextContent().split("/");
 						if (collectionInfo.length != 2 || collectionInfo[0].isEmpty() || collectionInfo[1].isEmpty())
-							return null;
+							continue;
 
 						// Looking for community
 						Community community = findCommunity(context, collectionInfo[0]);
@@ -569,9 +569,12 @@ public class MfuaXmlParser {
 					}
 				}
 				
+				log.debug("Checking for empty collection " + col.getMetadata("name"));
 				for (Collection collection: collections.values()) {
-					if (collection.countItems() > 0)
+					if (collection.countItems() > 0) {
+						log.debug("Collection not empty");
 						continue;
+					}
 					
 					log.info("Removing empty collection " + col.getMetadata("name"));
 					Community[] communities = col.getCommunities();
