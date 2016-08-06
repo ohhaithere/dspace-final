@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 
@@ -95,6 +96,7 @@ public class MfuaXmlParser {
 
 			NodeList records = doc.getElementsByTagName("Records");
 			for (int i = 0; i < records.getLength(); i++) {
+				Map<Integer, Collection> collections = new TreeMap<Integer, Collection>();
 				Element record = (Element) records.item(i);
 
 				// Discovering collection
@@ -118,25 +120,30 @@ public class MfuaXmlParser {
 						}
 
 						// Looking for collection
-						col = findCollection(context, community, collectionInfo[1]);
-						if (col == null) {
+						Collection collection = findCollection(context, community, collectionInfo[1]);
+						if (collection == null) {
 							log.debug("Creating collection: " + collectionInfo[1]);
-							col = Collection.create(context);
-							col.setMetadata("name", collectionInfo[1]);
-							HandleManager.createHandle(context, col);
-							col.update(false);
+							collection = Collection.create(context);
+							collection.setMetadata("name", collectionInfo[1]);
+							HandleManager.createHandle(context, collection);
+							collection.update(false);
 							String key = community.getID() + "_" + collectionInfo[1];
-							collectionCache.put(key, col);
-							context.commit();
-							community.addCollection(col, false);
+							collectionCache.put(key, collection);
 							context.commit();
 						}
+						collections.put(collection.getID(), collection);
 					}
+				} else {
+					collections.put(col.getID(), col);
 				}
 
 				// Checking collection found
-				if (col == null)
-					throw new Exception("No collection to import");
+				if (collections.size() > 0) {
+					// Main collection
+					col = ((TreeMap<Integer, Collection>) collections).firstEntry().getValue();
+				} else {
+					throw new Exception("No collections to import");
+				}
 
 				Boolean exists = false;
 				Integer itemId = 0;
@@ -491,9 +498,27 @@ public class MfuaXmlParser {
 							iss.close();
 					}
 
-					// Updating collection owning
+					// Updating owning collections
 					itemItem.setOwningCollection(col);
-
+					
+					// Current item collections
+					Map<Integer, Collection> itemCollections = new HashMap<Integer, Collection>();
+					for (Collection collection: itemItem.getCollections()) {
+						itemCollections.put(collection.getID(), collection);
+					}
+					
+					//Adding into new collections
+					for (Collection collection: collections.values()) {
+						if (!itemCollections.containsKey(collection.getID()))
+							collection.addItem(itemItem);
+					}
+					
+					// Removing from old collections
+					for (Collection collection: itemCollections.values()) {
+						if (!collections.containsKey(collection.getID()))
+							collection.removeItem(itemItem);
+					}
+					
 					itemItem.update(false);
 					context.commit();
 
@@ -543,6 +568,24 @@ public class MfuaXmlParser {
 						log.error("Rollback failed", e1);
 					}
 				}
+				
+				for (Collection collection: collections.values()) {
+					if (collection.countItems() > 0)
+						continue;
+					
+					log.info("Removing empty collection " + col.getMetadata("name"));
+					Community[] communities = col.getCommunities();
+					for (Community community : communities) {
+						community.removeCollection(col);
+						context.commit();
+						// Removing empty communities
+						if (community.countItems() == 0) {
+							log.info("Removing empty community " + community.getMetadata("name"));
+							community.delete();
+							context.commit();
+						}
+					}
+				}
 
 			}
 
@@ -554,22 +597,6 @@ public class MfuaXmlParser {
 		} finally {
 			communityCache.clear();
 			collectionCache.clear();
-
-			// Removing empty collection
-			if (col != null && col.countItems() == 0) {
-				log.info("Removing empty collection " + col.getMetadata("name"));
-				Community[] communities = col.getCommunities();
-				for (Community community : communities) {
-					community.removeCollection(col);
-					context.commit();
-					// Removing empty communities
-					if (community.countItems() == 0) {
-						log.info("Removing empty community " + community.getMetadata("name"));
-						community.delete();
-						context.commit();
-					}
-				}
-			}
 		}
 	}
 
