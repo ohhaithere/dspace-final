@@ -1298,10 +1298,8 @@ public class AuthorizeManager{
 		
 		//Checking black list rules
 		for (IpAccess rule: blackRules) {
-			if (rule.getIp().contains("/")) {
-				SubnetUtils utils = new SubnetUtils(rule.getIp());
-				if (utils.getInfo().isInRange(ip))
-					return false;
+			if (rule.getIp().contains("-")) {
+				return !isIpInRange(rule.getIp(), ip);
 			} else {
 				if (rule.getIp().equals(ip))
 					return false;
@@ -1312,9 +1310,7 @@ public class AuthorizeManager{
 		if (whiteRules.size() > 0) {
 			for (IpAccess rule: whiteRules) {
 				if (rule.getIp().contains("/")) {
-					SubnetUtils utils = new SubnetUtils(rule.getIp());
-					if (utils.getInfo().isInRange(ip))
-						return true;
+					return isIpInRange(rule.getIp(), ip);
 				} else {
 					if (rule.getIp().equals(ip))
 						return true;
@@ -1324,6 +1320,14 @@ public class AuthorizeManager{
 		}
 		
 		return null;
+    }
+    
+    private static boolean isIpInRange(String range, String ip) {
+    	String[] parts = range.split("-");
+		Long ipStart = Long.valueOf(parts[0].replaceAll("[^0-9]", ""));
+		Long ipEnd = Long.valueOf(parts[1].replaceAll("[^0-9]", ""));
+		Long longIp = Long.valueOf(ip.replaceAll("[^0-9]", ""));
+		return (longIp >= ipStart && longIp <= ipEnd);
     }
 
 }

@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FilenameUtils;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.importlog.ImportErrorLog;
 import org.dspace.util.MfuaXmlParser;
 import org.mortbay.log.Log;
@@ -43,6 +44,11 @@ public class FolderServiceImpl implements FolderService {
 	public void init() throws SQLException {
 		logger.info("Initializing folder service");
 		context = new Context();
+		context.setIgnoreAuthorization(true);
+		EPerson[] users = EPerson.findAll(context, EPerson.ID);
+		if (users.length > 0) {
+			context.setCurrentUser(users[0]);
+		}
 		scheduler.setDaemon(true);
 		scheduler.start();
 		
@@ -221,9 +227,7 @@ public class FolderServiceImpl implements FolderService {
 					}
 					
 					//Removing original file parent directory with all files inside
-					File itemDir = item.getParentFile();
-					logger.debug("Removing parent directory: " + itemDir.getAbsolutePath());
-					itemDir.delete();
+					//deleteRecursive(item.getParentFile());
 				}
 			}
 			
@@ -249,6 +253,9 @@ public class FolderServiceImpl implements FolderService {
 		}
 		
 		private void deleteRecursive(File path) {
+			if (!path.exists())
+				return;
+			
 			if (path.isDirectory()) {
 				File[] files = path.listFiles();
 				for (File file: files) {

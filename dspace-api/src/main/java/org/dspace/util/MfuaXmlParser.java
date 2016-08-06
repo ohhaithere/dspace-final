@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 
@@ -95,15 +96,16 @@ public class MfuaXmlParser {
 
 			NodeList records = doc.getElementsByTagName("Records");
 			for (int i = 0; i < records.getLength(); i++) {
+				Map<Integer, Collection> collections = new TreeMap<Integer, Collection>();
 				Element record = (Element) records.item(i);
 
 				// Discovering collection
-				if (col == null) {
+				if (file != null) {
 					NodeList collectionNodes = record.getElementsByTagName("Collections");
 					for (int j = 0; j < collectionNodes.getLength(); j++) {
 						String[] collectionInfo = collectionNodes.item(j).getTextContent().split("/");
 						if (collectionInfo.length != 2 || collectionInfo[0].isEmpty() || collectionInfo[1].isEmpty())
-							return null;
+							continue;
 
 						// Looking for community
 						Community community = findCommunity(context, collectionInfo[0]);
@@ -118,25 +120,30 @@ public class MfuaXmlParser {
 						}
 
 						// Looking for collection
-						col = findCollection(context, community, collectionInfo[1]);
-						if (col == null) {
+						Collection collection = findCollection(context, community, collectionInfo[1]);
+						if (collection == null) {
 							log.debug("Creating collection: " + collectionInfo[1]);
-							col = Collection.create(context);
-							col.setMetadata("name", collectionInfo[1]);
-							HandleManager.createHandle(context, col);
-							col.update(false);
+							collection = Collection.create(context);
+							collection.setMetadata("name", collectionInfo[1]);
+							HandleManager.createHandle(context, collection);
+							collection.update(false);
 							String key = community.getID() + "_" + collectionInfo[1];
-							collectionCache.put(key, col);
-							context.commit();
-							community.addCollection(col, false);
+							collectionCache.put(key, collection);
 							context.commit();
 						}
+						collections.put(collection.getID(), collection);
 					}
+				} else {
+					collections.put(col.getID(), col);
 				}
 
 				// Checking collection found
-				if (col == null)
-					throw new Exception("No collection to import");
+				if (collections.size() > 0) {
+					// Main collection
+					col = ((TreeMap<Integer, Collection>) collections).firstEntry().getValue();
+				} else {
+					throw new Exception("No collections to import");
+				}
 
 				Boolean exists = false;
 				Integer itemId = 0;
@@ -192,18 +199,19 @@ public class MfuaXmlParser {
 					} else {
 						try {
 							itemItem = Item.find(context, itemId);
-							try{
-								dateAc = itemItem.getMetadata("dc","date","accessioned", null)[0].value;
-								dateAv = itemItem.getMetadata("dc","date","available", null)[0].value;
-								descrProv = itemItem.getMetadata("dc","description","provenance", "en")[0].value;
-								identUri = itemItem.getMetadata("dc","identifier","uri", null)[0].value;
+							try {
+								dateAc = itemItem.getMetadata("dc", "date", "accessioned", null)[0].value;
+								dateAv = itemItem.getMetadata("dc", "date", "available", null)[0].value;
+								descrProv = itemItem.getMetadata("dc", "description", "provenance", "en")[0].value;
+								identUri = itemItem.getMetadata("dc", "identifier", "uri", null)[0].value;
 
-							}catch (Exception e){
+							} catch (Exception e) {
 							}
 							itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateAc);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateAv);
-							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null, descrProv);
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null,
+									descrProv);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
 						} catch (Exception e) {
@@ -414,14 +422,14 @@ public class MfuaXmlParser {
 						} catch (Exception e) {
 						}
 
-						try{
-						  PreparedStatement statement = null;
-          				  statement = context.getDBConnection().prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
-          				  int ij = statement.executeUpdate(); 
-        				} catch(Exception e){
-        					
-        				}
+						try {
+							PreparedStatement statement = null;
+							statement = context.getDBConnection()
+									.prepareStatement("DELETE FROM workflowitem WHERE item_id=" + itemItem.getID());
+							int ij = statement.executeUpdate();
+						} catch (Exception e) {
 
+						}
 
 						Node link = record.getElementsByTagName("Link").item(0);
 
@@ -467,7 +475,7 @@ public class MfuaXmlParser {
 							log.info("wowlol: " + firstUrl + linkEncode);
 						}
 
-						if (exists == false && iss != null) {
+						if (iss != null) {
 							log.debug("Uploading file");
 							itemItem.createBundle("ORIGINAL", false);
 							Bitstream b = itemItem.getBundles("ORIGINAL")[0].createBitstream(iss, false);
@@ -490,35 +498,58 @@ public class MfuaXmlParser {
 							iss.close();
 					}
 
-					// Updating collection owning
+					// Updating owning collections
 					itemItem.setOwningCollection(col);
-
+					
+					// Current item collections
+					Map<Integer, Collection> itemCollections = new HashMap<Integer, Collection>();
+					for (Collection collection: itemItem.getCollections()) {
+						itemCollections.put(collection.getID(), collection);
+					}
+					
+					//Adding into new collections
+					for (Collection collection: collections.values()) {
+						if (!itemCollections.containsKey(collection.getID()))
+							collection.addItem(itemItem);
+					}
+					
+					// Removing from old collections
+					for (Collection collection: itemCollections.values()) {
+						if (!collections.containsKey(collection.getID()))
+							collection.removeItem(itemItem);
+					}
+					
 					itemItem.update(false);
 					context.commit();
-					
-					//Writing link into XML file
-					String itemLink = configurationService.getProperty("dspace.url") + "/handle/" + itemItem.getHandle();
+
+					// Writing link into XML file
+					String itemLink = configurationService.getProperty("dspace.url") + "/handle/"
+							+ itemItem.getHandle();
 					log.debug("Item link: " + itemLink);
 					Element source = doc.createElement("Source");
 					source.setTextContent(itemLink);
 					record.appendChild(source);
 
-					if(ConfigurationManager.getProperty("workflow","workflow.framework").equals("xmlworkflow")){
-						try{
-							XmlWorkflowManager.start(context, wsitem);
-						}catch (Exception e){
-							log.error(LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "), e);
+					if (exists == false) {
+						if (ConfigurationManager.getProperty("workflow", "workflow.framework").equals("xmlworkflow")) {
 							try {
-								throw new ServletException(e);
-							} catch (ServletException e1) {
-								e1.printStackTrace();
+								XmlWorkflowManager.start(context, wsitem);
+							} catch (Exception e) {
+								log.error(
+										LogManager.getHeader(context, "Error while starting xml workflow", "Item id: "),
+										e);
+								try {
+									throw new ServletException(e);
+								} catch (ServletException e1) {
+									e1.printStackTrace();
+								}
 							}
-						}
-					}else{
-						try {
-							WorkflowManager.start(context, wsitem);
-						} catch (IOException e) {
-							e.printStackTrace();
+						} else {
+							try {
+								WorkflowManager.start(context, wsitem);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 
@@ -537,6 +568,27 @@ public class MfuaXmlParser {
 						log.error("Rollback failed", e1);
 					}
 				}
+				
+				log.debug("Checking for empty collection " + col.getMetadata("name"));
+				for (Collection collection: collections.values()) {
+					if (collection.countItems() > 0) {
+						log.debug("Collection not empty");
+						continue;
+					}
+					
+					log.info("Removing empty collection " + col.getMetadata("name"));
+					Community[] communities = col.getCommunities();
+					for (Community community : communities) {
+						community.removeCollection(col);
+						context.commit();
+						// Removing empty communities
+						if (community.countItems() == 0) {
+							log.info("Removing empty community " + community.getMetadata("name"));
+							community.delete();
+							context.commit();
+						}
+					}
+				}
 
 			}
 
@@ -552,15 +604,16 @@ public class MfuaXmlParser {
 	}
 
 	private static void writeMetaDataToItemLowerCase(Item item, String qualifier, NodeList nodes) {
-		for(int j = 0; j < nodes.getLength(); j++){
+		for (int j = 0; j < nodes.getLength(); j++) {
 			Element subjectNode = (Element) nodes.item(j);
 			Node textSubject = subjectNode.getElementsByTagName("Value").item(0);
 			Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
 			String qualtext = qulSubject.getTextContent().toLowerCase();
-			if(qulSubject.getTextContent().toLowerCase().equals("subject")){
+			if (qulSubject.getTextContent().toLowerCase().equals("subject")) {
 				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, null, "ru", textSubject.getTextContent());
-			}else {
-				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier, qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
+			} else {
+				item.addMetadata(MetadataSchema.DC_SCHEMA, qualifier,
+						qulSubject.getTextContent().toLowerCase().replace(" ", ""), "ru", textSubject.getTextContent());
 			}
 		}
 	}
