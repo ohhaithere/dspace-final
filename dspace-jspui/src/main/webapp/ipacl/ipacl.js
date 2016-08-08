@@ -1,4 +1,8 @@
+var selectedIp = null;
+
 $(function() {
+	$('#deletebtn').click(deleteRule);
+	
 	$('input[name=type]').change(function() {
 		if ($('input[name=type]:checked').val() == 'ip') {
 			$('#simpleip').show();
@@ -18,18 +22,39 @@ $(function() {
 		}
 	});
 	
-	/*$('#allow').click(function() {
-		$(this).prop('disabled', true);
-		addRule('allow');
+	$('#whiteList').change(function(e) {
+		if ($(this).find('option:selected').length == 0)
+			return;
+		
+		$('#blackList option').prop('selected', false);
 	});
 	
-	$('#deny').click(function() {
-		$(this).prop('disabled', true);
-		addRule('deny');
-	});*/
+	$('#blackList').change(function(e) {
+		if ($(this).find('option:selected').length == 0)
+			return;
+		
+		$('#whiteList option').prop('selected', false);
+	});
+	
+	$('#whiteList, #blackList').change(function() {
+		var option = $(this).find('option:selected');
+		if (option.length == 0)
+			return;
+		
+		selectedIp = option.val();
+		$('.ipaccess .controls').show();
+	});
 	
 	$('#ipform').submit(function(e) {
 		e.preventDefault();
+		var btn = $('.ipaccess button[clicked=true]');
+		btn.prop('disabled', true);
+		addRule(btn.val());
+	});
+	
+	$('.ipaccess button').click(function() {
+		$('.ipaccess button').removeAttr('clicked');
+	    $(this).attr('clicked', 'true');
 	});
 	
 	loadRules();
@@ -46,6 +71,7 @@ function loadRules() {
 		dataType: 'json',
 		data: data
 	}).done(function(response) {
+		$('.ipaccess .controls').hide();
 		$('#whiteList').empty();
 		$('#blackList').empty();
 		
@@ -87,8 +113,26 @@ function addRule(action) {
 		} else {
 			alert(response.error);
 		}
-		$('input[name=ip]').val('');
+		$('input[name=ip], input[name=ip1], input[name=ip2]').val('');
 	}).always(function() {
 		$('.ipaccess button').prop('disabled', false);
+	});
+}
+
+function deleteRule(e) {
+	e.preventDefault();
+	if (!window.confirm('Вы действительно хотите удалить ip адрес?'))
+		return;
+	
+	$.ajax({
+		url: contextPath + '/ipaccess?action=delete',
+		type: 'POST',
+		cache: false,
+		dataType: 'json',
+		data: {
+			id: selectedIp
+		}
+	}).done(function(response) {
+		loadRules();
 	});
 }

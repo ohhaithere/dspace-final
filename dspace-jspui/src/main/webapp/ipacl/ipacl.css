@@ -17,12 +17,14 @@
 
 .ipaccess select {
 	min-width: 200px;
+	min-height: 100px;
 }
 
 .ipaccess .controls {
 	vertical-align: middle;
 	padding-left: 50px;
 	border-left: 2px solid #000000;
+	display: none;
 }
 
 .ipaccess .controls a {
@@ -30,7 +32,7 @@
 }
 
 .ipaccess .controls a:hover {
-	text-decoration: underline;
+	text-decoration: none;
 }
 
 #blackList {

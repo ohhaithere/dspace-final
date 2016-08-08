@@ -51,6 +51,8 @@
     boolean add_button = (add_b == null ? false : add_b.booleanValue());
     Boolean remove_b = (Boolean)request.getAttribute("remove_button");
     boolean remove_button = (remove_b == null ? false : remove_b.booleanValue());
+    Boolean ip_b = (Boolean)request.getAttribute("ip_button");
+    boolean ip_button = (ip_b == null ? false : ip_b.booleanValue());
 
 	// get the browse indices
     BrowseIndex[] bis = BrowseIndex.getBrowseIndices();
@@ -400,6 +402,12 @@
                  <input type="hidden" name="handle" value="<%= community.getHandle() %>" />
                  <input class="btn btn-default col-md-12" type="submit" value="<fmt:message key="jsp.general.metadataexport.button"/>" />
                </form> -->
+			<% } %>
+			<% if( ip_button ) { %>
+				<form method="get" action="<%=request.getContextPath()%>/ipaccess">
+                    <input type="hidden" name="rid" value="<%= community.getID() %>" />
+                    <input class="btn btn-default col-md-12" type="submit" name="submit" value="Фильтрация IP" />
+                 </form>
 			<% } %>
 			</div>
 		</div>

@@ -96,8 +96,8 @@ if (resource == null) {
 		</tr>
 		<tr>
 			<td colspan="3">
-				<button type="submit" name="submit" value="allow">Разрешить</button>
-				<button type="submit" name="submit" value="deny">Запретить</button>
+				<button type="submit" value="allow">Разрешить</button>
+				<button type="submit" value="deny">Запретить</button>
 			</td>
 			<td></td>
 		</tr>
