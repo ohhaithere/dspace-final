@@ -55,6 +55,8 @@
     Collection[] collections = (Collection[]) request.getAttribute("collections");
     Boolean admin_b = (Boolean)request.getAttribute("admin_button");
     boolean admin_button = (admin_b == null ? false : admin_b.booleanValue());
+    Boolean ip_b = (Boolean)request.getAttribute("ip_button");
+    boolean ip_button = (ip_b == null ? false : ip_b.booleanValue());
 
     Boolean imported = false;
     try{
@@ -159,6 +161,12 @@
                     <%--<input type="submit" name="submit" value="Edit...">--%>
                     <input class="btn btn-default col-md-12" type="submit" name="submit" value="<fmt:message key="jsp.general.edit.button"/>" />
                 </form>
+                <% if (ip_button) { %>
+                <form method="get" action="<%= request.getContextPath() %>/ipaccess">
+                    <input type="hidden" name="rid" value="<%= item.getID() %>" />
+                    <input class="btn btn-default col-md-12" type="submit" name="submit" value="Фильтрация IP" />
+                </form>
+                <% } %>
                 <%
                 if(imported)
                 {

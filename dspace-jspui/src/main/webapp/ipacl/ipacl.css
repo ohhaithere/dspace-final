@@ -1,0 +1,40 @@
+.ipaccess td {
+	padding: 5px;
+}
+
+.ipaccess label {
+	display: block;
+}
+
+.ipaccess .access-type label {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+#iprange {
+	display: none;
+}
+
+.ipaccess select {
+	min-width: 200px;
+	min-height: 100px;
+}
+
+.ipaccess .controls {
+	vertical-align: middle;
+	padding-left: 50px;
+	border-left: 2px solid #000000;
+	display: none;
+}
+
+.ipaccess .controls a {
+	color: #000000;
+}
+
+.ipaccess .controls a:hover {
+	text-decoration: none;
+}
+
+#blackList {
+	margin-right: 50px;
+}

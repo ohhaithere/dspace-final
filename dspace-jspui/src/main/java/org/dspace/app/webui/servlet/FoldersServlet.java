@@ -46,7 +46,7 @@ public class FoldersServlet extends DSpaceServlet{
         request.setCharacterEncoding("UTF-8");
         
         if (!AuthorizeManager.isAdmin(context)) {
-		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		    throw new AuthorizeException("Вы должны быть администратором, чтобы управлять папками для импорта");
 		}
         
         String action = request.getParameter("action");
@@ -125,7 +125,7 @@ public class FoldersServlet extends DSpaceServlet{
         request.setCharacterEncoding("UTF-8");
         
         if (!AuthorizeManager.isAdmin(context)) {
-		    throw new AuthorizeException("Вы должны быть администратором управлять папками для импорта");
+		    throw new AuthorizeException("Вы должны быть администратором, чтобы управлять папками для импорта");
 		}
         
         boolean success = false;

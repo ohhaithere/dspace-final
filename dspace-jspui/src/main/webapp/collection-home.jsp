@@ -63,6 +63,9 @@
 
     Boolean submit_b      = (Boolean)request.getAttribute("can_submit_button");
     boolean submit_button = (submit_b == null ? false : submit_b.booleanValue());
+    
+    Boolean ip_b = (Boolean)request.getAttribute("ip_button");
+    boolean ip_button = (ip_b == null ? false : ip_b.booleanValue());
 
     // get the browse indices
     BrowseIndex[] bis = BrowseIndex.getBrowseIndices();
@@ -346,6 +349,12 @@
                     <input class="btn btn-default col-md-12" type="submit" name="submit_edit" value="<fmt:message key="jsp.collection-home.editsub.button"/>" />
                 </form>
                 <% } %>
+                <% if( ip_button ) { %>
+					<form method="get" action="<%=request.getContextPath()%>/ipaccess">
+	                    <input type="hidden" name="rid" value="<%= collection.getID() %>" />
+	                    <input class="btn btn-default col-md-12" type="submit" name="submit" value="Фильтрация IP" />
+	                 </form>
+				<% } %>
                 <% if( editor_button || admin_button) { %>
                 <!--
                 <form method="post" action="<%=request.getContextPath()%>/mydspace">

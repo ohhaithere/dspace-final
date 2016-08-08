@@ -344,8 +344,8 @@ public class MetadataValue
         }
     }
     
-    public static Object findResource(Context context, int resourceId) throws SQLException {
-    	Object resource = null;
+    public static DSpaceObject findResource(Context context, int resourceId) throws SQLException {
+    	DSpaceObject resource = null;
     	
     	TableRowIterator tri = DatabaseManager.queryTable(context, "MetadataValue",
                 "SELECT resource_type_id FROM MetadataValue where resource_id= ? LIMIT 1",
@@ -361,6 +361,10 @@ public class MetadataValue
                 		
                 	case 3:
                 		resource = Collection.find(context, resourceId);
+                		break;
+                		
+                	case 4:
+                		resource = Community.find(context, resourceId);
                 		break;
                 }
             }

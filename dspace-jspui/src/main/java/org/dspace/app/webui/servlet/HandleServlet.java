@@ -381,6 +381,10 @@ public class HandleServlet extends DSpaceServlet
             // set a variable to create an edit button
             request.setAttribute("admin_button", Boolean.TRUE);
         }
+        
+        if (AuthorizeManager.isAdmin(context)) {
+        	request.setAttribute("ip_button", Boolean.TRUE);
+        }
 
         // Get the collections
         Collection[] collections = item.getCollections();
@@ -573,6 +577,10 @@ public class HandleServlet extends DSpaceServlet
             {
                 // set a variable to create an edit button
                 request.setAttribute("remove_button", Boolean.TRUE);
+            }
+            
+            if (AuthorizeManager.isAdmin(context)) {
+            	request.setAttribute("ip_button", Boolean.TRUE);
             }
 
             // Fire usage event.
@@ -786,6 +794,10 @@ public class HandleServlet extends DSpaceServlet
                 {
                     request.setAttribute("can_submit_button",
                             Boolean.FALSE);
+                }
+                
+                if (AuthorizeManager.isAdmin(context)) {
+                	request.setAttribute("ip_button", Boolean.TRUE);
                 }
             }
 

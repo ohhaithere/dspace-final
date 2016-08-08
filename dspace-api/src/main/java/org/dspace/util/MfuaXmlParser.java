@@ -210,7 +210,7 @@ public class MfuaXmlParser {
 							itemItem.clearDC(Item.ANY, Item.ANY, Item.ANY);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateAc);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateAv);
-							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", null,
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "description", "provenance", "en",
 									descrProv);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
