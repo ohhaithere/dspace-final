@@ -69,14 +69,6 @@ public class IpAccess extends DSpaceObject {
 		myRow.setColumn("resource_id", resourceId);
 	}
 	
-	public Integer getResourceTypeId() {
-		return myRow.getIntColumn("resource_type_id");
-	}
-	
-	public void setResourceTypeId(Integer resourceTypeId) {
-		myRow.setColumn("resource_type_id", resourceTypeId);
-	}
-	
 	public Integer getAccessType() {
 		return myRow.getIntColumn("type");
 	}
@@ -93,8 +85,72 @@ public class IpAccess extends DSpaceObject {
 		myRow.setColumn("ip", ip);
 	}
 	
+	public void delete() throws SQLException {
+		DatabaseManager.delete(ourContext, myRow);
+		log.info(LogManager.getHeader(ourContext, "delete_ip_access", "rule_id=" + getID()));
+	}
+	
+	public static IpAccess create(Context context) throws SQLException, AuthorizeException {
+		if (!AuthorizeManager.isAdmin(context)) {
+		    throw new AuthorizeException("Вы должны быть администратором чтобы создать правило IP доступа");
+		}
+
+		// Create a table row
+		TableRow row = DatabaseManager.create(context, "ip_access");
+		IpAccess f = new IpAccess(context, row);
+		
+		log.info(LogManager.getHeader(context, "ip_access", "rule_id=" + f.getID()));
+		
+		return f;
+	}
+	
+	/**
+	 * Returns folder by ID
+	 * @param context Context
+	 * @param id ID
+	 * @return Folder
+	 * @throws SQLException
+	 */
+	public static IpAccess find(Context context, int id) throws SQLException {
+		TableRow row = DatabaseManager.find(context, "ip_access", id);
+
+        if (row == null) {
+            return null;
+        } else {
+            return new IpAccess(context, row);
+        }
+	}
+	
+	public static IpAccess[] findAll(Context context) throws SQLException {
+
+        // NOTE: The use of 's' in the order by clause can not cause an SQL 
+        // injection because the string is derived from constant values above.
+        TableRowIterator rows = DatabaseManager.query(context, "select * from ip_access");
+
+        try {
+            List<TableRow> gRows = rows.toList();
+            IpAccess[] rules = new IpAccess[gRows.size()];
+
+            for (int i = 0; i < gRows.size(); i++) {
+                TableRow row = gRows.get(i);
+                rules[i] = new IpAccess(context, row);
+            }
+
+            return rules;
+        } finally {
+            if (rows != null) {
+                rows.close();
+            }
+        }
+    }
+	
 	public static IpAccess[] findByResourceId(Context context, Integer resourceId) throws SQLException {
-		TableRowIterator rows = DatabaseManager.query(context, "select * from ip_access WHERE resource_id = ?", resourceId);
+		TableRowIterator rows;
+		if (resourceId != null) {
+			rows = DatabaseManager.query(context, "select * from ip_access WHERE resource_id = ?", resourceId);
+		} else {
+			rows = DatabaseManager.query(context, "select * from ip_access WHERE resource_id IS NULL");
+		}
 		try {
             List<TableRow> gRows = rows.toList();
             IpAccess[] rules = new IpAccess[gRows.size()];

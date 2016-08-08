@@ -14,9 +14,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
-import org.dspace.content.*;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
+import org.dspace.content.Collection;
+import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -1254,7 +1258,7 @@ public class AuthorizeManager{
     		}
     		
     		//Getting resource
-        	Object resource = null;
+        	DSpaceObject resource = null;
         	if (resourceId != null) {
         		resource = MetadataValue.findResource(context, resourceId);
         	}

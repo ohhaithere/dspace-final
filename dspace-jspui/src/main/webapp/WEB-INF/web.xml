@@ -227,6 +227,11 @@
         <servlet-name>reimport-item</servlet-name>
         <servlet-class>org.dspace.app.webui.servlet.ReimportServlet</servlet-class>
     </servlet>
+    
+    <servlet>
+        <servlet-name>ipaccess</servlet-name>
+        <servlet-class>org.dspace.app.webui.servlet.IpAccessServlet</servlet-class>
+    </servlet>
 
   <servlet>
     <servlet-name>community-list</servlet-name>
@@ -574,6 +579,11 @@
     <servlet-mapping>
         <servlet-name>reimport-item</servlet-name>
         <url-pattern>/reimport-item/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>ipaccess</servlet-name>
+        <url-pattern>/ipaccess/*</url-pattern>
     </servlet-mapping>
 
   <servlet-mapping>
