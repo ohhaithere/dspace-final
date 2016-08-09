@@ -130,6 +130,8 @@ public class MfuaXmlParser {
 							String key = community.getID() + "_" + collectionInfo[1];
 							collectionCache.put(key, collection);
 							context.commit();
+							community.addCollection(collection);
+							context.commit();
 						}
 						collections.put(collection.getID(), collection);
 					}
