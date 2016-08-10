@@ -159,24 +159,27 @@ public class FolderServiceImpl implements FolderService {
 		@Override
 		public void execute(TaskExecutionContext context) throws RuntimeException {
 			//Prevent multiple execution
-			if (aliveTask.contains(id))
+			if (isAliveTask(id))
 				return;
 			
-			aliveTask.add(id);
-			logger.info("Executing import task for path " + path);
-			//Checking year
-			if (year != null) {
-				Calendar cal = Calendar.getInstance();
-				if (cal.get(Calendar.YEAR) != year)
-					return;
+			try {
+				aliveTask.add(id);
+				logger.info("Executing import task for path " + path);
+				//Checking year
+				if (year != null) {
+					Calendar cal = Calendar.getInstance();
+					if (cal.get(Calendar.YEAR) != year)
+						return;
+				}
+				
+				importId = UUID.randomUUID().toString();
+				
+				parseDir(new File(path));
+				
+				logger.info("Finished import path for path " + path);
+			} finally {
+				aliveTask.remove(id);
 			}
-			
-			importId = UUID.randomUUID().toString();
-			
-			parseDir(new File(path));
-			
-			logger.info("Finished import path for path " + path);
-			aliveTask.remove(id);
 		}
 		
 		private void parseDir(File dir) {

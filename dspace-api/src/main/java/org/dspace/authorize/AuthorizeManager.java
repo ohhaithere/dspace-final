@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
+import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -1267,7 +1268,20 @@ public class AuthorizeManager{
         	if (resource instanceof Item) {
         		Collection[] collections = ((Item) resource).getCollections();
         		for (Collection collection: collections) {
-        			rules = IpAccess.findByResourceId(context, collection.getID());
+        			/*rules = IpAccess.findByResourceId(context, collection.getID());
+        			hasAccess = checkIpAccess(rules, userIp);*/
+        			hasAccess = hasIpAccess(context, request, collection.getID());
+        			if (hasAccess != null) {
+            			return hasAccess;
+            		}
+        		}
+        	}
+        	
+        	//Checking access to community
+        	if (resource instanceof Collection) {
+        		Community[] communities = ((Collection) resource).getCommunities();
+        		for (Community community: communities) {
+        			rules = IpAccess.findByResourceId(context, community.getID());
         			hasAccess = checkIpAccess(rules, userIp);
         			if (hasAccess != null) {
             			return hasAccess;

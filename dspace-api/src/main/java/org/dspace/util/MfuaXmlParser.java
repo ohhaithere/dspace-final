@@ -357,16 +357,19 @@ public class MfuaXmlParser {
 					Date today = Calendar.getInstance().getTime();
 					String dateNow = df.format(today);
 
-					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
-					} catch (Exception e1) {
 
-					}
-					try {
-						itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateNow);
-					} catch (Exception e2) {
+                    if(exists == false) {
+                        try {
+                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
+                        } catch (Exception e1) {
 
-					}
+                        }
+                        try {
+                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateNow);
+                        } catch (Exception e2) {
+
+                        }
+                    }
 
 					if (exists == false) {
 						itemItem.setDiscoverable(true);
