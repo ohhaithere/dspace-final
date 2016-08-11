@@ -11,8 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.dspace.content.Bitstream;
@@ -21,7 +21,6 @@ import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.MetadataValue;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -130,6 +129,12 @@ public class AuthorizeManager{
     public static void authorizeAction(Context c, DSpaceObject o, int action, boolean useInheritance)
             throws AuthorizeException, SQLException
     {
+    	
+    	//Ip access
+    	if (hasIpAccess(c, o) == false) {
+    		throw new AuthorizeException("Access denied by IP filters configuration");
+    	}
+    	
         if (o == null)
         {
             // action can be -1 due to a null entry
@@ -1234,44 +1239,58 @@ public class AuthorizeManager{
         return policy;
     }
     
-    public static boolean hasIpAccess(Context context, HttpServletRequest request) throws SQLException {
-    	return hasIpAccess(context, request, null);
+    public static boolean hasIpAccess(Context context) throws SQLException {
+    	return hasIpAccess(context, null);
     }
     
-    public static boolean hasIpAccess(Context context, HttpServletRequest request, Integer resourceId) throws SQLException {
+    public static boolean hasIpAccess(Context context, DSpaceObject resource) throws SQLException {
     	//Getting user IP
-    	String userIp = request.getHeader("X-FORWARDED-FOR");
-    	if (userIp == null) {
-    		userIp = request.getRemoteAddr();
-    	}
+    	Pattern p = Pattern.compile(".*ip_addr=((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3}))");
+		Matcher m = p.matcher(context.getExtraLogInfo());
+		String userIp = null;
+		if (m.matches()) {
+			userIp = m.group(1);
+		}
+		
+		if (userIp == null) {
+			log.debug("No ip in context");
+			return true;
+		}
+    	
+		log.debug("User IP is " + userIp);
     	
     	try {
     		//Checking access directly
-    		IpAccess[] rules = IpAccess.findByResourceId(context, resourceId);
+    		if (resource != null) {
+    			log.debug("Checking access to resource " + resource.getID());
+    		} else {
+    			log.debug("Checking global access");
+    		}
+    		IpAccess[] rules = IpAccess.findByResourceId(context, resource != null ? resource.getID() : null);
     		Boolean hasAccess = checkIpAccess(rules, userIp);
     		if (hasAccess != null) {
+    			log.debug("Access filter result: " + hasAccess);
     			return hasAccess;
+    		} else {
+    			log.debug("No direct access rules");
     		}
     		
     		//Is it global access check
-    		if (resourceId == null) {
+    		if (resource == null) {
+    			log.debug("No any access rule found");
     			return true;
     		}
-    		
-    		//Getting resource
-        	DSpaceObject resource = null;
-        	if (resourceId != null) {
-        		resource = MetadataValue.findResource(context, resourceId);
-        	}
         	
         	//Checking access to collection
         	if (resource instanceof Item) {
+        		log.debug("Checking access to item's parent collections");
         		Collection[] collections = ((Item) resource).getCollections();
         		for (Collection collection: collections) {
         			/*rules = IpAccess.findByResourceId(context, collection.getID());
         			hasAccess = checkIpAccess(rules, userIp);*/
-        			hasAccess = hasIpAccess(context, request, collection.getID());
+        			hasAccess = hasIpAccess(context, collection);
         			if (hasAccess != null) {
+        				log.debug("Access filter result: " + hasAccess);
             			return hasAccess;
             		}
         		}
@@ -1279,18 +1298,22 @@ public class AuthorizeManager{
         	
         	//Checking access to community
         	if (resource instanceof Collection) {
+        		log.debug("Checking access to collection's parent communities");
         		Community[] communities = ((Collection) resource).getCommunities();
         		for (Community community: communities) {
         			rules = IpAccess.findByResourceId(context, community.getID());
         			hasAccess = checkIpAccess(rules, userIp);
         			if (hasAccess != null) {
+        				log.debug("Access filter result: " + hasAccess);
             			return hasAccess;
+            		} else {
+            			log.debug("No collection access rules");
             		}
         		}
         	}
         	
         	//Checking global access
-        	return hasIpAccess(context, request);
+        	return hasIpAccess(context);
     	} catch (SQLException e) {
     		log.error("Can't check IP access", e);
     	}
@@ -1307,7 +1330,7 @@ public class AuthorizeManager{
     	List<IpAccess> whiteRules = new ArrayList<IpAccess>();
 		List<IpAccess> blackRules = new ArrayList<IpAccess>();
 		for (IpAccess rule: rules) {
-			if (rule.getType() == IpAccess.BLACK) {
+			if (rule.getAccessType() == IpAccess.BLACK) {
 				blackRules.add(rule);
 			} else {
 				whiteRules.add(rule);
