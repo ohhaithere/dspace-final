@@ -358,7 +358,7 @@ public class MfuaXmlParser {
 					String dateNow = df.format(today);
 
 
-                    if(exists == false) {
+                 /*   if(exists == false) {
                         try {
                             itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
                         } catch (Exception e1) {
@@ -369,7 +369,7 @@ public class MfuaXmlParser {
                         } catch (Exception e2) {
 
                         }
-                    }
+                    }*/
 
 					if (exists == false) {
 						itemItem.setDiscoverable(true);
