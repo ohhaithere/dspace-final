@@ -63,7 +63,7 @@ Date endDate = new Date();
 int m1 = startDate.getMonth();
 int m2 = endDate.getMonth();
 int months = m2 - m1 + 1;
-for(int i = 0; i < months; i++){ %>
+for(int i = 4; i < months; i++){ %>
 <% if(i == 4){ %>
 <a href="<%= request.getContextPath() %>/reports?dateStart=2016-08-01&dateEnd=2016-08-30">Август 2016</a> 
 <% } %>
