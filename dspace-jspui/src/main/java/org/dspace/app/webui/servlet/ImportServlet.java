@@ -607,16 +607,18 @@ public class ImportServlet extends DSpaceServlet {
         Date today = Calendar.getInstance().getTime();
         String dateNow = df.format(today);
 
-        try {
-            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
-        }
-        catch(Exception e1){
 
-        }
-        try {
-            ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
-        } catch(Exception e2){
+        if(exists == false) {
+            try {
+                ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", "ru", dateNow);
+            } catch (Exception e1) {
 
+            }
+            try {
+                ti.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", "ru", dateNow);
+            } catch (Exception e2) {
+
+            }
         }
 
         ti.setDiscoverable(true);
