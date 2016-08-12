@@ -15,6 +15,9 @@
   -    recent.submissions - RecetSubmissions
   --%>
 
+<%@page import="org.dspace.app.webui.util.JSPManager"%>
+<%@page import="org.dspace.authorize.AuthorizeException"%>
+<%@page import="org.dspace.authorize.AuthorizeManager"%>
 <%@page import="org.dspace.core.Utils"%>
 <%@page import="org.dspace.content.Bitstream"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -39,6 +42,10 @@
 <%@ page import="org.dspace.content.Item" %>
 
 <%
+	if (AuthorizeManager.hasIpAccess(UIUtil.obtainContext(request)) == false) {
+		JSPManager.showAuthorizeError(request, response, new AuthorizeException("Access denied by IP filters configuration"));
+	}
+
     Community[] communities = (Community[]) request.getAttribute("communities");
 
     Locale sessionLocale = UIUtil.getSessionLocale(request);
