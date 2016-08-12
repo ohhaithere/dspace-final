@@ -132,7 +132,7 @@ public class AuthorizeManager{
     	
     	//Ip access
     	if (hasIpAccess(c, o) == false) {
-    		throw new AuthorizeException("Access denied by IP filters configuration");
+    		throw new IpAccessException("Access denied by IP filters configuration");
     	}
     	
         if (o == null)

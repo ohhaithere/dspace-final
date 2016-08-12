@@ -20,6 +20,8 @@ import org.dspace.app.webui.util.Authenticate;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.app.webui.util.UIUtil;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.AuthorizeManager;
+import org.dspace.authorize.IpAccessException;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
 
@@ -98,6 +100,13 @@ public class DSpaceServlet extends HttpServlet
             // Obtain a context - either create one, or get the one created by
             // an authentication filter
             context = UIUtil.obtainContext(request);
+            
+            //Checking IP access
+            if (!(this instanceof HandleServlet)) {
+            	if (AuthorizeManager.hasIpAccess(context) == false) {
+            		throw new IpAccessException("Access denied by IP filters configuration");
+            	}
+            }
 
             // Are we resuming a previous request that was interrupted for
             // authentication?
@@ -130,6 +139,10 @@ public class DSpaceServlet extends HttpServlet
             UIUtil.sendAlert(request, se);
 
             JSPManager.showInternalError(request, response);
+        }
+        catch (IpAccessException iae) {
+        	log.debug("Access denied", iae);
+        	JSPManager.showAuthorizeError(request, response, iae);
         }
         catch (AuthorizeException ae)
         {
