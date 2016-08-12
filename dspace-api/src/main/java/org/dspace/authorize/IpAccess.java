@@ -70,11 +70,11 @@ public class IpAccess extends DSpaceObject {
 	}
 	
 	public Integer getAccessType() {
-		return myRow.getIntColumn("type");
+		return myRow.getIntColumn("access_type");
 	}
 	
 	public void setAccessType(Integer type) {
-		myRow.setColumn("type", type);
+		myRow.setColumn("access_type", type);
 	}
 	
 	public String getIp() {
