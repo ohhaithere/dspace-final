@@ -109,11 +109,11 @@ function addRule(action) {
 		data: data
 	}).done(function(response) {
 		if (response.success) {
+			$('input[name=ip], input[name=ip1], input[name=ip2]').val('');
 			loadRules();
 		} else {
 			alert(response.error);
 		}
-		$('input[name=ip], input[name=ip1], input[name=ip2]').val('');
 	}).always(function() {
 		$('.ipaccess button').prop('disabled', false);
 	});
