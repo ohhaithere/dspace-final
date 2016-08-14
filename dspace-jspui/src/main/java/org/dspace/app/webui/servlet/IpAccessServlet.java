@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.AuthorizeManager;
@@ -19,6 +20,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class IpAccessServlet extends DSpaceServlet {
+	
+	/** Logger */
+    private static Logger log = Logger.getLogger(IpAccessServlet.class);
 
 	@Override
 	protected void doDSGet(Context context, HttpServletRequest request, HttpServletResponse response)
@@ -70,19 +74,44 @@ public class IpAccessServlet extends DSpaceServlet {
         
         switch (action) {
         	case "add":
-        		String ip = request.getParameter("ip");
-        		String ip2 = request.getParameter("ip2");
-        		String type = request.getParameter("type");
-        		String ipStr = ip;
-        		if (ip2 != null)
-        			ipStr += "-" + ip2;
-        		IpAccess rule = IpAccess.create(context);
-        		rule.setAccessType(Integer.valueOf(type));
-        		rule.setIp(ipStr);
-        		if (id != null)
-        			rule.setResourceId(Integer.valueOf(id));
-        		rule.update();
-        		json.addProperty("success", true);
+        		boolean success = false;
+        		String error = null;
+        		try {
+	        		String ip = request.getParameter("ip");
+	        		String ip2 = request.getParameter("ip2");
+	        		String type = request.getParameter("type");
+	        		String ipStr = ip;
+	        		if (ip2 != null) {
+	        			Long ipLong = Long.valueOf(ip.replaceAll("[^0-9]", ""));
+	        			Long ip2Long = Long.valueOf(ip2.replaceAll("[^0-9]", ""));
+	        			if (ipLong >= ip2Long)
+	        				throw new Exception("Некорректный диапазон");
+	        			ipStr += "-" + ip2;
+	        		} else {
+	        			//Checking rule exist
+	        			IpAccess[] rules = IpAccess.findByResourceId(context, id != null ? Integer.valueOf(id) : null);
+	        			for (IpAccess rule: rules) {
+	        				if (rule.getIp().contains("-"))
+	        					continue;
+	        				if (ip.equals(rule.getIp()))
+	        					throw new Exception("Для данного IP уже задано правило фильтрации");
+	        			}
+	        		}
+	        		IpAccess rule = IpAccess.create(context);
+	        		rule.setAccessType(Integer.valueOf(type));
+	        		rule.setIp(ipStr);
+	        		if (id != null)
+	        			rule.setResourceId(Integer.valueOf(id));
+	        		rule.update();
+	        		
+	        		success = true;
+        		} catch (Exception e) {
+        			error = e.getMessage();
+        			log.warn("Unable to add IP access rule", e);
+        		}
+        		json.addProperty("success", success);
+        		if (!success)
+        			json.addProperty("error", error);
         		break;
         		
         	case "delete":
