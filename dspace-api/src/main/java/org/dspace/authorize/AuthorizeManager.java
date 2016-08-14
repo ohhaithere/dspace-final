@@ -1350,7 +1350,7 @@ public class AuthorizeManager{
 		//Checking white list rules
 		if (whiteRules.size() > 0) {
 			for (IpAccess rule: whiteRules) {
-				if (rule.getIp().contains("/")) {
+				if (rule.getIp().contains("-")) {
 					return isIpInRange(rule.getIp(), ip);
 				} else {
 					if (rule.getIp().equals(ip))
