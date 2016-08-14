@@ -78,10 +78,12 @@ public class IpAccessServlet extends DSpaceServlet {
         		String error = null;
         		try {
 	        		String ip = request.getParameter("ip");
+	        		validateIp(ip);
 	        		String ip2 = request.getParameter("ip2");
 	        		String type = request.getParameter("type");
 	        		String ipStr = ip;
 	        		if (ip2 != null) {
+	        			validateIp(ip2);
 	        			Long ipLong = Long.valueOf(ip.replaceAll("[^0-9]", ""));
 	        			Long ip2Long = Long.valueOf(ip2.replaceAll("[^0-9]", ""));
 	        			if (ipLong >= ip2Long)
@@ -146,6 +148,14 @@ public class IpAccessServlet extends DSpaceServlet {
         
         response.setContentType("application/json");
         response.getWriter().write(json.toString());
+	}
+	
+	private void validateIp(String ip) throws Exception {
+		String[] octs = ip.split("\\.");
+		for (String oct: octs) {
+			if (Integer.valueOf(oct) < 0 || Integer.valueOf(oct) > 255)
+				throw new Exception("Некорректный IP адрес");
+		}
 	}
 
 }
