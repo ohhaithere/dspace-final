@@ -62,6 +62,10 @@ if (resource == null) {
 		area = ((Item)resource).getMetadata("title");
 	}
 }
+
+if (resource != null) {
+	area = "<a href=\"" + request.getContextPath() + "/handle/" + resource.getHandle() + "\">" + area + "</a>";
+}
 %>
 
 <dspace:layout navbar="admin" style="submission" title="Фильтрация IP адресов" nocache="true">

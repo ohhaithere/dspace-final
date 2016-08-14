@@ -1258,6 +1258,10 @@ public class AuthorizeManager{
 		}
     	
 		log.debug("User IP is " + userIp);
+		
+		//Allow local access
+		if (userIp.equals("127.0.0.1"))
+			return true;
     	
     	try {
     		//Checking access directly
