@@ -744,16 +744,17 @@ public class ItemTag extends TagSupport
             		(style.equals("full")?"colspan=\"2\"":"")
             		+">");
 
-         //   for (int i = 0; i < collections.length; i++)
-          //  {
+            for (int i = 0; i < collections.length; i++) {
                 out.print("<a href=\"");
                 out.print(request.getContextPath());
                 out.print("/handle/");
-                out.print(collections[0].getHandle());
+                out.print(collections[i].getHandle());
                 out.print("\">");
-                out.print(collections[0].getMetadata("name"));
-                out.print("</a><br/>");
-      //      }
+                out.print(collections[i].getMetadata("name"));
+                out.print("</a>");
+                if (i < (collections.length - 1))
+                	out.print("<br/>");
+            }
 
             out.println("</td></tr>");
         }
