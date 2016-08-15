@@ -110,7 +110,7 @@ public class CompleteStep extends AbstractProcessingStep
 
      //   if(dcorevalues3.length == 0)
 
-            item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\SGAU\\" + dateFormat.format(date) + "\\" + item.getID());
+            item.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", null, "ru", "Dspace\\MSAL\\" + dateFormat.format(date) + "\\" + item.getID());
 
 
         try {

@@ -65,6 +65,7 @@ function resetFolderForm(force) {
 				return;
 		}
 	}
+	$('#error').empty();
 	form.removeClass('modified');
 	form.get(0).reset();
 	form.find('input[name=id]').val('');
@@ -117,6 +118,7 @@ function onFolderSelect(e) {
 		if (!window.confirm("У Вас есть несохраненное расписание.\nПерейти к редактированию?"))
 			return;
 	}
+	$('#error').empty();
 	form.removeClass('modified');
 	$('#folder_list a').removeClass('selected');
 	$(this).addClass('selected');
