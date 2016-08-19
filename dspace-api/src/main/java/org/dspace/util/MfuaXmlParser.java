@@ -133,7 +133,8 @@ public class MfuaXmlParser {
 							community.addCollection(collection);
 							context.commit();
 						}
-						collections.put(collection.getID(), collection);
+						if (!collections.containsKey(collection.getID()))
+							collections.put(collection.getID(), collection);
 					}
 				} else {
 					collections.put(col.getID(), col);
@@ -514,8 +515,11 @@ public class MfuaXmlParser {
 					
 					//Adding into new collections
 					for (Collection collection: collections.values()) {
-						if (!itemCollections.containsKey(collection.getID()))
-							collection.addItem(itemItem);
+						if (itemCollections.containsKey(collection.getID()))
+							continue;
+						
+						collection.addItem(itemItem);
+						itemCollections.put(collection.getID(), collection);
 					}
 					
 					// Removing from old collections
