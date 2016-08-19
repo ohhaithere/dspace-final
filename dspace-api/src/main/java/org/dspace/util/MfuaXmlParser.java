@@ -217,6 +217,7 @@ public class MfuaXmlParser {
 									descrProv);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
+							context.commit();
 						} catch (Exception e) {
 						}
 					}
@@ -499,6 +500,7 @@ public class MfuaXmlParser {
 							b.update(false);
 						}
 						itemItem.update(false);
+						context.commit();
 
 						if (iss != null)
 							iss.close();
@@ -519,6 +521,7 @@ public class MfuaXmlParser {
 							continue;
 						
 						collection.addItem(itemItem);
+						context.commit();
 						itemCollections.put(collection.getID(), collection);
 					}
 					
@@ -526,6 +529,7 @@ public class MfuaXmlParser {
 					for (Collection collection: itemCollections.values()) {
 						if (!collections.containsKey(collection.getID()))
 							collection.removeItem(itemItem);
+						context.commit();
 					}
 					
 					itemItem.update(false);
