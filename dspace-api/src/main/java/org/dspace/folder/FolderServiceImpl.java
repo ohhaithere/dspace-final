@@ -163,14 +163,15 @@ public class FolderServiceImpl implements FolderService {
 				return;
 			
 			try {
-				aliveTask.add(id);
-				logger.info("Executing import task for path " + path);
 				//Checking year
 				if (year != null) {
 					Calendar cal = Calendar.getInstance();
 					if (cal.get(Calendar.YEAR) != year)
 						return;
 				}
+				
+				aliveTask.add(id);
+				logger.info("Executing import task for path " + path);
 				
 				importId = UUID.randomUUID().toString();
 				
