@@ -133,7 +133,8 @@ public class MfuaXmlParser {
 							community.addCollection(collection);
 							context.commit();
 						}
-						collections.put(collection.getID(), collection);
+						if (!collections.containsKey(collection.getID()))
+							collections.put(collection.getID(), collection);
 					}
 				} else {
 					collections.put(col.getID(), col);
@@ -216,6 +217,7 @@ public class MfuaXmlParser {
 									descrProv);
 							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "identifier", "uri", null, identUri);
 							itemItem.update();
+							context.commit();
 						} catch (Exception e) {
 						}
 					}
@@ -498,6 +500,7 @@ public class MfuaXmlParser {
 							b.update(false);
 						}
 						itemItem.update(false);
+						context.commit();
 
 						if (iss != null)
 							iss.close();
@@ -514,14 +517,35 @@ public class MfuaXmlParser {
 					
 					//Adding into new collections
 					for (Collection collection: collections.values()) {
-						if (!itemCollections.containsKey(collection.getID()))
-							collection.addItem(itemItem);
+						if (itemCollections.containsKey(collection.getID()))
+							continue;
+						
+						collection.addItem(itemItem);
+						context.commit();
+						itemCollections.put(collection.getID(), collection);
 					}
 					
 					// Removing from old collections
 					for (Collection collection: itemCollections.values()) {
 						if (!collections.containsKey(collection.getID()))
 							collection.removeItem(itemItem);
+						context.commit();
+						
+						// Checking collection is empty
+						if (collection.countItems() == 0) {
+							log.info("Removing empty collection " + collection.getMetadata("name"));
+							Community[] communities = collection.getCommunities();
+							for (Community community : communities) {
+								community.removeCollection(collection);
+								context.commit();
+								// Removing empty communities
+								if (community.countItems() == 0) {
+									log.info("Removing empty community " + community.getMetadata("name"));
+									community.delete();
+									context.commit();
+								}
+							}
+						}
 					}
 					
 					itemItem.update(false);
@@ -581,10 +605,10 @@ public class MfuaXmlParser {
 						continue;
 					}
 					
-					log.info("Removing empty collection " + col.getMetadata("name"));
-					Community[] communities = col.getCommunities();
+					log.info("Removing empty collection " + collection.getMetadata("name"));
+					Community[] communities = collection.getCommunities();
 					for (Community community : communities) {
-						community.removeCollection(col);
+						community.removeCollection(collection);
 						context.commit();
 						// Removing empty communities
 						if (community.countItems() == 0) {

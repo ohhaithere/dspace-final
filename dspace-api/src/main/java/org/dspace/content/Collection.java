@@ -617,7 +617,6 @@ public class Collection extends DSpaceObject
         {
             setMetadataSingleValue(MDValue[0], MDValue[1], MDValue[2], null, value);
         }
-
         addDetails(field);
     }
 
@@ -1098,7 +1097,7 @@ public class Collection extends DSpaceObject
      * @throws SQLException
      * @throws AuthorizeException
      * @throws IOException
-     */
+     */    
     public void removeItem(Item item) throws SQLException, AuthorizeException,
             IOException
     {
@@ -1156,7 +1155,7 @@ public class Collection extends DSpaceObject
                 "collection_id=" + getID()));
 
         DatabaseManager.update(ourContext, collectionRow);
-
+        
         if (modified)
         {
             ourContext.addEvent(new Event(Event.MODIFY, Constants.COLLECTION, 
@@ -1168,6 +1167,8 @@ public class Collection extends DSpaceObject
             updateMetadata();
             clearDetails();
         }
+        
+        ourContext.clearCache();
     }
 
     public boolean canEditBoolean() throws java.sql.SQLException

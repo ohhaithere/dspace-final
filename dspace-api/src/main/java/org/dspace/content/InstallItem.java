@@ -222,7 +222,8 @@ public class InstallItem
         throws SQLException, IOException, AuthorizeException
     {
         // create collection2item mapping
-        is.getCollection().addItem(item);
+    	if (!item.isIn(is.getCollection()))
+    		is.getCollection().addItem(item);
 
         // set owning collection
         item.setOwningCollection(is.getCollection());
