@@ -485,7 +485,6 @@ public class Community extends DSpaceObject
         {
             setMetadataSingleValue(MDValue[0], MDValue[1], MDValue[2], null, value);
         }
-
         addDetails(field);
     }
 
@@ -592,6 +591,8 @@ public class Community extends DSpaceObject
             updateMetadata();
             clearDetails();
         }
+        
+        ourContext.clearCache();
     }
 
     /**
@@ -675,7 +676,7 @@ public class Community extends DSpaceObject
      * @throws SQLException
      */
     public Collection getCollectionByName(String name) throws SQLException {
-    	Collection[] collections = getCollections();
+    	Collection[] collections = getCollections(false);
     	for (Collection collection: collections) {
     		if (collection.getMetadata("name").equals(name))
     			return collection;
@@ -691,6 +692,11 @@ public class Community extends DSpaceObject
      * @return array of Collection objects
      */
     public Collection[] getCollections() throws SQLException
+    {
+    	return getCollections(true);
+    }
+    
+    public Collection[] getCollections(Boolean useCache) throws SQLException
     {
         List<Collection> collections = new ArrayList<Collection>();
 
@@ -728,7 +734,7 @@ public class Community extends DSpaceObject
                 Collection fromCache = (Collection) ourContext.fromCache(
                         Collection.class, row.getIntColumn("collection_id"));
 
-                if (fromCache != null)
+                if (useCache && fromCache != null)
                 {
                     collections.add(fromCache);
                 }
