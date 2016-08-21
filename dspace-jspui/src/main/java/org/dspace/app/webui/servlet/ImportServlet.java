@@ -59,6 +59,11 @@ public class ImportServlet extends DSpaceServlet {
                            HttpServletResponse response) throws ServletException, IOException,
             SQLException, AuthorizeException {
 
+        if (context.getCurrentUser() == null)
+        {
+            request.getRequestDispatcher("/login/password.jsp").forward(request, response);
+        }
+
 
         request.setAttribute("community_id", request.getParameter("community_id"));
         request.setAttribute("collection_id", request.getParameter("collection_id"));
