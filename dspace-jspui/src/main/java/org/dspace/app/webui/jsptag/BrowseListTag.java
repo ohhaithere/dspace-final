@@ -407,10 +407,6 @@ public class BrowseListTag extends TagSupport
             String idCheck = "t" + Integer.toString(cOddOrEven.length + 1);
             String cssCheck = "oddRow" + cOddOrEven[cOddOrEven.length - 2] + "Col";
 
-            out.print("<th id=\"" + idCheck +  "\" class=\"" + cssCheck + "\">"
-                    + "<strong>"
-                    + "Экспорт"
-                    + "</strong>" + "</th>");
 
             if (linkToEdit)
             {
@@ -648,10 +644,7 @@ public class BrowseListTag extends TagSupport
                 }
                 String id = "t" + Integer.toString(cOddOrEven.length + 1);
 
-                out.print("<td headers=\"" + id + "\" class=\""
-                        + rOddOrEven + "Row" + cOddOrEven[cOddOrEven.length - 2] + "Col\" nowrap>" +
-                        "<input type=\"checkbox\" name=\"vehicle\" id=\"" + items[i].getID() + "\" class=\"exportThisItem\""
-                        + "></td>");
+
                 out.println("</tr>");
             }
 
