@@ -167,9 +167,9 @@ public class SoapHelper {
         }else {
             title = "";
         }
-            request.setAttribute("url", ("http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + name + bothStr + title + ")").replace("\"", "&quot;"));
+            request.setAttribute("url", ("http://irbisnew.msal.local:210/book2+stapr?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + name + bothStr + title + ")").replace("\"", "&quot;"));
             log.info("WTF " + "http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + name + bothStr + title + ")");
-            doc = db.parse(new URL("http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + name + bothStr + title + ")").openStream());
+            doc = db.parse(new URL("http://irbisnew.msal.local:210/book2+stapr?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + name + bothStr + title + ")").openStream());
         } catch (SAXException e) {
             log.info("wtf " + e.getMessage());
         } catch (IOException e) {
@@ -222,9 +222,9 @@ public class SoapHelper {
         } else{
             id = "";
         }
-            request.setAttribute("url", ("http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=("  + id  + ")").replace("\"", "&quot;"));
+            request.setAttribute("url", ("http://irbisnew.msal.local:210/book2+stapr?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=("  + id  + ")").replace("\"", "&quot;"));
             log.info("WTF " + "http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + id  + ")");
-            doc = db.parse(new URL("http://irbisnew.msal.local:210/book2?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + id + ")").openStream());
+            doc = db.parse(new URL("http://irbisnew.msal.local:210/book2+stapr?version=1.1&operation=searchRetrieve&maximumRecords=20&recordSchema=user&query=(" + id + ")").openStream());
         } catch (SAXException e) {
             log.info("wtf " + e.getMessage());
         } catch (IOException e) {
