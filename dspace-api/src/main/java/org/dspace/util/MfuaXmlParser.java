@@ -404,28 +404,6 @@ public class MfuaXmlParser {
 							StatisticsWriter sw = new StatisticsWriter();
 							sw.writeStatistics(context, "item_added", null);
 
-							if (ConfigurationManager.getProperty("workflow", "workflow.framework")
-									.equals("xmlworkflow")) {
-								try {
-									XmlWorkflowManager.start(context, wsitem);
-								} catch (Exception e) {
-									// log.error(LogManager.getHeader(context,
-									// "Error
-									// while
-									// starting xml workflow", "Item id: "), e);
-									try {
-										throw new ServletException(e);
-									} catch (ServletException e1) {
-										e1.printStackTrace();
-									}
-								}
-							} else {
-								try {
-									WorkflowManager.start(context, wsitem);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
 						} catch (Exception e) {
 						}
 
