@@ -245,14 +245,15 @@ public class FolderServiceImpl implements FolderService {
 		private File convertPath(File file, String dir) {
 			String filePath = file.getAbsolutePath();
 			String[] pathParts = path.split("/");
+			String db = pathParts[pathParts.length - 1];
 			StringBuilder newPath = new StringBuilder();
-			for (int i = 0; i < (pathParts.length - 1); i++) {
+			for (int i = 0; i < (pathParts.length - 2); i++) {
 				if (i > 0) {
 					newPath.append("/");
 				}
 				newPath.append(pathParts[i]);
 			}
-			newPath.append("/" + dir);
+			newPath.append("/" + dir + "/" + db);
 			return new File(filePath.replaceFirst("^" + path, newPath.toString()));
 		}
 		
