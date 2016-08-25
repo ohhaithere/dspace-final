@@ -194,7 +194,7 @@ public class ImportLog extends DSpaceObject {
 	}
 	
 	public static Date getLastDate(Context context) throws SQLException {
-		TableRowIterator rows = DatabaseManager.query(context, "SELECT import_id FROM " + tableName + " ORDER BY date DESC LIMIT 1");
+		TableRowIterator rows = DatabaseManager.query(context, "SELECT date FROM " + tableName + " ORDER BY date DESC LIMIT 1");
 		if (rows.hasNext()) {
 			TableRow row = rows.next();
 			return row.getDateColumn("date");
