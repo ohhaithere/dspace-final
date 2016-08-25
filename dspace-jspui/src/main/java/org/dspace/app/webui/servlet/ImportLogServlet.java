@@ -35,23 +35,34 @@ public class ImportLogServlet extends DSpaceServlet {
         if (!AuthorizeManager.isAdmin(context)) {
 		    throw new AuthorizeException("Вы должны быть администратором просматривать журнал импорта");
 		}
+        
+		String area = request.getParameter("area");
+		String action = request.getParameter("action");
 		
 		String dateStr = request.getParameter("date");
-		Date date;
+		Date date = null;
 		try {
 			if (dateStr != null) {
 				DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 				date = df.parse(dateStr);
-			} else {
-				throw new Exception("Date parse failed");
 			}
-		} catch (Exception e) {
-			date = Calendar.getInstance().getTime();
+		} catch (Exception e) {}
+		
+		if (area != null && area.equals("errors")) {
+			if (date == null) {
+				date = ImportErrorLog.getLastDate(context);
+				if (date == null)
+					date = Calendar.getInstance().getTime();
+			}
+		} else {
+			if (date == null) {
+				date = ImportLog.getLastDate(context);
+				if (date == null)
+					date = Calendar.getInstance().getTime();
+			}
 		}
 		request.setAttribute("date", date);
 		
-		String area = request.getParameter("area");
-		String action = request.getParameter("action");
 		if (area != null && area.equals("errors")) {
 			if (action == null) {
 				JSPManager.showJSP(request, response, "/importlog/errors.jsp");
