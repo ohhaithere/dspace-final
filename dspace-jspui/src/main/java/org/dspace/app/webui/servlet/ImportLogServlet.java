@@ -37,22 +37,23 @@ public class ImportLogServlet extends DSpaceServlet {
 		}
 		
 		String dateStr = request.getParameter("date");
-		Date date;
+		Date date = null;
 		try {
 			if (dateStr != null) {
 				DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 				date = df.parse(dateStr);
-			} else {
-				throw new Exception("Date parse failed");
 			}
-		} catch (Exception e) {
-			date = Calendar.getInstance().getTime();
-		}
+		} catch (Exception e) {}
 		request.setAttribute("date", date);
 		
 		String area = request.getParameter("area");
 		String action = request.getParameter("action");
 		if (area != null && area.equals("errors")) {
+			if (date == null) {
+				date = ImportErrorLog.getLastDate(context);
+				if (date == null)
+					date = Calendar.getInstance().getTime();
+			}
 			if (action == null) {
 				JSPManager.showJSP(request, response, "/importlog/errors.jsp");
 			} else {
@@ -102,6 +103,11 @@ public class ImportLogServlet extends DSpaceServlet {
 				response.getWriter().write(json.toString());
 			}
 		} else {
+			if (date == null) {
+				date = ImportLog.getLastDate(context);
+				if (date == null)
+					date = Calendar.getInstance().getTime();
+			}
 			if (action == null) {
 				JSPManager.showJSP(request, response, "/importlog/log.jsp");
 			} else {
