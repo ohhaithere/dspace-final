@@ -1288,15 +1288,11 @@ public class AuthorizeManager{
         	//Checking access to collection
         	if (resource instanceof Item) {
         		log.debug("Checking access to item's parent collections");
-        		Collection[] collections = ((Item) resource).getCollections();
-        		for (Collection collection: collections) {
-        			/*rules = IpAccess.findByResourceId(context, collection.getID());
-        			hasAccess = checkIpAccess(rules, userIp);*/
-        			hasAccess = hasIpAccess(context, collection);
-        			if (hasAccess != null) {
-        				log.debug("Access filter result: " + hasAccess);
-            			return hasAccess;
-            		}
+        		Collection collection = ((Item) resource).getOwningCollection();
+    			hasAccess = hasIpAccess(context, collection);
+    			if (hasAccess != null) {
+    				log.debug("Access filter result: " + hasAccess);
+        			return hasAccess;
         		}
         	}
         	
