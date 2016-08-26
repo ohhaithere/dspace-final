@@ -30,6 +30,7 @@ $(function() {
 	});
 	
 	$('#prevLink, #nextLink').click(function(e) {
+		e.preventDefault();
 		var params = {
 			id: $(this).data('id')
 		};
@@ -40,6 +41,7 @@ $(function() {
 		}
 	});
 	$('#loadMore').click(function(e) {
+		e.preventDefault();
 		var params = {
 			id: $(this).data('id'),
 			page: $(this).data('page')
