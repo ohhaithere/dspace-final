@@ -44,6 +44,8 @@
         <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css" type="text/css" />
         <link rel="stylesheet" href="<%= request.getContextPath() %>/print.css" media="print" type="text/css" />
         <link rel="shortcut icon" href="<%= request.getContextPath() %>/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="<%= request.getContextPath() %>/static/css/main.css" type="text/css" />
+	    <link rel="stylesheet" href="<%= request.getContextPath() %>/static/css/select2.css" type="text/css" />
 <%
     if (extraHeadData != null)
         { %>

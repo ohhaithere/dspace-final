@@ -1295,6 +1295,7 @@
     </arr>
   </requestHandler>
 
+<queryResponseWriter name="velocity" class="solr.VelocityResponseWriter"/>
  
 <requestHandler name="/browse" class="solr.SearchHandler">
     <lst name="defaults">
@@ -1891,6 +1892,7 @@
   <!--
      Custom response writers can be declared as needed...
     -->
+    <queryResponseWriter name="velocity" class="solr.VelocityResponseWriter" startup="lazy"/>
   
 
   <!-- XSLT response writer transforms the XML output by any xslt file found

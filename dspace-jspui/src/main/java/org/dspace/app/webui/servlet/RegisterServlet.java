@@ -96,7 +96,7 @@ public class RegisterServlet extends DSpaceServlet
                 // Registering a new user
                 if (ldap_enabled)
                 {
-                    JSPManager.showJSP(request, response, "/register/new-ldap-user.jsp");
+                    JSPManager.showJSP(request, response, "/register/new-user.jsp");
                 }
                 JSPManager.showJSP(request, response, "/register/new-user.jsp");
             }
@@ -390,7 +390,7 @@ public class RegisterServlet extends DSpaceServlet
             {
                 if (ldap_enabled)
                 {
-                    JSPManager.showJSP(request, response, "/register/new-ldap-user.jsp");
+                    JSPManager.showJSP(request, response, "/register/new-user.jsp");
                 }
                 else
                 {

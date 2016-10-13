@@ -15,9 +15,6 @@
   -    recent.submissions - RecetSubmissions
   --%>
 
-<%@page import="org.dspace.app.webui.util.JSPManager"%>
-<%@page import="org.dspace.authorize.AuthorizeException"%>
-<%@page import="org.dspace.authorize.AuthorizeManager"%>
 <%@page import="org.dspace.core.Utils"%>
 <%@page import="org.dspace.content.Bitstream"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -42,10 +39,6 @@
 <%@ page import="org.dspace.content.Item" %>
 
 <%
-	if (AuthorizeManager.hasIpAccess(UIUtil.obtainContext(request)) == false) {
-		JSPManager.showAuthorizeError(request, response, new AuthorizeException("Access denied by IP filters configuration"));
-	}
-
     Community[] communities = (Community[]) request.getAttribute("communities");
 
     Locale sessionLocale = UIUtil.getSessionLocale(request);
@@ -68,7 +61,8 @@
 <dspace:layout locbar="nolink" titlekey="jsp.home.title" feedData="<%= feedData %>">
 
 	<div class="jumbotron">
-	МГЮА
+	Добро пожаловать в репозиторий ФГБОУ ВО «Московский государственный юридический университет имени О.Е. Кутафина (МГЮА)».<br>
+Репозиторий (виртуальный читальный зал) создан для обеспечения открытого доступа к фонду электронных изданий Университета. В виртуальном читальном зале можно получить доступ к авторефератам, диссертациям, справочным, учебным и методическим пособиям, электронным копиям учебников. Возможен полнотекстовый поиск по автору, заглавию, дате публикации, предмету, типу документа, ключевым словам (тематикам), а также просмотр учебных изданий кафедр Университета имени О.Е. Кутафина (МГЮА) по дисциплинам.
 	</div>
 
 <div class="row">

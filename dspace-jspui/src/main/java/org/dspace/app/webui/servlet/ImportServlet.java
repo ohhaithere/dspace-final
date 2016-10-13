@@ -713,8 +713,8 @@ public class ImportServlet extends DSpaceServlet {
                 ti.createBundle("ORIGINAL");
                 Bitstream b = ti.getBundles("ORIGINAL")[0].createBitstream(iss);
                 b.setName(filenamelel);
-                b.setDescription("from 1C");
-                b.setSource("1C");
+                b.setDescription("");
+                b.setSource("");
 
                 ti.getBundles("ORIGINAL")[0].setPrimaryBitstreamID(b.getID());
 
@@ -1103,6 +1103,27 @@ public class ImportServlet extends DSpaceServlet {
             NodeList coverages = record.getElementsByTagName("Coverage");
             writeMetaDataToItemLowerCase(itemItem, "subject", coverages);
             coverages = null;
+        } catch (Exception e) {
+            //response.getWriter().write(e.getMessage());
+        }
+
+        try{
+           // NodeList link_t = record.getElementsByTagName("Link_t");
+            NodeList link_i = record.getElementsByTagName("Link_i");
+            // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+
+            //request.setAttribute("wtf_lang", textSubject.getTextContent());
+            for(int i = 0; i < link_i.getLength(); i++){
+                Element linkNode = (Element) link_i.item(i);
+                Node node1 = link_i.item(i); 
+                try{
+                   Node linktNode = linkNode.getElementsByTagName("Link_t").item(0);
+            	   itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linktNode.getTextContent());
+                } catch(Exception e){
+                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linkNode.getTextContent());
+                }
+            }
+           // coverages = null;
         } catch (Exception e) {
             //response.getWriter().write(e.getMessage());
         }

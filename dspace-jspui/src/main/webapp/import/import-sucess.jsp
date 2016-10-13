@@ -48,6 +48,6 @@ Boolean exists = (Boolean) request.getAttribute("existed");
     <b>Данные загружены в коллекцию!<br>
     <br>
     <a href="<%=link%>">Перейти на загруженный ресурс</a><br>
-    <a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
+    <a href="/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
 
 </dspace:layout>

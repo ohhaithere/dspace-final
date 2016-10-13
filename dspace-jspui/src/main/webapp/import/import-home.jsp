@@ -41,7 +41,7 @@
 
 <dspace:layout navbar="admin" style="submission" titlekey="jsp.register.edit-profile.title" nocache="true">
     <b>Поиск по идентификатору</b><br>
-    <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+    <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
   <span class="col-md-5">
     <input class="form-control" type="text" id="metadata_import_val" name="uuid_search" placeholder="Идентификатор" size="23" value=""/>
   </span>
@@ -55,7 +55,7 @@
     <br>
     <br>
     <b>Поиск по наименованию или автору</b><br>
-    <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+    <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
   <span class="col-md-5">
     <input class="form-control" type="text" name="name" id="author_name" placeholder="Наименование" size="23" value=""/>
   </span>

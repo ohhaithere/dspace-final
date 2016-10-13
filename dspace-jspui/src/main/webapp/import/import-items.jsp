@@ -75,7 +75,7 @@
       String title = titleValue.getTextContent();
       String item_id = "test";%>
  <br>
-  <form action="/jspui/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
+  <form action="/import-item" method="post" name="edit_metadata" id="edit_metadata" onkeydown="return disableEnterKey(event);">
 
     <%="<b>Автор:</b> " + author + "<br> <b>Наименование:</b>  " + title + "<br>"%>
     <input type="hidden" name="import_item" value="<%=i %>" />

@@ -47,5 +47,5 @@ String link = (String) request.getAttribute("link");
     <b>Данные успешно обновлены!</b><br>
     <br>
     <b><a href="<%=link%>">Перейти на обновленный ресурс</a></b><br>
-    <b><a href="/jspui/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
+    <b><a href="/import-item?collection_id=<%=colId%>">Импортировать еще</a> </b><br>
 </dspace:layout>

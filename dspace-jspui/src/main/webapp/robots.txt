@@ -1,8 +1,8 @@
 # The FULL URL to the DSpace sitemaps
-# The ${dspace.url} will be auto-filled with the value in dspace.cfg
+# The http://10.0.0.22:8080/jspui will be auto-filled with the value in dspace.cfg
 # XML sitemap is listed first as it is preferred by most search engines
-Sitemap: ${dspace.url}/sitemap
-Sitemap: ${dspace.url}/htmlmap
+Sitemap: http://10.0.0.22:8080/jspui/sitemap
+Sitemap: http://10.0.0.22:8080/jspui/htmlmap
 
 ##########################
 # Default Access Group

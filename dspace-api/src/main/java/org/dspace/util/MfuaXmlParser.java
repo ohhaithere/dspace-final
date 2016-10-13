@@ -346,6 +346,22 @@ public class MfuaXmlParser {
 						// response.getWriter().write(e.getMessage());
 					}
 
+					// NodeList link_t = record.getElementsByTagName("Link_t");
+            NodeList link_i = record.getElementsByTagName("Link_i");
+            // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+
+            //request.setAttribute("wtf_lang", textSubject.getTextContent());
+            for(int j = 0; j < link_i.getLength(); j++){
+                Element linkNode = (Element) link_i.item(j);
+                Node node1 = link_i.item(j); 
+                try{
+                   Node linktNode = linkNode.getElementsByTagName("Link_t").item(0);
+            	   itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linkNode.getTextContent());
+                } catch(Exception e){
+                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linkNode.getTextContent());
+                }
+            }
+
 					try {
 
 						NodeList citation = record.getElementsByTagName("Citation");
@@ -419,7 +435,7 @@ public class MfuaXmlParser {
 						Node link = record.getElementsByTagName("Link").item(0);
 
 						InputStream iss = null;
-						if (file != null && link.getTextContent() != null && !link.getTextContent().isEmpty()) {
+						if (file != null  && link.getTextContent() != null && !link.getTextContent().isEmpty()) {
 							log.debug("Import linked file from local");
 							File linkedFile = new File(
 									file.getParentFile().getAbsoluteFile() + "/" + link.getTextContent());
@@ -428,46 +444,38 @@ public class MfuaXmlParser {
 								iss = new FileInputStream(linkedFile);
 							}
 						} else {
+							if(link.getTextContent() != null && !link.getTextContent().isEmpty()){
 							log.debug("Import linked file from remote");
-							
-							URL linkToDownload = null;
-							String authStringEnc = null;
-							
-							if (file == null) {
-								String name = "dspace";
-								String password = "dspace";
 
-								String authString = name + ":" + password;
-								System.out.println("auth string: " + authString);
-								byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-								authStringEnc = new String(authEncBytes);
-								
-								// Getting file from url
-								String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+							String name = "dspace";
+							String password = "dspace";
 
-								String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
-								linkEncode = linkEncode.replace("+", "%20");
+							String authString = name + ":" + password;
+							System.out.println("auth string: " + authString);
+							byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+							String authStringEnc = new String(authEncBytes);
+							System.out.println("Base64 encoded auth string: " + authStringEnc);
 
-								//String filenamelel = link.getTextContent()
-								//		.substring(link.getTextContent().lastIndexOf('\\') + 1);
-								
-								linkToDownload = new URL(firstUrl + linkEncode);
-							} else {
-								NodeList linkINodes = record.getElementsByTagName("Link_i");
-								if (linkINodes.getLength() > 0) {
-									Node linkI = linkINodes.item(0);
-									if (linkI.getTextContent() != null && !linkI.getTextContent().isEmpty())
-										linkToDownload = new URL(linkI.getTextContent());
-								}
-							}
-							
-							if (linkToDownload != null) {
-								URLConnection urlConnection = linkToDownload.openConnection();
-								if (authStringEnc != null)
-									urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-	
-								iss = urlConnection.getInputStream();
-							}
+							// Getting file from url
+							String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+
+							String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+							linkEncode = linkEncode.replace("+", "%20");
+
+							String filenamelel = link.getTextContent()
+									.substring(link.getTextContent().lastIndexOf('\\') + 1);
+
+							URL linkToDownload = new URL(firstUrl + linkEncode);
+							URLConnection urlConnection = linkToDownload.openConnection();
+							urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+							iss = urlConnection.getInputStream();
+
+							// InputStream issforPdf =
+							// linkToDownload.openStream();
+
+							log.info("wowlol: " + firstUrl + linkEncode);
+						}
 						}
 
 						if (iss != null) {
