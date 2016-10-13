@@ -347,20 +347,27 @@ public class MfuaXmlParser {
 					}
 
 					// NodeList link_t = record.getElementsByTagName("Link_t");
-            NodeList link_i = record.getElementsByTagName("Link_i");
-            // Node qulSubject = subjectNode.getElementsByTagName("Qualifier").item(0);
+					NodeList link_i = record.getElementsByTagName("Link_i");
+					// Node qulSubject =
+					// subjectNode.getElementsByTagName("Qualifier").item(0);
 
-            //request.setAttribute("wtf_lang", textSubject.getTextContent());
-            for(int j = 0; j < link_i.getLength(); j++){
-                Element linkNode = (Element) link_i.item(j);
-                Node node1 = link_i.item(j); 
-                try{
-                   Node linktNode = linkNode.getElementsByTagName("Link_t").item(0);
-            	   itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linkNode.getTextContent());
-                } catch(Exception e){
-                    itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru", linkNode.getTextContent() + "\">" + linkNode.getTextContent());
-                }
-            }
+					// request.setAttribute("wtf_lang",
+					// textSubject.getTextContent());
+					for (int j = 0; j < link_i.getLength(); j++) {
+						try {
+							Element linkNode = (Element) link_i.item(j);
+							String linkUrl = linkNode.getFirstChild().getTextContent();
+							String linkName = linkUrl;
+							NodeList linktNodes = linkNode.getElementsByTagName("Link_t");
+							if (linktNodes.getLength() > 0) {
+								linkName = linktNodes.item(0).getTextContent();
+							}
+							itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "source", "uri", "ru",
+									linkUrl + "\">" + linkName);
+						} catch (Exception e) {
+							log.warn("Link_i parse error", e);
+						}
+					}
 
 					try {
 
@@ -375,19 +382,17 @@ public class MfuaXmlParser {
 					Date today = Calendar.getInstance().getTime();
 					String dateNow = df.format(today);
 
-
-                 /*   if(exists == false) {
-                        try {
-                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "accessioned", null, dateNow);
-                        } catch (Exception e1) {
-
-                        }
-                        try {
-                            itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date", "available", null, dateNow);
-                        } catch (Exception e2) {
-
-                        }
-                    }*/
+					/*
+					 * if(exists == false) { try {
+					 * itemItem.addMetadata(MetadataSchema.DC_SCHEMA, "date",
+					 * "accessioned", null, dateNow); } catch (Exception e1) {
+					 * 
+					 * } try { itemItem.addMetadata(MetadataSchema.DC_SCHEMA,
+					 * "date", "available", null, dateNow); } catch (Exception
+					 * e2) {
+					 * 
+					 * } }
+					 */
 
 					if (exists == false) {
 						itemItem.setDiscoverable(true);
@@ -435,7 +440,7 @@ public class MfuaXmlParser {
 						Node link = record.getElementsByTagName("Link").item(0);
 
 						InputStream iss = null;
-						if (file != null  && link.getTextContent() != null && !link.getTextContent().isEmpty()) {
+						if (file != null && link.getTextContent() != null && !link.getTextContent().isEmpty()) {
 							log.debug("Import linked file from local");
 							File linkedFile = new File(
 									file.getParentFile().getAbsoluteFile() + "/" + link.getTextContent());
@@ -444,38 +449,38 @@ public class MfuaXmlParser {
 								iss = new FileInputStream(linkedFile);
 							}
 						} else {
-							if(link.getTextContent() != null && !link.getTextContent().isEmpty()){
-							log.debug("Import linked file from remote");
+							if (link.getTextContent() != null && !link.getTextContent().isEmpty()) {
+								log.debug("Import linked file from remote");
 
-							String name = "dspace";
-							String password = "dspace";
+								String name = "dspace";
+								String password = "dspace";
 
-							String authString = name + ":" + password;
-							System.out.println("auth string: " + authString);
-							byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-							String authStringEnc = new String(authEncBytes);
-							System.out.println("Base64 encoded auth string: " + authStringEnc);
+								String authString = name + ":" + password;
+								System.out.println("auth string: " + authString);
+								byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+								String authStringEnc = new String(authEncBytes);
+								System.out.println("Base64 encoded auth string: " + authStringEnc);
 
-							// Getting file from url
-							String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
+								// Getting file from url
+								String firstUrl = "http://10.0.0.34/IRBIS64/DATAi/BOOK2/";
 
-							String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
-							linkEncode = linkEncode.replace("+", "%20");
+								String linkEncode = URLEncoder.encode(link.getTextContent(), "UTF-8");
+								linkEncode = linkEncode.replace("+", "%20");
 
-							String filenamelel = link.getTextContent()
-									.substring(link.getTextContent().lastIndexOf('\\') + 1);
+								String filenamelel = link.getTextContent()
+										.substring(link.getTextContent().lastIndexOf('\\') + 1);
 
-							URL linkToDownload = new URL(firstUrl + linkEncode);
-							URLConnection urlConnection = linkToDownload.openConnection();
-							urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+								URL linkToDownload = new URL(firstUrl + linkEncode);
+								URLConnection urlConnection = linkToDownload.openConnection();
+								urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
-							iss = urlConnection.getInputStream();
+								iss = urlConnection.getInputStream();
 
-							// InputStream issforPdf =
-							// linkToDownload.openStream();
+								// InputStream issforPdf =
+								// linkToDownload.openStream();
 
-							log.info("wowlol: " + firstUrl + linkEncode);
-						}
+								log.info("wowlol: " + firstUrl + linkEncode);
+							}
 						}
 
 						if (iss != null) {
@@ -504,29 +509,29 @@ public class MfuaXmlParser {
 
 					// Updating owning collections
 					itemItem.setOwningCollection(col);
-					
+
 					// Current item collections
 					Map<Integer, Collection> itemCollections = new HashMap<Integer, Collection>();
-					for (Collection collection: itemItem.getCollections()) {
+					for (Collection collection : itemItem.getCollections()) {
 						itemCollections.put(collection.getID(), collection);
 					}
-					
-					//Adding into new collections
-					for (Collection collection: collections.values()) {
+
+					// Adding into new collections
+					for (Collection collection : collections.values()) {
 						if (itemCollections.containsKey(collection.getID()))
 							continue;
-						
+
 						collection.addItem(itemItem);
 						context.commit();
 						itemCollections.put(collection.getID(), collection);
 					}
-					
+
 					// Removing from old collections
-					for (Collection collection: itemCollections.values()) {
+					for (Collection collection : itemCollections.values()) {
 						if (!collections.containsKey(collection.getID()))
 							collection.removeItem(itemItem);
 						context.commit();
-						
+
 						// Checking collection is empty
 						if (collection.countItems() == 0) {
 							log.info("Removing empty collection " + collection.getMetadata("name"));
@@ -543,7 +548,7 @@ public class MfuaXmlParser {
 							}
 						}
 					}
-					
+
 					itemItem.update(false);
 					context.commit();
 
@@ -593,14 +598,14 @@ public class MfuaXmlParser {
 						log.error("Rollback failed", e1);
 					}
 				}
-				
+
 				log.debug("Checking for empty collection " + col.getMetadata("name"));
-				for (Collection collection: collections.values()) {
+				for (Collection collection : collections.values()) {
 					if (collection.countItems() > 0) {
 						log.debug("Collection not empty");
 						continue;
 					}
-					
+
 					log.info("Removing empty collection " + collection.getMetadata("name"));
 					Community[] communities = collection.getCommunities();
 					for (Community community : communities) {
